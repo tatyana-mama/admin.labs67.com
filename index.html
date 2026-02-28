@@ -37,6 +37,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .tb-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
 .tb-time{font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--muted);}
+.tb-nav{display:flex;gap:2px;margin-left:16px;}
+.tb-tab{padding:6px 16px;background:transparent;border:1px solid var(--b1);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;}
+.tb-tab:hover{color:var(--text);}
+.tb-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(232,184,64,0.05);}
 
 /* LAYOUT */
 .layout{display:grid;grid-template-columns:300px 1fr 320px;height:100vh;padding-top:52px;}
@@ -298,13 +302,18 @@ option{background:#08101f;}
     </div>
     <div class="tb-badge">ADMIN PANEL</div>
   </div>
+  <div class="tb-nav">
+    <button class="tb-tab active" onclick="showPage('crm',this)">💬 CRM</button>
+    <button class="tb-tab" onclick="showPage('bot',this)">⚙️ Бот</button>
+    <button class="tb-tab" onclick="showPage('logs',this)">🤖 Логи</button>
+  </div>
   <div class="tb-r">
     <div class="tb-status"><div class="tb-dot"></div><span id="dbStatus">CONNECTING...</span></div>
     <span class="tb-time" id="clock"></span>
   </div>
 </div>
 
-<div class="layout">
+<div id="page-crm" class="layout">
 
   <!-- COL 1: LEADS -->
   <div class="pane">
@@ -370,7 +379,123 @@ option{background:#08101f;}
 
 </div>
 
+<!-- PAGE 2: БОТ -->
+<div id="page-bot" style="display:none;height:calc(100vh - 52px);margin-top:52px;display:none;grid-template-columns:350px 1fr;gap:0;background:var(--bg);">
+  <div style="border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;">
+    <div class="pane-hdr"><span class="pane-title">// Настройки бота</span></div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;flex:1;">
+      <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;">Системный промпт</label><textarea style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;resize:vertical;min-height:120px;" placeholder="Вы — ассистент LABS67. Помогаете клиентам выбрать направление..."></textarea></div>
+      <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;">Приветственное сообщение</label><input type="text" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;" value="Здравствуйте! Чем могу помочь?"></div>
+      <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;">Задержка ответа (мс)</label><input type="number" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;" value="800"></div>
+      <button onclick="alert('Настройки сохранены')" style="padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#03050e;font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;">// СОХРАНИТЬ</button>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;overflow:hidden;background:var(--bg2);">
+    <div class="pane-hdr"><span class="pane-title" style="color:var(--cyan);">// РЕЖИМ ТЕСТИРОВАНИЯ</span></div>
+    <div id="bot-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <div style="max-width:80%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--b1);border-radius:0 8px 8px 8px;font-size:0.84rem;align-self:flex-start;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;color:var(--cyan);display:block;margin-bottom:4px;">// Бот</span>Здравствуйте! Чем могу помочь?</div>
+    </div>
+    <div style="padding:10px;border-top:1px solid var(--b1);display:flex;gap:8px;">
+      <input id="bot-inp" type="text" placeholder="Введите сообщение..." onkeydown="if(event.key==='Enter')botSend()" style="flex:1;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;">
+      <button onclick="botSend()" style="padding:9px 16px;background:var(--cyan);border:none;color:#03050e;font-weight:700;cursor:pointer;font-size:0.8rem;">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: ЛОГИ -->
+<div id="page-logs" style="display:none;height:calc(100vh - 52px);margin-top:52px;display:none;flex-direction:column;background:var(--bg);">
+  <div style="padding:10px 16px;border-bottom:1px solid var(--b1);display:flex;gap:10px;align-items:center;background:var(--panel);flex-shrink:0;">
+    <select id="log-agent" onchange="renderLogs()" style="padding:6px 10px;background:var(--bg);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.5rem;outline:none;"><option value="">Все агенты</option><option value="Кай">Кай</option><option value="Степа">Степа</option></select>
+    <select id="log-status" onchange="renderLogs()" style="padding:6px 10px;background:var(--bg);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.5rem;outline:none;"><option value="">Все статусы</option><option value="success">Success</option><option value="error">Error</option></select>
+    <input id="log-date" type="date" onchange="renderLogs()" style="padding:6px 10px;background:var(--bg);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.5rem;outline:none;">
+    <button onclick="document.getElementById('log-agent').value='';document.getElementById('log-status').value='';document.getElementById('log-date').value='';renderLogs();" style="padding:6px 14px;background:transparent;border:1px solid var(--b1);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.48rem;cursor:pointer;">Сбросить</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--muted);margin-left:auto;">// AGENT LOGS</span>
+  </div>
+  <div style="flex:1;overflow-y:auto;">
+    <table id="log-table" style="width:100%;border-collapse:collapse;">
+      <thead><tr style="background:var(--panel);font-family:'JetBrains Mono',monospace;font-size:0.46rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">
+        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Время</th>
+        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Агент</th>
+        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Модель</th>
+        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Задача</th>
+        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Статус</th>
+        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Стоимость</th>
+        <th style="padding:10px 14px;border-bottom:1px solid var(--b1);"></th>
+      </tr></thead>
+      <tbody id="log-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
 <script>
+// ── NAVIGATION ──
+const MOCK_LOGS=[
+  {id:1,time:'02:47',agent:'Кай',model:'sonnet-4.6',task:'fix(form): direction validation',status:'success',cost:'$0.009',detail:'Баг direction.includes. Фикс startsWith. Коммит 2224a32.'},
+  {id:2,time:'02:51',agent:'Степа',model:'sonnet-4.6',task:'opt(form): remove Prefer header',status:'success',cost:'$0.003',detail:'Убран Prefer header. Дубль emailRe удалён. Коммит fc10ec5.'},
+  {id:3,time:'02:55',agent:'Кай',model:'sonnet-4.6',task:'Архитектура admin redesign',status:'success',cost:'$0.007',detail:'3-страничная SPA архитектура.'},
+  {id:4,time:'03:04',agent:'Степа',model:'sonnet-4.6',task:'PWA manifest + apple-touch-icon',status:'success',cost:'$0.005',detail:'Добавлен manifest.json, apple-mobile-web-app-capable meta теги.'}
+];
+
+function showPage(name, btn) {
+  ['crm','bot','logs'].forEach(p => {
+    const el = document.getElementById('page-'+p);
+    if(el) el.style.display = 'none';
+  });
+  const target = document.getElementById('page-'+name);
+  if(target) target.style.display = name==='crm' ? 'grid' : name==='logs' ? 'flex' : 'grid';
+  document.querySelectorAll('.tb-tab').forEach(t => t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  if(name==='logs') renderLogs();
+}
+
+function renderLogs() {
+  const agent = document.getElementById('log-agent').value;
+  const status = document.getElementById('log-status').value;
+  const tbody = document.getElementById('log-tbody');
+  const filtered = MOCK_LOGS.filter(l =>
+    (!agent || l.agent===agent) && (!status || l.status===status)
+  );
+  tbody.innerHTML = filtered.map(l => `
+    <tr style="border-bottom:1px solid var(--b1);font-size:0.82rem;" id="log-row-${l.id}">
+      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--muted);">${l.time}</td>
+      <td style="padding:10px 14px;font-weight:700;color:${l.agent==='Кай'?'var(--gold)':'var(--cyan)'};">${l.agent}</td>
+      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--muted);">${l.model}</td>
+      <td style="padding:10px 14px;">${l.task}</td>
+      <td style="padding:10px 14px;"><span style="display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:${l.status==='success'?'var(--green)':'var(--red)'};">● ${l.status}</span></td>
+      <td style="padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--gold);">${l.cost}</td>
+      <td style="padding:10px 14px;"><button onclick="toggleDetail(${l.id})" style="background:transparent;border:1px solid var(--b1);color:var(--muted);font-size:0.7rem;cursor:pointer;padding:2px 8px;">▶</button></td>
+    </tr>
+    <tr id="log-detail-${l.id}" style="display:none;background:rgba(255,255,255,0.02);">
+      <td colspan="7" style="padding:10px 14px 16px 40px;font-size:0.82rem;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.52rem;line-height:1.7;border-bottom:1px solid var(--b1);">${l.detail}</td>
+    </tr>
+  `).join('');
+}
+
+function toggleDetail(id) {
+  const row = document.getElementById('log-detail-'+id);
+  if(row) row.style.display = row.style.display==='none' ? 'table-row' : 'none';
+}
+
+function botSend() {
+  const inp = document.getElementById('bot-inp');
+  const msgs = document.getElementById('bot-msgs');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  const userMsg = document.createElement('div');
+  userMsg.style.cssText = 'max-width:80%;padding:10px 14px;background:rgba(232,184,64,0.08);border:1px solid rgba(232,184,64,0.2);border-radius:8px 0 8px 8px;font-size:0.84rem;align-self:flex-end;color:var(--gold);margin-left:auto;';
+  userMsg.textContent = text;
+  msgs.appendChild(userMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    const botMsg = document.createElement('div');
+    botMsg.style.cssText = 'max-width:80%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--b1);border-radius:0 8px 8px 8px;font-size:0.84rem;align-self:flex-start;';
+    botMsg.innerHTML = `<span style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;color:var(--cyan);display:block;margin-bottom:4px;">// Бот</span>// Бот: ${text}`;
+    msgs.appendChild(botMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 800);
+}
+
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://ctdleobjnzniqkqomlrq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0ZGxlb2JqbnpuaXFrcW9tbHJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMzE4MTEsImV4cCI6MjA4NzgwNzgxMX0.AMHtY7zGPemKYCxMy2bqRTOEAp8trA_Slor9wmg7C38';

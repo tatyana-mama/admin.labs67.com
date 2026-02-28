@@ -659,5 +659,43 @@ function notify(msg, isErr=false) {
 loadLeads();
 subscribeRealtime();
 </script>
+
+  <!-- CURRENCY CONVERTER -->
+  <div style="position:fixed;bottom:18px;left:18px;z-index:200;background:var(--panel);border:1px solid var(--b1);padding:12px 14px;width:210px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.45rem;letter-spacing:0.2em;color:var(--gold);margin-bottom:8px;">// КУРС NBP</div>
+    <div style="display:flex;gap:6px;margin-bottom:8px;">
+      <input id="cvAmt" type="number" value="1000" style="flex:1;padding:5px 8px;background:rgba(0,0,0,0.4);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.62rem;outline:none;">
+      <select id="cvFrom" style="padding:5px;background:#08101f;border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.55rem;outline:none;">
+        <option>PLN</option><option>EUR</option><option>USD</option>
+      </select>
+    </div>
+    <div id="cvResult" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--green);margin-bottom:6px;">→ Расчёт...</div>
+    <div id="cvRate" style="font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--muted);">Курс NBP загружается...</div>
+  </div>
+  <script>
+  (async()=>{
+    let rates={EUR:4.2233,USD:3.5804};
+    try{
+      const r=await fetch('https://api.nbp.pl/api/exchangerates/tables/a/?format=json');
+      const d=await r.json();
+      d[0].rates.forEach(x=>{rates[x.code]=x.mid;});
+      document.getElementById('cvRate').textContent=`NBP: 1 EUR = ${rates.EUR.toFixed(4)} PLN`;
+    }catch(e){}
+    function convert(){
+      const amt=parseFloat(document.getElementById('cvAmt').value)||0;
+      const from=document.getElementById('cvFrom').value;
+      let pln=from==='PLN'?amt:amt*rates[from];
+      const eur=Math.ceil(pln/rates.EUR);
+      const usd=Math.ceil(pln/rates.USD);
+      document.getElementById('cvResult').innerHTML=
+        from==='PLN'
+          ? `→ ${Math.ceil(pln/rates.EUR)} EUR · ${Math.ceil(pln/rates.USD)} USD`
+          : `→ ${Math.ceil(pln)} PLN · ${Math.ceil(pln/rates.EUR)} EUR`;
+    }
+    document.getElementById('cvAmt').oninput=convert;
+    document.getElementById('cvFrom').onchange=convert;
+    convert();
+  })();
+  </script>
 </body>
 </html>

@@ -76,48 +76,143 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ltag.hot{border-color:rgba(255,77,109,0.4);color:var(--red);}
 .ltag.contacted{border-color:rgba(232,184,64,0.3);color:var(--gold);}
 
-/* CHAT AREA */
-.chat-area{display:flex;flex-direction:column;overflow:hidden;}
-.chat-bar{padding:10px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--panel);flex-shrink:0;}
-.cb-l{display:flex;align-items:center;gap:10px;}
-.cb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#03050e;font-family:'JetBrains Mono',monospace;}
-.cb-name{font-size:0.85rem;font-weight:700;}
-.cb-meta{font-family:'JetBrains Mono',monospace;font-size:0.44rem;color:var(--muted);}
+/* ── CHAT AREA ── */
+.chat-area{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+
+/* Contact header bar */
+.chat-bar{
+  padding:12px 20px;border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--panel);flex-shrink:0;
+  box-shadow:0 1px 0 rgba(255,255,255,0.04);
+}
+.cb-l{display:flex;align-items:center;gap:12px;}
+.cb-av{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;color:#03050e;
+  font-family:'JetBrains Mono',monospace;flex-shrink:0;
+}
+.cb-info{display:flex;flex-direction:column;gap:2px;}
+.cb-name{font-size:0.88rem;font-weight:700;line-height:1;}
+.cb-meta{font-family:'JetBrains Mono',monospace;font-size:0.43rem;color:var(--muted);margin-top:2px;}
 .cb-r{display:flex;gap:6px;}
-.cb-btn{padding:4px 12px;border:1px solid var(--b1);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.43rem;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s;}
+.cb-btn{
+  padding:5px 12px;border:1px solid var(--b1);background:transparent;
+  color:var(--muted);font-family:'JetBrains Mono',monospace;
+  font-size:0.43rem;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s;
+}
 .cb-btn:hover{color:var(--gold);border-color:var(--gold-dim);}
-.cb-btn.red{border-color:rgba(255,77,109,0.3);color:var(--red);}
+.cb-btn.red{border-color:rgba(255,77,109,0.25);color:var(--red);}
+.cb-btn.red:hover{background:rgba(255,77,109,0.08);}
 
-.msgs-area{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
-.msgs-area::-webkit-scrollbar{width:3px;}
-.msgs-area::-webkit-scrollbar-thumb{background:var(--b2);}
+/* Messages area — like Telegram */
+.msgs-area{
+  flex:1;overflow-y:auto;
+  padding:20px 24px;
+  display:flex;flex-direction:column;gap:4px;
+  background:var(--bg);
+}
+.msgs-area::-webkit-scrollbar{width:4px;}
+.msgs-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px;}
 
-.msg-row{display:flex;gap:8px;max-width:82%;}
-.msg-row.bot{align-self:flex-start;}
-.msg-row.user{align-self:flex-end;flex-direction:row-reverse;}
-.msg-row.admin{align-self:flex-end;flex-direction:row-reverse;}
-.msg-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;margin-top:2px;}
-.msg-av.bot-av{background:rgba(232,184,64,0.1);border:1px solid var(--gold-dim);}
-.msg-av.user-av{background:rgba(255,255,255,0.05);border:1px solid var(--b1);}
-.msg-av.admin-av{background:rgba(48,220,255,0.1);border:1px solid rgba(48,220,255,0.3);}
-.msg-bubble{padding:9px 13px;font-size:0.8rem;line-height:1.6;}
-.msg-bubble.bot{background:var(--panel);border:1px solid var(--b1);border-radius:0 8px 8px 8px;}
-.msg-bubble.user{background:rgba(255,255,255,0.04);border:1px solid var(--b1);border-radius:8px 0 8px 8px;}
-.msg-bubble.admin{background:rgba(48,220,255,0.06);border:1px solid rgba(48,220,255,0.2);border-radius:8px 0 8px 8px;}
-.msg-sender{font-family:'JetBrains Mono',monospace;font-size:0.43rem;letter-spacing:0.08em;color:var(--gold);display:block;margin-bottom:4px;}
-.msg-sender.admin-lbl{color:var(--cyan);}
-.msg-time{font-family:'JetBrains Mono',monospace;font-size:0.4rem;color:var(--muted);margin-top:3px;display:block;}
+/* Date separator */
+.msg-date-sep{
+  text-align:center;margin:10px 0 6px;
+  font-family:'JetBrains Mono',monospace;font-size:0.42rem;
+  letter-spacing:0.12em;color:var(--muted);
+  display:flex;align-items:center;gap:10px;
+}
+.msg-date-sep::before,.msg-date-sep::after{content:'';flex:1;border-top:1px solid var(--b1);}
 
-.typing{display:flex;align-items:center;gap:4px;padding:6px 0;}
-.td{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:td 1.2s infinite;}
+/* Message wrapper */
+.msg-row{display:flex;flex-direction:column;margin-bottom:2px;}
+.msg-row.bot  .msg-wrap{align-items:flex-start;}
+.msg-row.user .msg-wrap{align-items:flex-end;}
+.msg-row.admin .msg-wrap{align-items:flex-end;}
+
+.msg-wrap{display:flex;flex-direction:column;max-width:72%;}
+
+/* Sender label */
+.msg-who{
+  font-family:'JetBrains Mono',monospace;font-size:0.41rem;
+  letter-spacing:0.08em;margin-bottom:3px;padding:0 4px;
+}
+.msg-who.lbl-bot{color:var(--gold);}
+.msg-who.lbl-user{color:var(--muted);text-align:right;}
+.msg-who.lbl-admin{color:var(--cyan);text-align:right;}
+
+/* Bubble */
+.msg-bubble{
+  padding:10px 14px;font-size:0.82rem;line-height:1.65;
+  word-break:break-word;position:relative;
+}
+.msg-bubble.bot{
+  background:var(--panel);
+  border:1px solid var(--b1);
+  border-radius:2px 12px 12px 12px;
+  color:var(--text);
+}
+.msg-bubble.user{
+  background:rgba(232,184,64,0.08);
+  border:1px solid rgba(232,184,64,0.15);
+  border-radius:12px 2px 12px 12px;
+  color:var(--text);
+  text-align:left;
+}
+.msg-bubble.admin{
+  background:rgba(48,220,255,0.07);
+  border:1px solid rgba(48,220,255,0.18);
+  border-radius:12px 2px 12px 12px;
+  color:var(--text);
+}
+
+/* Time inside bubble */
+.msg-time{
+  display:block;
+  font-family:'JetBrains Mono',monospace;font-size:0.4rem;
+  color:var(--muted);margin-top:5px;
+  text-align:right;
+}
+
+/* Typing indicator */
+.typing-row{display:flex;align-items:center;gap:6px;padding:6px 0;}
+.typing-dots{display:flex;gap:4px;align-items:center;background:var(--panel);border:1px solid var(--b1);padding:8px 14px;border-radius:2px 12px 12px 12px;}
+.td{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:tdot 1.2s infinite;}
 .td:nth-child(2){animation-delay:0.2s;}
 .td:nth-child(3){animation-delay:0.4s;}
-@keyframes td{0%,80%,100%{opacity:0.2;transform:scale(0.8);}40%{opacity:1;transform:scale(1);}}
+@keyframes tdot{0%,80%,100%{opacity:0.2;transform:scale(0.7);}40%{opacity:1;transform:scale(1);}}
 
-.input-area{padding:12px 16px;border-top:1px solid var(--b1);display:flex;gap:8px;align-items:flex-end;background:var(--panel);flex-shrink:0;}
-.chat-inp{flex:1;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.8rem;outline:none;resize:none;height:38px;transition:border-color 0.2s;}
-.chat-inp:focus{border-color:var(--gold-dim);}
-.send-btn{padding:9px 16px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#03050e;font-family:'JetBrains Mono',monospace;font-size:0.5rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+/* Input area */
+.input-area{
+  padding:12px 20px;border-top:1px solid var(--b1);
+  display:flex;gap:10px;align-items:flex-end;
+  background:var(--panel);flex-shrink:0;
+}
+.inp-wrap{
+  flex:1;display:flex;align-items:center;
+  background:rgba(0,0,0,0.35);border:1px solid var(--b1);
+  transition:border-color 0.2s;
+}
+.inp-wrap:focus-within{border-color:rgba(232,184,64,0.25);}
+.chat-inp{
+  flex:1;padding:10px 14px;
+  background:transparent;border:none;
+  color:var(--text);font-family:'Syne',sans-serif;font-size:0.82rem;
+  outline:none;resize:none;height:40px;max-height:120px;
+}
+.chat-inp::placeholder{color:var(--muted);}
+.send-btn{
+  padding:10px 20px;height:40px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;color:#03050e;
+  font-family:'JetBrains Mono',monospace;font-size:0.52rem;
+  font-weight:700;letter-spacing:0.08em;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;
+  clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
+}
+.send-btn:hover{box-shadow:0 0 16px rgba(232,184,64,0.3);}
 
 /* RIGHT PANEL */
 .right-panel{border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
@@ -233,7 +328,7 @@ option{background:#08101f;}
     <div class="chat-bar" id="chatBar" style="display:none;">
       <div class="cb-l">
         <div class="cb-av" id="chatAv">?</div>
-        <div>
+        <div class="cb-info">
           <div class="cb-name" id="chatName">—</div>
           <div class="cb-meta" id="chatMeta">—</div>
         </div>
@@ -241,15 +336,17 @@ option{background:#08101f;}
       <div class="cb-r">
         <button class="cb-btn" onclick="setStatus('contacted')">✓ Contacted</button>
         <button class="cb-btn" onclick="setStatus('hot')">🔥 Hot</button>
-        <button class="cb-btn red" onclick="setStatus('done')">Archive</button>
+        <button class="cb-btn red" onclick="setStatus('done')">✕ Archive</button>
       </div>
     </div>
     <div class="msgs-area" id="msgsArea">
-      <div class="empty"><div class="empty-ico">💬</div><div class="empty-txt">Выберите заявку</div></div>
+      <div class="empty"><div class="empty-ico">💬</div><div class="empty-txt">Выберите заявку слева</div></div>
     </div>
     <div class="input-area" id="inputArea" style="display:none;">
-      <textarea class="chat-inp" id="adminInp" placeholder="Написать от имени менеджера..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminMsg();}"></textarea>
-      <button class="send-btn" onclick="sendAdminMsg()">SEND →</button>
+      <div class="inp-wrap">
+        <textarea class="chat-inp" id="adminInp" placeholder="Написать от имени менеджера..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminMsg();}"></textarea>
+      </div>
+      <button class="send-btn" onclick="sendAdminMsg()">→ SEND</button>
     </div>
   </div>
 
@@ -357,21 +454,24 @@ function renderMsgs() {
     area.innerHTML = '<div class="empty"><div class="empty-ico">💬</div><div class="empty-txt">Нет сообщений</div></div>';
     return;
   }
+  // Group by date
+  let lastDate = '';
   area.innerHTML = messages.map(m => {
-    const time = new Date(m.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'});
-    const isBot = m.role === 'bot';
-    const isAdmin = m.role === 'admin';
+    const dt = new Date(m.created_at);
+    const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'});
+    const dateStr = dt.toLocaleDateString('ru-RU', {day:'2-digit',month:'long'});
     const cls = m.role || 'user';
-    return `
+    const isBot = cls === 'bot';
+    const isAdmin = cls === 'admin';
+    let dateSep = '';
+    if (dateStr !== lastDate) { lastDate = dateStr; dateSep = `<div class="msg-date-sep">${dateStr}</div>`; }
+    const whoLabel = isBot ? '// LABS67 AI' : isAdmin ? '// Manager' : '// Client';
+    const whoClass = isBot ? 'lbl-bot' : isAdmin ? 'lbl-admin' : 'lbl-user';
+    return `${dateSep}
       <div class="msg-row ${cls}">
-        <div class="msg-av ${cls}-av">${isBot?'🤖':isAdmin?'👨‍💼':'👤'}</div>
-        <div>
-          <div class="msg-bubble ${cls}">
-            ${isBot?'<span class="msg-sender">// LABS67 AI</span>':''}
-            ${isAdmin?'<span class="msg-sender admin-lbl">// Manager</span>':''}
-            ${m.text}
-            <span class="msg-time">${time}</span>
-          </div>
+        <div class="msg-wrap">
+          <span class="msg-who ${whoClass}">${whoLabel}</span>
+          <div class="msg-bubble ${cls}">${m.text}<span class="msg-time">${time}</span></div>
         </div>
       </div>`;
   }).join('');

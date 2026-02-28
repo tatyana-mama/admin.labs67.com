@@ -292,485 +292,397 @@ option{background:#08101f;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.5;}}
 
 /* ══════════════════════════════════════════
-   OFFICE PAGE
+   OFFICE PAGE — TOP-DOWN PIXEL ART
 ══════════════════════════════════════════ */
 #page-office{
   height:calc(100vh - 52px);
   margin-top:52px;
-  flex-direction:column;
+  flex-direction:row;
   background:var(--bg);
   overflow:hidden;
+  display:none;
 }
-.office-wrap{
-  display:flex;
-  flex:1;
-  overflow:hidden;
-  min-height:0;
-}
-.office-room{
+/* Основная карта офиса */
+.td-map{
   flex:1;
   position:relative;
   overflow:hidden;
-  background:#0a1020;
-  /* паркетный пол снизу */
+  background:#0c1525;
+  cursor:default;
+  image-rendering:pixelated;
 }
-/* Стены + потолок */
-.office-wall{
-  position:absolute;
-  top:0;left:0;right:0;
-  height:55%;
-  background:linear-gradient(180deg,#0d1830 0%,#111e35 100%);
-}
-/* Паркет */
-.office-floor{
-  position:absolute;
-  bottom:0;left:0;right:0;
-  height:45%;
-  background:repeating-linear-gradient(
-    90deg,
-    #1a2a18 0px,#1a2a18 39px,
-    #162415 40px,#162415 80px
-  ),
-  repeating-linear-gradient(
-    180deg,
-    transparent 0px,transparent 19px,
-    rgba(0,0,0,0.15) 20px,rgba(0,0,0,0.15) 21px
-  );
-  background-blend-mode:overlay;
-}
-.office-floor::after{
+/* Внешние стены */
+.td-map::before{
   content:'';
   position:absolute;
-  top:0;left:0;right:0;bottom:0;
-  background:repeating-linear-gradient(
-    90deg,
-    transparent 0px,transparent 39px,
-    rgba(0,0,0,0.2) 39px,rgba(0,0,0,0.2) 40px
-  ),
-  repeating-linear-gradient(
-    180deg,
-    transparent 0px,transparent 19px,
-    rgba(0,0,0,0.1) 19px,rgba(0,0,0,0.1) 20px
-  );
+  inset:20px;
+  border:3px solid #1e2d50;
+  background:transparent;
+  pointer-events:none;
+  z-index:5;
+  box-shadow:inset 0 0 0 1px #0a1020;
 }
-/* Окно */
-.office-window{
+/* Пол рабочей зоны — плитка */
+.td-floor-work{
   position:absolute;
-  top:8%;
-  left:4%;
-  width:120px;
-  height:140px;
-  border:3px solid #2a3a5a;
-  border-radius:2px;
-  overflow:hidden;
-  box-shadow:0 0 20px rgba(48,220,255,0.15);
+  top:20px;left:20px;
+  width:60%;
+  bottom:20px;
+  background:
+    repeating-linear-gradient(90deg, rgba(30,45,80,0.4) 0px, rgba(30,45,80,0.4) 1px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(0deg, rgba(30,45,80,0.4) 0px, rgba(30,45,80,0.4) 1px, transparent 1px, transparent 40px),
+    #0f1a30;
 }
-.office-window::before{
+/* Пол лаунжа — паркет */
+.td-floor-lounge{
+  position:absolute;
+  top:20px;right:20px;
+  width:calc(40% - 3px);
+  bottom:20px;
+  background:
+    repeating-linear-gradient(90deg, rgba(60,40,20,0.3) 0px, rgba(60,40,20,0.3) 1px, transparent 1px, transparent 48px),
+    repeating-linear-gradient(0deg, rgba(60,40,20,0.2) 0px, rgba(60,40,20,0.2) 1px, transparent 1px, transparent 24px),
+    #1a1208;
+}
+/* Разделительная стена */
+.td-wall-divider{
+  position:absolute;
+  top:20px;bottom:20px;
+  left:calc(60% + 20px);
+  width:4px;
+  background:#1e2d50;
+  z-index:4;
+}
+.td-wall-divider::after{
   content:'';
   position:absolute;
-  inset:0;
-  background:linear-gradient(180deg,#0a2050 0%,#1a4080 40%,#2a6090 70%,#1a3060 100%);
+  top:35%;bottom:35%;
+  left:0;right:0;
+  background:#0c1525;
 }
-.office-window .win-cross-h{
+/* ── МЕБЕЛЬ (top-down вид) ── */
+.td-obj{
   position:absolute;
-  top:50%;left:0;right:0;
-  height:3px;
-  background:#2a3a5a;
-  transform:translateY(-50%);
-  z-index:2;
+  image-rendering:pixelated;
 }
-.office-window .win-cross-v{
-  position:absolute;
-  left:50%;top:0;bottom:0;
-  width:3px;
-  background:#2a3a5a;
-  transform:translateX(-50%);
-  z-index:2;
-}
-/* Звёзды в окне */
-.office-window .stars{
-  position:absolute;inset:0;z-index:1;overflow:hidden;
-}
-.star{
-  position:absolute;
-  width:2px;height:2px;
-  background:#fff;
-  border-radius:50%;
-  opacity:0.6;
-  animation:twinkle 2s infinite;
-}
-@keyframes twinkle{0%,100%{opacity:0.6;}50%{opacity:0.15;}}
-/* Потолочный свет */
-.ceiling-light{
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:80px;
-  height:6px;
-  background:rgba(232,184,64,0.6);
-  box-shadow:0 0 60px 30px rgba(232,184,64,0.08);
-}
-
-/* ── ПЕРСОНАЖ ── */
-.agent-station{
-  position:absolute;
-  bottom:45%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:0;
-}
-.agent-station.kai{ left:22%; }
-.agent-station.stepa{ right:22%; }
-
-/* Стол */
-.desk{
-  width:130px;
-  height:18px;
-  background:#1a2240;
-  border:1px solid #2a3560;
+/* Стол рабочий — вид сверху */
+.td-desk{
+  width:72px;height:44px;
+  background:#1c2d50;
+  border:2px solid #2a3f70;
   border-radius:2px;
-  position:relative;
-  box-shadow:0 4px 0 #0f1830;
-  margin-top:4px;
+  box-shadow:2px 3px 0 #0a1525;
+}
+.td-desk::after{
+  content:'';
+  position:absolute;
+  top:6px;left:8px;right:8px;bottom:6px;
+  background:#0d1830;
+  border:1px solid #223060;
+  border-radius:1px;
 }
 /* Монитор на столе */
-.monitor{
+.td-monitor{
   position:absolute;
-  top:-38px;
-  left:50%;
-  transform:translateX(-50%);
-  width:50px;
-  height:34px;
-  background:#0a1020;
-  border:2px solid #2a3560;
-  border-radius:2px;
+  width:28px;height:18px;
+  background:#050e1f;
+  border:2px solid #30dcff;
+  border-radius:1px;
   overflow:hidden;
 }
-.monitor::after{
-  content:'';
+.td-monitor-screen{
   position:absolute;
-  bottom:-6px;left:50%;
-  transform:translateX(-50%);
-  width:16px;height:6px;
-  background:#1a2240;
-  border:1px solid #2a3560;
+  inset:2px;
+  display:flex;flex-direction:column;gap:2px;padding:1px;
 }
-.monitor-screen{
-  width:100%;height:100%;
-  background:#050d1a;
-  overflow:hidden;
-  display:flex;flex-direction:column;
-  gap:2px;
-  padding:3px;
+.td-mline{
+  height:2px;border-radius:1px;
+  background:var(--green);opacity:0.6;
 }
-.code-line{
-  height:3px;
-  border-radius:1px;
-  background:var(--green);
-  opacity:0.5;
-}
-/* Анимация строк кода при working */
-[data-state="working"] .code-line{
-  animation:codeBlink 1.5s infinite;
-}
-[data-state="working"] .code-line:nth-child(2){ animation-delay:0.3s; }
-[data-state="working"] .code-line:nth-child(3){ animation-delay:0.6s; }
-[data-state="working"] .code-line:nth-child(4){ animation-delay:0.9s; }
-@keyframes codeBlink{
-  0%,100%{opacity:0.5;width:100%;}
-  50%{opacity:0.9;width:60%;}
-}
-
-/* Персонаж — конструкция */
-.character{
-  position:relative;
-  display:flex;flex-direction:column;
-  align-items:center;
-  margin-bottom:0;
-}
-.char-overhead{
-  height:24px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1rem;
-  margin-bottom:2px;
-  position:relative;
-}
-/* Иконка состояния */
-.state-ico{
-  display:none !important;
-  font-size:1.1rem;
-}
-[data-state="working"] .state-ico.ico-working{ display:block !important; }
-[data-state="coffee"] .state-ico.ico-coffee{ display:block !important; }
-[data-state="idle"] .state-ico.ico-idle{ display:block !important; animation:floatUp 2s infinite; }
-@keyframes floatUp{
-  0%{transform:translateY(0);opacity:1;}
-  80%{transform:translateY(-12px);opacity:0;}
-  100%{transform:translateY(0);opacity:0;}
-}
-
-/* Пузырь для talking */
-.speech-bubble{
-  display:none;
-  position:absolute;
-  top:-28px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--panel);
-  border:1px solid var(--b1);
-  border-radius:8px 8px 8px 2px;
-  padding:4px 8px;
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.55rem;
-  white-space:nowrap;
-  color:var(--cyan);
-}
-.speech-bubble::after{
-  content:'';
-  position:absolute;
-  bottom:-5px;left:6px;
-  width:8px;height:8px;
-  background:var(--panel);
-  border-right:1px solid var(--b1);
-  border-bottom:1px solid var(--b1);
-  transform:rotate(45deg);
-  clip-path:polygon(0 100%,100% 0,100% 100%);
-}
-[data-state="talking"] .speech-bubble{
-  display:block;
-  animation:bubbleBounce 0.6s infinite alternate;
-}
-@keyframes bubbleBounce{
-  from{transform:translateX(-50%) translateY(0);}
-  to{transform:translateX(-50%) translateY(-3px);}
-}
-
-/* Пар над кофе */
-.steam{
-  display:none;
-  position:absolute;
-  top:-8px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;gap:3px;
-}
-.steam{ display:none !important; }
-[data-state="coffee"] .steam{ display:flex !important; }
-.steam-line{
-  width:2px;
-  height:8px;
-  background:rgba(200,200,200,0.4);
-  border-radius:1px;
-  animation:steamRise 1.2s infinite;
-}
-.steam-line:nth-child(2){ animation-delay:0.4s; }
-.steam-line:nth-child(3){ animation-delay:0.8s; }
-@keyframes steamRise{
-  0%{transform:scaleY(1) translateY(0);opacity:0.4;}
-  100%{transform:scaleY(0.2) translateY(-10px);opacity:0;}
-}
-
-/* Тело персонажа */
-.char-body-wrap{
-  display:flex;align-items:flex-end;gap:0;position:relative;
-}
-.char-arm{
-  width:7px;
-  height:20px;
+/* Кресло — вид сверху */
+.td-chair{
+  width:22px;height:22px;
+  background:#0d1520;
+  border:2px solid #1a2540;
   border-radius:3px;
-  margin-bottom:2px;
+  box-shadow:1px 2px 0 #060c18;
 }
-.char-arm.left{ margin-right:1px; border-radius:3px 2px 3px 4px; }
-.char-arm.right{ margin-left:1px; border-radius:2px 3px 4px 3px; }
-
-/* Анимация рук при typing */
-[data-state="working"] .char-arm.left{
-  animation:typingLeft 0.3s infinite alternate;
-  transform-origin:top center;
+.td-chair::after{
+  content:'';
+  position:absolute;
+  top:3px;left:3px;right:3px;bottom:3px;
+  background:#111e35;
+  border-radius:2px;
 }
-[data-state="working"] .char-arm.right{
-  animation:typingRight 0.3s infinite alternate;
-  transform-origin:top center;
+/* Диван — вид сверху */
+.td-sofa{
+  width:100px;height:32px;
+  background:#1a2545;
+  border:2px solid #253560;
+  border-radius:3px;
+  box-shadow:2px 3px 0 #0a1020;
 }
-@keyframes typingLeft{
-  from{transform:rotate(-8deg) translateY(0);}
-  to{transform:rotate(5deg) translateY(-4px);}
+.td-sofa::before{
+  content:'';
+  position:absolute;
+  top:4px;left:4px;right:4px;bottom:4px;
+  background:#1e2e55;
+  border-radius:2px;
+  border:1px solid #2a3e6a;
 }
-@keyframes typingRight{
-  from{transform:rotate(8deg) translateY(-4px);}
-  to{transform:rotate(-5deg) translateY(0);}
+/* Кофемашина */
+.td-coffee{
+  width:28px;height:28px;
+  background:#1a0808;
+  border:2px solid #cc4400;
+  border-radius:2px;
 }
-
-/* Наклон при кофе */
-[data-state="coffee"] .character{
-  transform:rotate(-4deg);
-  transform-origin:bottom center;
-}
-
-.char-torso{
-  width:28px;
-  height:32px;
-  border-radius:3px 3px 2px 2px;
-  position:relative;
-}
-.char-head{
-  width:26px;
-  height:24px;
-  border-radius:5px;
-  margin-bottom:1px;
-  position:relative;
+.td-coffee::after{
+  content:'☕';
+  position:absolute;
+  inset:0;
   display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;
 }
-/* Лицо — пиксельные глаза */
-.char-head::before{
-  content:'· ·';
-  font-size:0.5rem;
-  color:rgba(255,255,255,0.7);
-  font-family:monospace;
-  letter-spacing:3px;
+/* Растение */
+.td-plant{
+  width:22px;height:22px;
+  background:#0a1f0a;
+  border:2px solid #1a4010;
+  border-radius:50%;
 }
-.char-legs{
-  display:flex;gap:4px;margin-top:1px;
+.td-plant::after{
+  content:'🌿';
+  position:absolute;
+  inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.6rem;
 }
-.char-leg{
-  width:10px;
-  height:16px;
-  border-radius:0 0 3px 3px;
+/* Полка */
+.td-shelf{
+  width:80px;height:14px;
+  background:#1c2540;
+  border:1px solid #2a3560;
+  border-radius:1px;
 }
-
-/* Цвета КАЙ */
-.kai .char-head{ background:#1a9fc0; }
-.kai .char-torso{ background:#30dcff; }
-.kai .char-arm{ background:#1a9fc0; }
-.kai .char-leg{ background:#1a6080; }
-
-/* Цвета СТЕПА */
-.stepa .char-head{ background:#15b870; }
-.stepa .char-torso{ background:#1df59a; }
-.stepa .char-arm{ background:#15b870; }
-.stepa .char-leg{ background:#0d7a4a; }
-
-/* Имя + статус */
-.char-label{
-  margin-top:6px;
-  text-align:center;
+.td-shelf::after{
+  content:'';
+  position:absolute;
+  top:2px;left:6px;right:6px;bottom:2px;
+  background:repeating-linear-gradient(90deg, #e85 0,#e85 6px, #8a4 7px,#8a4 12px, #44c 13px,#44c 18px, #0d1830 19px,#0d1830 22px);
+  border-radius:1px;
 }
-.char-name{
+/* Знак LABS67 на стене */
+.td-sign{
+  position:absolute;
+  top:28px;right:32px;
   font-family:'JetBrains Mono',monospace;
   font-size:0.55rem;
   font-weight:700;
-  letter-spacing:0.1em;
+  letter-spacing:0.2em;
+  color:var(--gold);
+  opacity:0.7;
+  text-shadow:0 0 8px rgba(232,184,64,0.4);
+  z-index:6;
 }
-.kai .char-name{ color:var(--cyan); }
-.stepa .char-name{ color:var(--green); }
-.char-status-dot{
-  display:inline-block;
-  width:6px;height:6px;
+/* Потолочные лампы */
+.td-lamp{
+  position:absolute;
+  width:8px;height:8px;
+  background:rgba(232,184,64,0.8);
   border-radius:50%;
-  margin-right:4px;
-  vertical-align:middle;
+  box-shadow:0 0 20px 10px rgba(232,184,64,0.06);
+  z-index:3;
 }
-.char-state-txt{
+
+/* ── ПИКСЕЛЬНЫЙ ПЕРСОНАЖ (top-down) ── */
+.td-agent{
+  position:absolute;
+  z-index:10;
+  display:flex;flex-direction:column;
+  align-items:center;
+  gap:1px;
+  transition:left 0.8s cubic-bezier(.4,0,.2,1), top 0.8s cubic-bezier(.4,0,.2,1);
+  cursor:pointer;
+}
+/* Тень под персонажем */
+.td-shadow{
+  width:22px;height:6px;
+  background:rgba(0,0,0,0.4);
+  border-radius:50%;
+  margin-top:-2px;
+}
+/* Маркер активного */
+.td-marker{
+  position:absolute;
+  bottom:-4px;
+  width:28px;height:8px;
+  border-radius:50%;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.td-agent.active .td-marker{ opacity:1; animation:markerPulse 1.5s infinite; }
+@keyframes markerPulse{0%,100%{transform:scaleX(1);}50%{transform:scaleX(1.15);}}
+
+/* Тело персонажа (вид сверху/сзади — классический RPG стиль) */
+.td-body{
+  position:relative;
+  width:16px;height:20px;
+}
+/* Голова */
+.td-head{
+  position:absolute;
+  top:0;left:50%;transform:translateX(-50%);
+  width:14px;height:13px;
+  border-radius:3px 3px 2px 2px;
+}
+/* Тело */
+.td-torso{
+  position:absolute;
+  top:11px;left:50%;transform:translateX(-50%);
+  width:12px;height:9px;
+  border-radius:1px;
+}
+/* Иконка состояния над головой */
+.td-status-ico{
+  position:absolute;
+  top:-20px;left:50%;transform:translateX(-50%);
+  font-size:0.75rem;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,0.8));
+  animation:icoFloat 2s ease-in-out infinite;
+}
+@keyframes icoFloat{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-3px);}}
+/* Пузырь */
+.td-bubble{
+  display:none;
+  position:absolute;
+  top:-32px;left:50%;transform:translateX(-50%);
+  background:#0f1830;
+  border:1px solid var(--cyan);
+  border-radius:6px 6px 6px 2px;
+  padding:3px 7px;
   font-family:'JetBrains Mono',monospace;
-  font-size:0.42rem;
-  color:var(--muted);
+  font-size:0.45rem;
+  color:var(--cyan);
+  white-space:nowrap;
+  z-index:20;
 }
-/* Состояние → цвет точки */
-[data-state="working"] .char-status-dot{ background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 1s infinite; }
-[data-state="coffee"] .char-status-dot{ background:var(--gold); }
-[data-state="talking"] .char-status-dot{ background:var(--cyan); }
-[data-state="idle"] .char-status-dot{ background:#555; }
+[data-state="talking"] .td-bubble{display:block;animation:bubblePop 0.5s infinite alternate;}
+@keyframes bubblePop{from{transform:translateX(-50%) scale(1);}to{transform:translateX(-50%) scale(1.04);}}
+/* Пар кофе */
+.td-steam{
+  display:none;
+  position:absolute;
+  top:-18px;left:50%;transform:translateX(-50%);
+  gap:2px;
+}
+[data-state="coffee"] .td-steam{display:flex;}
+.td-steam-p{width:2px;height:6px;background:rgba(220,220,220,0.35);border-radius:1px;animation:tdSteam 1s infinite;}
+.td-steam-p:nth-child(2){animation-delay:.33s;}
+.td-steam-p:nth-child(3){animation-delay:.66s;}
+@keyframes tdSteam{0%{opacity:.35;transform:translateY(0);}100%{opacity:0;transform:translateY(-8px);}}
+/* ZZZ */
+.td-zzz{
+  display:none;
+  position:absolute;
+  top:-22px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.5rem;
+  color:#888;
+  animation:tdZzz 2s infinite;
+}
+[data-state="idle"] .td-zzz{display:block;}
+@keyframes tdZzz{0%{opacity:1;transform:translateX(-50%) translateY(0);}100%{opacity:0;transform:translateX(-50%) translateY(-14px);}}
+
+/* Имя тег */
+.td-nametag{
+  background:rgba(3,5,14,0.85);
+  border:1px solid var(--b1);
+  border-radius:2px;
+  padding:2px 6px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.38rem;
+  letter-spacing:0.08em;
+  white-space:nowrap;
+  margin-top:2px;
+}
+/* Анимации ходьбы */
+@keyframes walkBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-2px);}}
+.td-agent[data-state="working"] .td-body{animation:workBob 0.25s infinite alternate;}
+@keyframes workBob{from{transform:translateX(-50%) rotate(-1deg);}to{transform:translateX(-50%) rotate(1deg);}}
+.td-agent[data-state="coffee"] .td-body{transform:rotate(-5deg);transform-origin:bottom center;}
 
 /* ── ЛЕНТА СОБЫТИЙ ── */
-.office-feed{
-  width:300px;
+.td-feed{
+  width:280px;
   border-left:1px solid var(--b1);
-  display:flex;
-  flex-direction:column;
+  display:flex;flex-direction:column;
   background:var(--panel);
   flex-shrink:0;
 }
-.feed-hdr{
+.td-feed-hdr{
   padding:12px 16px;
   border-bottom:1px solid var(--b1);
   font-family:'JetBrains Mono',monospace;
-  font-size:0.48rem;
-  letter-spacing:0.2em;
-  text-transform:uppercase;
-  color:var(--gold);
+  font-size:0.48rem;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--gold);
 }
-.feed-hdr::before{ content:'// ';opacity:0.5; }
-.feed-list{
-  flex:1;
-  overflow-y:auto;
-  padding:10px 0;
+.td-feed-hdr::before{content:'// ';opacity:0.5;}
+.td-feed-list{flex:1;overflow-y:auto;padding:8px 0;}
+.td-feed-list::-webkit-scrollbar{width:3px;}
+.td-feed-list::-webkit-scrollbar-thumb{background:var(--b2);}
+.td-feed-entry{
+  padding:7px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  display:flex;gap:8px;align-items:flex-start;
 }
-.feed-list::-webkit-scrollbar{width:3px;}
-.feed-list::-webkit-scrollbar-thumb{background:var(--b2);}
-.feed-item{
-  padding:8px 16px;
-  border-bottom:1px solid var(--b1);
-  display:flex;
-  gap:8px;
-  align-items:flex-start;
-}
-.feed-time{
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.42rem;
-  color:var(--muted);
-  white-space:nowrap;
-  flex-shrink:0;
-  margin-top:1px;
-}
-.feed-text{
-  font-size:0.72rem;
-  line-height:1.5;
-  color:var(--text);
-}
-.feed-text .kai-name{ color:var(--cyan); }
-.feed-text .stepa-name{ color:var(--green); }
+.td-feed-entry:hover{background:rgba(255,255,255,0.02);}
+.td-ftime{font-family:'JetBrains Mono',monospace;font-size:0.4rem;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.td-ftext{font-size:0.7rem;line-height:1.5;color:var(--text);}
+.td-ftext .kn{color:var(--cyan);}
+.td-ftext .sn{color:var(--green);}
 
-/* ── НИЖНЯЯ ПАНЕЛЬ УПРАВЛЕНИЯ ── */
-.office-controls{
+/* ── НИЖНЯЯ ПАНЕЛЬ ── */
+.td-controls{
+  position:absolute;
+  bottom:0;left:0;right:280px;
   border-top:1px solid var(--b1);
-  background:var(--panel);
-  padding:10px 20px;
-  display:flex;
-  gap:20px;
-  align-items:center;
-  flex-shrink:0;
+  background:rgba(8,16,31,0.95);
+  backdrop-filter:blur(10px);
+  padding:8px 20px;
+  display:flex;gap:20px;align-items:center;
+  z-index:20;
 }
-.ctrl-group{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  flex-wrap:wrap;
-}
-.ctrl-lbl{
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.45rem;
-  letter-spacing:0.1em;
-  color:var(--muted);
-  margin-right:4px;
-}
-.ctrl-btn{
-  padding:4px 10px;
+.td-ctrl-grp{display:flex;align-items:center;gap:5px;}
+.td-ctrl-lbl{font-family:'JetBrains Mono',monospace;font-size:0.43rem;letter-spacing:0.08em;color:var(--muted);}
+.td-cbtn{
+  padding:3px 9px;
   border:1px solid var(--b1);
   background:transparent;
   color:var(--muted);
   font-family:'JetBrains Mono',monospace;
-  font-size:0.43rem;
-  cursor:pointer;
-  transition:all 0.2s;
+  font-size:0.4rem;
+  cursor:pointer;transition:all 0.15s;
 }
-.ctrl-btn:hover{ color:var(--gold);border-color:var(--gold-dim); }
-.ctrl-btn.active-state{ color:var(--green);border-color:rgba(29,245,154,0.4);background:rgba(29,245,154,0.06); }
-.ctrl-divider{
-  width:1px;height:28px;background:var(--b1);
-  flex-shrink:0;
-}
+.td-cbtn:hover{color:var(--gold);border-color:var(--gold-dim);}
+.td-cbtn.on{color:var(--green);border-color:rgba(29,245,154,0.4);background:rgba(29,245,154,0.05);}
+.td-cdiv{width:1px;height:24px;background:var(--b1);flex-shrink:0;}
+
+/* Цвета КАЙ */
+.td-agent.kai .td-head{background:#1a9fc0;}
+.td-agent.kai .td-torso{background:#0d6a8a;}
+.td-agent.kai .td-marker{background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+.td-agent.kai .td-nametag{color:var(--cyan);border-color:rgba(48,220,255,0.3);}
+/* Цвета СТЕПА */
+.td-agent.stepa .td-head{background:#15b870;}
+.td-agent.stepa .td-torso{background:#0d7a4a;}
+.td-agent.stepa .td-marker{background:var(--green);box-shadow:0 0 8px var(--green);}
+.td-agent.stepa .td-nametag{color:var(--green);border-color:rgba(29,245,154,0.3);}
+
+/* Совместимость со старым office-controls (скрываем) */
+.office-controls,.office-wrap,.office-room,.office-feed,.office-floor,.office-wall,
+.ceiling-light,.agent-station,.desk,.monitor,.character,.char-overhead,.char-label,
+.ctrl-group,.ctrl-divider,.ctrl-btn{display:none !important;}
 </style>
 </head>
 <body>
@@ -909,154 +821,148 @@ option{background:#08101f;}
   </div>
 </div>
 
-<!-- PAGE 4: ОФИС -->
-<div id="page-office" style="display:none;flex-direction:column;">
+<!-- PAGE 4: ОФИС — TOP-DOWN -->
+<div id="page-office">
 
-  <!-- Офисная комната + лента -->
-  <div class="office-wrap">
+  <!-- Карта офиса -->
+  <div class="td-map" id="tdMap">
 
-    <!-- Комната -->
-    <div class="office-room">
-      <div class="office-wall"></div>
-      <div class="office-floor"></div>
-      <div class="ceiling-light"></div>
+    <!-- Полы -->
+    <div class="td-floor-work"></div>
+    <div class="td-floor-lounge"></div>
 
-      <!-- Окно -->
-      <div class="office-window">
-        <div class="stars" id="officeStars"></div>
-        <div class="win-cross-h"></div>
-        <div class="win-cross-v"></div>
-      </div>
+    <!-- Разделительная стена с проходом -->
+    <div class="td-wall-divider"></div>
 
-      <!-- КАЙ -->
-      <div class="agent-station kai" id="agent-kai" data-state="working">
-        <div class="character kai">
-          <div class="char-overhead">
-            <span class="state-ico ico-working">💻</span>
-            <span class="state-ico ico-coffee">☕</span>
-            <span class="state-ico ico-idle">💤</span>
-            <div class="speech-bubble">...</div>
-            <div class="steam">
-              <div class="steam-line"></div>
-              <div class="steam-line"></div>
-              <div class="steam-line"></div>
-            </div>
-          </div>
-          <div class="char-head"></div>
-          <div class="char-body-wrap">
-            <div class="char-arm left"></div>
-            <div class="char-torso"></div>
-            <div class="char-arm right"></div>
-          </div>
-          <div class="char-legs">
-            <div class="char-leg"></div>
-            <div class="char-leg"></div>
-          </div>
-        </div>
-        <div class="desk">
-          <div class="monitor">
-            <div class="monitor-screen">
-              <div class="code-line" style="width:80%"></div>
-              <div class="code-line" style="width:55%"></div>
-              <div class="code-line" style="width:90%"></div>
-              <div class="code-line" style="width:40%"></div>
-              <div class="code-line" style="width:70%"></div>
-            </div>
-          </div>
-        </div>
-        <div class="char-label">
-          <div class="char-name">⚡ КАЙ</div>
-          <div class="char-state-txt">
-            <span class="char-status-dot"></span>
-            <span class="state-txt-kai">РАБОТАЕТ</span>
-          </div>
+    <!-- Знак LABS67 -->
+    <div class="td-sign">LABS67 HQ</div>
+
+    <!-- Лампы -->
+    <div class="td-lamp" style="top:60px;left:22%"></div>
+    <div class="td-lamp" style="top:60px;left:48%"></div>
+    <div class="td-lamp" style="top:60px;right:22%"></div>
+
+    <!-- РАБОЧАЯ ЗОНА: Стол Кая -->
+    <div class="td-obj td-desk" style="top:90px;left:60px;">
+      <div class="td-monitor" style="top:6px;left:12px;">
+        <div class="td-monitor-screen">
+          <div class="td-mline" style="width:90%"></div>
+          <div class="td-mline" style="width:60%"></div>
+          <div class="td-mline" style="width:80%"></div>
         </div>
       </div>
+    </div>
+    <div class="td-obj td-chair" style="top:144px;left:85px;"></div>
 
-      <!-- СТЕПА -->
-      <div class="agent-station stepa" id="agent-stepa" data-state="coffee">
-        <div class="character stepa">
-          <div class="char-overhead">
-            <span class="state-ico ico-working">💻</span>
-            <span class="state-ico ico-coffee">☕</span>
-            <span class="state-ico ico-idle">💤</span>
-            <div class="speech-bubble">...</div>
-            <div class="steam">
-              <div class="steam-line"></div>
-              <div class="steam-line"></div>
-              <div class="steam-line"></div>
-            </div>
-          </div>
-          <div class="char-head"></div>
-          <div class="char-body-wrap">
-            <div class="char-arm left"></div>
-            <div class="char-torso"></div>
-            <div class="char-arm right"></div>
-          </div>
-          <div class="char-legs">
-            <div class="char-leg"></div>
-            <div class="char-leg"></div>
-          </div>
-        </div>
-        <div class="desk">
-          <div class="monitor">
-            <div class="monitor-screen">
-              <div class="code-line" style="width:60%"></div>
-              <div class="code-line" style="width:85%"></div>
-              <div class="code-line" style="width:45%"></div>
-              <div class="code-line" style="width:75%"></div>
-              <div class="code-line" style="width:50%"></div>
-            </div>
-          </div>
-        </div>
-        <div class="char-label">
-          <div class="char-name">🔧 СТЕПА</div>
-          <div class="char-state-txt">
-            <span class="char-status-dot"></span>
-            <span class="state-txt-stepa">КОФЕ</span>
-          </div>
+    <!-- Стол Степы -->
+    <div class="td-obj td-desk" style="top:90px;left:200px;">
+      <div class="td-monitor" style="top:6px;left:12px;">
+        <div class="td-monitor-screen">
+          <div class="td-mline" style="width:70%"></div>
+          <div class="td-mline" style="width:90%"></div>
+          <div class="td-mline" style="width:50%"></div>
         </div>
       </div>
+    </div>
+    <div class="td-obj td-chair" style="top:144px;left:225px;"></div>
 
-    </div><!-- /office-room -->
+    <!-- Доп стол -->
+    <div class="td-obj td-desk" style="top:220px;left:60px;"></div>
+    <div class="td-obj td-chair" style="top:272px;left:85px;"></div>
 
-    <!-- Лента событий -->
-    <div class="office-feed">
-      <div class="feed-hdr">ПОСЛЕДНИЕ ДЕЙСТВИЯ</div>
-      <div class="feed-list">
-        <div class="feed-item"><span class="feed-time">04:21</span><span class="feed-text"><span class="kai-name">⚡ Кай</span> → запушил 3-page SPA admin panel</span></div>
-        <div class="feed-item"><span class="feed-time">04:13</span><span class="feed-text"><span class="stepa-name">🔧 Степа</span> → написал 126 строк офисной вкладки</span></div>
-        <div class="feed-item"><span class="feed-time">04:05</span><span class="feed-text"><span class="kai-name">⚡ Кай</span> → нашёл баг в форме направлений</span></div>
-        <div class="feed-item"><span class="feed-time">03:58</span><span class="feed-text"><span class="stepa-name">🔧 Степа</span> → убрал Prefer header, почистил дубли</span></div>
-        <div class="feed-item"><span class="feed-time">03:47</span><span class="feed-text"><span class="kai-name">⚡ Кай</span> → добавил PWA manifest + apple icons</span></div>
-        <div class="feed-item"><span class="feed-time">03:39</span><span class="feed-text"><span class="stepa-name">🔧 Степа</span> → разработал архитектуру Логи страницы</span></div>
-        <div class="feed-item"><span class="feed-time">03:28</span><span class="feed-text"><span class="kai-name">⚡ Кай</span> → реализовал realtime Supabase подписки</span></div>
-        <div class="feed-item"><span class="feed-time">03:15</span><span class="feed-text"><span class="stepa-name">🔧 Степа</span> → настроил CRM chat bubbles стиль</span></div>
-        <div class="feed-item"><span class="feed-time">03:04</span><span class="feed-text"><span class="kai-name">⚡ Кай</span> → сделал конвертер валют NBP API</span></div>
-        <div class="feed-item"><span class="feed-time">02:51</span><span class="feed-text"><span class="stepa-name">🔧 Степа</span> → оптимизировал email validation regex</span></div>
-        <div class="feed-item"><span class="feed-time">02:47</span><span class="feed-text"><span class="kai-name">⚡ Кай</span> → фикс direction.includes → startsWith</span></div>
-        <div class="feed-item"><span class="feed-time">02:33</span><span class="feed-text"><span class="stepa-name">🔧 Степа</span> → создал первый коммит проекта LABS67</span></div>
+    <div class="td-obj td-desk" style="top:220px;left:200px;"></div>
+    <div class="td-obj td-chair" style="top:272px;left:225px;"></div>
+
+    <!-- Полка на стене -->
+    <div class="td-obj td-shelf" style="top:36px;left:60px;"></div>
+    <div class="td-obj td-shelf" style="top:36px;left:180px;"></div>
+
+    <!-- Растения в углах рабочей зоны -->
+    <div class="td-obj td-plant" style="top:36px;left:28px;"></div>
+    <div class="td-obj td-plant" style="bottom:28px;left:28px;"></div>
+
+    <!-- ЛАУНЖ зона: диван, кофемашина -->
+    <div class="td-obj td-sofa" style="top:100px;right:60px;"></div>
+    <div class="td-obj td-plant" style="top:100px;right:170px;"></div>
+    <div class="td-obj td-coffee" style="top:200px;right:80px;"></div>
+    <div class="td-obj td-plant" style="bottom:40px;right:60px;"></div>
+    <div class="td-obj td-plant" style="bottom:40px;right:100px;"></div>
+
+    <!-- КАЙ -->
+    <div class="td-agent kai active" id="td-kai" data-state="working"
+         style="left:88px;top:130px;"
+         onclick="tdSelectAgent('kai')">
+      <div class="td-status-ico" id="td-kai-ico">💻</div>
+      <div class="td-bubble">...</div>
+      <div class="td-steam">
+        <div class="td-steam-p"></div><div class="td-steam-p"></div><div class="td-steam-p"></div>
+      </div>
+      <div class="td-zzz">z z z</div>
+      <div class="td-body">
+        <div class="td-head"></div>
+        <div class="td-torso"></div>
+      </div>
+      <div class="td-marker"></div>
+      <div class="td-shadow"></div>
+      <div class="td-nametag">⚡ КАЙ</div>
+    </div>
+
+    <!-- СТЕПА -->
+    <div class="td-agent stepa" id="td-stepa" data-state="coffee"
+         style="left:228px;top:130px;"
+         onclick="tdSelectAgent('stepa')">
+      <div class="td-status-ico" id="td-stepa-ico">☕</div>
+      <div class="td-bubble">...</div>
+      <div class="td-steam">
+        <div class="td-steam-p"></div><div class="td-steam-p"></div><div class="td-steam-p"></div>
+      </div>
+      <div class="td-zzz">z z z</div>
+      <div class="td-body">
+        <div class="td-head"></div>
+        <div class="td-torso"></div>
+      </div>
+      <div class="td-marker"></div>
+      <div class="td-shadow"></div>
+      <div class="td-nametag">🔧 СТЕПА</div>
+    </div>
+
+    <!-- Нижняя панель -->
+    <div class="td-controls">
+      <div class="td-ctrl-grp">
+        <span class="td-ctrl-lbl">⚡ КАЙ:</span>
+        <button class="td-cbtn on" onclick="tdSetState('kai','working',this)">💻 Работает</button>
+        <button class="td-cbtn" onclick="tdSetState('kai','coffee',this)">☕ Кофе</button>
+        <button class="td-cbtn" onclick="tdSetState('kai','talking',this)">💬 Болтает</button>
+        <button class="td-cbtn" onclick="tdSetState('kai','idle',this)">💤 Отдых</button>
+      </div>
+      <div class="td-cdiv"></div>
+      <div class="td-ctrl-grp">
+        <span class="td-ctrl-lbl">🔧 СТЕПА:</span>
+        <button class="td-cbtn" onclick="tdSetState('stepa','working',this)">💻 Работает</button>
+        <button class="td-cbtn on" onclick="tdSetState('stepa','coffee',this)">☕ Кофе</button>
+        <button class="td-cbtn" onclick="tdSetState('stepa','talking',this)">💬 Болтает</button>
+        <button class="td-cbtn" onclick="tdSetState('stepa','idle',this)">💤 Отдых</button>
       </div>
     </div>
 
-  </div><!-- /office-wrap -->
+  </div><!-- /td-map -->
 
-  <!-- Нижняя панель управления -->
-  <div class="office-controls">
-    <div class="ctrl-group">
-      <span class="ctrl-lbl">⚡ КАЙ:</span>
-      <button class="ctrl-btn" onclick="setAgentState('kai','working',this)">Работает</button>
-      <button class="ctrl-btn" onclick="setAgentState('kai','coffee',this)">Кофе</button>
-      <button class="ctrl-btn" onclick="setAgentState('kai','talking',this)">Болтает</button>
-      <button class="ctrl-btn" onclick="setAgentState('kai','idle',this)">Отдыхает</button>
-    </div>
-    <div class="ctrl-divider"></div>
-    <div class="ctrl-group">
-      <span class="ctrl-lbl">🔧 СТЕПА:</span>
-      <button class="ctrl-btn" onclick="setAgentState('stepa','working',this)">Работает</button>
-      <button class="ctrl-btn" onclick="setAgentState('stepa','coffee',this)">Кофе</button>
-      <button class="ctrl-btn" onclick="setAgentState('stepa','talking',this)">Болтает</button>
-      <button class="ctrl-btn" onclick="setAgentState('stepa','idle',this)">Отдыхает</button>
+  <!-- Лента событий -->
+  <div class="td-feed">
+    <div class="td-feed-hdr">ПОСЛЕДНИЕ ДЕЙСТВИЯ</div>
+    <div class="td-feed-list">
+      <div class="td-feed-entry"><span class="td-ftime">04:56</span><span class="td-ftext"><span class="kn">⚡ Кай</span> → переделал офис в top-down режим</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">04:21</span><span class="td-ftext"><span class="kn">⚡ Кай</span> → запушил 3-page SPA admin panel</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">04:13</span><span class="td-ftext"><span class="sn">🔧 Степа</span> → написал 126 строк офисной вкладки</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">04:05</span><span class="td-ftext"><span class="kn">⚡ Кай</span> → нашёл баг в форме направлений</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">03:58</span><span class="td-ftext"><span class="sn">🔧 Степа</span> → убрал Prefer header, почистил дубли</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">03:47</span><span class="td-ftext"><span class="kn">⚡ Кай</span> → добавил PWA manifest + apple icons</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">03:28</span><span class="td-ftext"><span class="kn">⚡ Кай</span> → realtime Supabase подписки</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">03:15</span><span class="td-ftext"><span class="sn">🔧 Степа</span> → CRM chat bubbles стиль</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">03:04</span><span class="td-ftext"><span class="kn">⚡ Кай</span> → конвертер валют NBP API</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">02:51</span><span class="td-ftext"><span class="sn">🔧 Степа</span> → email validation regex</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">02:47</span><span class="td-ftext"><span class="kn">⚡ Кай</span> → фикс direction.includes → startsWith</span></div>
+      <div class="td-feed-entry"><span class="td-ftime">02:33</span><span class="td-ftext"><span class="sn">🔧 Степа</span> → первый коммит проекта LABS67</span></div>
     </div>
   </div>
 
@@ -1419,73 +1325,72 @@ function subscribeRealtime() {
 }
 
 // ══════════════════════════════════════════
-// OFFICE
+// OFFICE — TOP-DOWN
 // ══════════════════════════════════════════
-const STATE_LABELS = {
-  working: 'РАБОТАЕТ',
-  coffee: 'КОФЕ',
-  talking: 'БОЛТАЕТ',
-  idle: 'ОТДЫХАЕТ'
+const TD_STATE_ICO = { working:'💻', coffee:'☕', talking:'💬', idle:'💤' };
+const TD_STATES = ['working','coffee','talking','idle'];
+
+// Позиции агентов в офисе по состоянию
+const TD_POSITIONS = {
+  kai: {
+    working: {left:'88px', top:'130px'},
+    coffee:  {left:'calc(60% - 80px)', top:'200px'},
+    talking: {left:'155px', top:'115px'},
+    idle:    {left:'70px', top:'290px'}
+  },
+  stepa: {
+    working: {left:'228px', top:'130px'},
+    coffee:  {left:'calc(60% - 40px)', top:'200px'},
+    talking: {left:'195px', top:'115px'},
+    idle:    {left:'210px', top:'290px'}
+  }
 };
-const STATES = ['working','coffee','talking','idle'];
-let officeInitialized = false;
-let officeRotateTimer = null;
+
+let tdRotateTimer = null;
+let tdSelected = 'kai';
 
 function initOffice() {
-  // Генерируем звёзды в окне
-  if (!officeInitialized) {
-    const starsEl = document.getElementById('officeStars');
-    if (starsEl) {
-      let html = '';
-      for (let i = 0; i < 18; i++) {
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const delay = (Math.random() * 3).toFixed(2);
-        html += `<div class="star" style="left:${x}%;top:${y}%;animation-delay:${delay}s;"></div>`;
-      }
-      starsEl.innerHTML = html;
-    }
-    officeInitialized = true;
-    // Подсветить активные кнопки управления
-    syncControlButtons('kai', 'working');
-    syncControlButtons('stepa', 'coffee');
-  }
   // Авто-ротация каждые 30 сек
-  if (officeRotateTimer) clearInterval(officeRotateTimer);
-  officeRotateTimer = setInterval(() => {
-    const kaiState = STATES[Math.floor(Math.random() * STATES.length)];
-    const stepaState = STATES[Math.floor(Math.random() * STATES.length)];
-    setAgentState('kai', kaiState, null);
-    setAgentState('stepa', stepaState, null);
+  if (tdRotateTimer) clearInterval(tdRotateTimer);
+  tdRotateTimer = setInterval(() => {
+    const ks = TD_STATES[Math.floor(Math.random() * TD_STATES.length)];
+    const ss = TD_STATES[Math.floor(Math.random() * TD_STATES.length)];
+    tdSetState('kai', ks, null);
+    tdSetState('stepa', ss, null);
   }, 30000);
 }
 
-function setAgentState(agent, state, btn) {
-  const el = document.getElementById('agent-' + agent);
+function tdSetState(agent, state, btn) {
+  const el = document.getElementById('td-' + agent);
   if (!el) return;
   el.setAttribute('data-state', state);
-  // Обновить текст статуса
-  const txtEl = el.querySelector('.state-txt-' + agent);
-  if (txtEl) txtEl.textContent = STATE_LABELS[state] || state;
-  syncControlButtons(agent, state);
+  // Иконка
+  const ico = document.getElementById('td-' + agent + '-ico');
+  if (ico) ico.textContent = TD_STATE_ICO[state] || '⚡';
+  // Позиция
+  const pos = TD_POSITIONS[agent] && TD_POSITIONS[agent][state];
+  if (pos) { el.style.left = pos.left; el.style.top = pos.top; }
+  // Кнопки
+  const grpLbl = agent === 'kai' ? 'КАЙ' : 'СТЕПА';
+  document.querySelectorAll('.td-ctrl-grp').forEach(g => {
+    const lbl = g.querySelector('.td-ctrl-lbl');
+    if (!lbl || !lbl.textContent.includes(grpLbl)) return;
+    g.querySelectorAll('.td-cbtn').forEach(b => b.classList.remove('on'));
+    if (btn) btn.classList.add('on');
+  });
 }
 
-function syncControlButtons(agent, state) {
-  // Найти группу кнопок для агента
-  const stateMap = { working:0, coffee:1, talking:2, idle:3 };
-  const groups = document.querySelectorAll('.ctrl-group');
-  groups.forEach(g => {
-    const lbl = g.querySelector('.ctrl-lbl');
-    if (!lbl) return;
-    const isKai = lbl.textContent.includes('КАЙ') && agent === 'kai';
-    const isStepa = lbl.textContent.includes('СТЕПА') && agent === 'stepa';
-    if (isKai || isStepa) {
-      const btns = g.querySelectorAll('.ctrl-btn');
-      btns.forEach(b => b.classList.remove('active-state'));
-      const idx = stateMap[state];
-      if (idx !== undefined && btns[idx]) btns[idx].classList.add('active-state');
-    }
-  });
+function tdSelectAgent(agent) {
+  tdSelected = agent;
+  document.querySelectorAll('.td-agent').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('td-' + agent);
+  if (el) el.classList.add('active');
+}
+
+// Совместимость со старым кодом
+function setAgentState(agent, state, btn) { tdSetState(agent, state, btn); }
+function syncControlButtons(agent, state) {}
+function initOffice_legacy() {}
 }
 
 // ── NOTIFY ──

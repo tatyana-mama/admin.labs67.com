@@ -540,6 +540,12 @@ option{background:#08101f;}
 @keyframes ping{0%,100%{opacity:1;}50%{opacity:0.3;}}
 <!-- PAGE 4: ОФИС — PIXEL ART -->
 <div id="page-office">
+  <div class="office-tabs" style="display:flex;border-bottom:1px solid var(--b1);background:var(--panel);padding:0 16px;">
+    <button class="office-tab active" onclick="switchOfficeTab('pixel',this)" style="padding:8px 18px;background:transparent;border:none;border-bottom:2px solid var(--gold);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.15em;cursor:pointer;">🏢 PIXEL HQ</button>
+    <button class="office-tab" onclick="switchOfficeTab('dash',this)" style="padding:8px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.15em;cursor:pointer;">📊 DASHBOARD</button>
+  </div>
+  <div id="off-pixel" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+
   <div class="office-header">
     <span></span>
     <span class="office-clock" id="offClock">--:--:--</span>
@@ -733,438 +739,10 @@ option{background:#08101f;}
 
     </div><!-- /pixel-canvas -->
   </div>
-</div><!-- /page-office -->"en">
-<head>
-<meta charset="UTF-8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2303050e'/%3E%3Cpolygon points='16,3 29,9.5 29,22.5 16,29 3,22.5 3,9.5' fill='none' stroke='%23e8b840' stroke-width='2'/%3E%3Ctext x='16' y='20' text-anchor='middle' font-size='8' font-weight='900' font-family='monospace' fill='%23e8b840'%3EADM%3C/text%3E%3C/svg%3E" type="image/svg+xml">
-<rect width='32' height='32' fill='%2303050e'/><polygon points='16,2 30,9 30,23 16,30 2,23 2,9' fill='none' stroke='%23e8b840' stroke-width='2'/><text x='16' y='20' text-anchor='middle' font-size='9' font-weight='bold' font-family='monospace' fill='%23e8b840'>ADM</text></svg>">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LABS67 Admin">
-<meta name="theme-color" content="#03050e">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%2303050e'/%3E%3Cpolygon points='90,15 165,52 165,128 90,165 15,128 15,52' fill='none' stroke='%23e8b840' stroke-width='8'/%3E%3Ctext x='90' y='105' text-anchor='middle' font-size='42' font-weight='900' font-family='monospace' fill='%23e8b840'%3EADM%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href="manifest.json">
-<title id="pageTitle">LABS67 Admin Panel</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#03050e;--bg2:#060916;--panel:#08101f;
-  --b1:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.14);
-  --gold:#e8b840;--gold2:#f5cc60;--gold-dim:rgba(232,184,64,0.35);
-  --cyan:#30dcff;--green:#1df59a;--red:#ff4d6d;
-  --text:#cdd8f5;--muted:rgba(160,185,240,0.42);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;}
 
-/* TOPBAR */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:rgba(3,5,14,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--b1);}
-.tb-logo{display:flex;align-items:center;gap:10px;}
-.tb-mark{width:28px;height:28px;background:linear-gradient(135deg,var(--gold),var(--gold2));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:0.48rem;font-weight:700;color:#03050e;}
-.tb-name{font-size:0.85rem;font-weight:800;letter-spacing:0.15em;}
-.tb-name em{color:var(--gold);font-style:normal;}
-.tb-badge{font-family:'JetBrains Mono',monospace;font-size:0.45rem;letter-spacing:0.25em;color:var(--muted);border:1px solid var(--b1);padding:3px 8px;}
-.tb-r{display:flex;align-items:center;gap:12px;}
-.tb-status{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.1em;color:var(--green);}
-.tb-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.tb-time{font-family:'JetBrains Mono',monospace;font-size:0.5rem;color:var(--muted);}
-.tb-nav{display:flex;gap:2px;margin-left:16px;}
-.tb-tab{padding:6px 16px;background:transparent;border:1px solid var(--b1);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.5rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;}
-.tb-tab:hover{color:var(--text);}
-.tb-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(232,184,64,0.05);}
-
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:300px 1fr 320px;height:100vh;padding-top:52px;}
-
-/* PANE */
-.pane{border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
-.pane-hdr{padding:12px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;background:var(--panel);flex-shrink:0;}
-.pane-title{font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
-.pane-count{font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--muted);background:var(--b1);padding:2px 8px;border-radius:2px;}
-.pane-body{flex:1;overflow-y:auto;}
-.pane-body::-webkit-scrollbar{width:3px;}
-.pane-body::-webkit-scrollbar-thumb{background:var(--b2);}
-
-/* STATS */
-.stats-bar{display:flex;gap:1px;background:var(--b1);border-bottom:1px solid var(--b1);flex-shrink:0;}
-.stat-item{flex:1;padding:8px 10px;background:var(--bg2);text-align:center;}
-.stat-num{font-size:1.1rem;font-weight:800;color:var(--gold);display:block;}
-.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:0.4rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);display:block;margin-top:1px;}
-
-/* FILTER */
-.filter-bar{padding:8px 12px;border-bottom:1px solid var(--b1);display:flex;gap:4px;flex-wrap:wrap;background:var(--bg2);flex-shrink:0;}
-.fb{padding:3px 9px;border:1px solid var(--b1);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.43rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;}
-.fb:hover,.fb.active{color:var(--gold);border-color:var(--gold-dim);}
-
-/* LEAD ITEMS */
-.lead-item{padding:12px 14px;border-bottom:1px solid var(--b1);cursor:pointer;transition:background 0.15s;position:relative;}
-.lead-item:hover{background:rgba(255,255,255,0.02);}
-.lead-item.selected{background:rgba(232,184,64,0.05);border-left:2px solid var(--gold);}
-.lead-item.unread::after{content:'';position:absolute;top:12px;right:12px;width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);}
-.li-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.li-name{font-size:0.8rem;font-weight:700;}
-.li-time{font-family:'JetBrains Mono',monospace;font-size:0.43rem;color:var(--muted);}
-.li-src{font-family:'JetBrains Mono',monospace;font-size:0.43rem;letter-spacing:0.08em;margin-bottom:4px;}
-.li-src.dental{color:var(--gold);}
-.li-src.trade{color:var(--cyan);}
-.li-src.academi{color:var(--green);}
-.li-src.franchise{color:var(--red);}
-.li-src.main{color:var(--muted);}
-.li-preview{font-size:0.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.li-tags{display:flex;gap:3px;margin-top:5px;}
-.ltag{font-family:'JetBrains Mono',monospace;font-size:0.4rem;padding:2px 6px;border:1px solid var(--b1);color:var(--muted);}
-.ltag.new{border-color:rgba(29,245,154,0.4);color:var(--green);}
-.ltag.hot{border-color:rgba(255,77,109,0.4);color:var(--red);}
-.ltag.contacted{border-color:rgba(232,184,64,0.3);color:var(--gold);}
-
-/* ── CHAT AREA ── */
-.chat-area{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
-
-/* Contact header bar */
-.chat-bar{
-  padding:12px 20px;border-bottom:1px solid var(--b1);
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--panel);flex-shrink:0;
-  box-shadow:0 1px 0 rgba(255,255,255,0.04);
-}
-.cb-l{display:flex;align-items:center;gap:12px;}
-.cb-av{
-  width:36px;height:36px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.75rem;font-weight:700;color:#03050e;
-  font-family:'JetBrains Mono',monospace;flex-shrink:0;
-}
-.cb-info{display:flex;flex-direction:column;gap:2px;}
-.cb-name{font-size:0.88rem;font-weight:700;line-height:1;}
-.cb-meta{font-family:'JetBrains Mono',monospace;font-size:0.43rem;color:var(--muted);margin-top:2px;}
-.cb-r{display:flex;gap:6px;}
-.cb-btn{
-  padding:5px 12px;border:1px solid var(--b1);background:transparent;
-  color:var(--muted);font-family:'JetBrains Mono',monospace;
-  font-size:0.43rem;letter-spacing:0.08em;cursor:pointer;transition:all 0.2s;
-}
-.cb-btn:hover{color:var(--gold);border-color:var(--gold-dim);}
-.cb-btn.red{border-color:rgba(255,77,109,0.25);color:var(--red);}
-.cb-btn.red:hover{background:rgba(255,77,109,0.08);}
-
-/* Messages area — like Telegram */
-.msgs-area{
-  flex:1;overflow-y:auto;
-  padding:20px 24px;
-  display:flex;flex-direction:column;gap:4px;
-  background:var(--bg);
-}
-.msgs-area::-webkit-scrollbar{width:4px;}
-.msgs-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px;}
-
-/* Date separator */
-.msg-date-sep{
-  text-align:center;margin:10px 0 6px;
-  font-family:'JetBrains Mono',monospace;font-size:0.42rem;
-  letter-spacing:0.12em;color:var(--muted);
-  display:flex;align-items:center;gap:10px;
-}
-.msg-date-sep::before,.msg-date-sep::after{content:'';flex:1;border-top:1px solid var(--b1);}
-
-/* Message wrapper */
-.msg-row{display:flex;flex-direction:column;margin-bottom:2px;}
-.msg-row.bot  .msg-wrap{align-items:flex-start;}
-.msg-row.user .msg-wrap{align-items:flex-end;}
-.msg-row.admin .msg-wrap{align-items:flex-end;}
-
-.msg-wrap{display:flex;flex-direction:column;max-width:72%;}
-
-/* Sender label */
-.msg-who{
-  font-family:'JetBrains Mono',monospace;font-size:0.41rem;
-  letter-spacing:0.08em;margin-bottom:3px;padding:0 4px;
-}
-.msg-who.lbl-bot{color:var(--gold);}
-.msg-who.lbl-user{color:var(--muted);text-align:right;}
-.msg-who.lbl-admin{color:var(--cyan);text-align:right;}
-
-/* Bubble */
-.msg-bubble{
-  padding:10px 14px;font-size:0.82rem;line-height:1.65;
-  word-break:break-word;position:relative;
-}
-.msg-bubble.bot{
-  background:var(--panel);
-  border:1px solid var(--b1);
-  border-radius:2px 12px 12px 12px;
-  color:var(--text);
-}
-.msg-bubble.user{
-  background:rgba(232,184,64,0.08);
-  border:1px solid rgba(232,184,64,0.15);
-  border-radius:12px 2px 12px 12px;
-  color:var(--text);
-  text-align:left;
-}
-.msg-bubble.admin{
-  background:rgba(48,220,255,0.07);
-  border:1px solid rgba(48,220,255,0.18);
-  border-radius:12px 2px 12px 12px;
-  color:var(--text);
-}
-
-/* Time inside bubble */
-.msg-time{
-  display:block;
-  font-family:'JetBrains Mono',monospace;font-size:0.4rem;
-  color:var(--muted);margin-top:5px;
-  text-align:right;
-}
-
-/* Typing indicator */
-.typing-row{display:flex;align-items:center;gap:6px;padding:6px 0;}
-.typing-dots{display:flex;gap:4px;align-items:center;background:var(--panel);border:1px solid var(--b1);padding:8px 14px;border-radius:2px 12px 12px 12px;}
-.td{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:tdot 1.2s infinite;}
-.td:nth-child(2){animation-delay:0.2s;}
-.td:nth-child(3){animation-delay:0.4s;}
-@keyframes tdot{0%,80%,100%{opacity:0.2;transform:scale(0.7);}40%{opacity:1;transform:scale(1);}}
-
-/* Input area */
-.input-area{
-  padding:12px 20px;border-top:1px solid var(--b1);
-  display:flex;gap:10px;align-items:flex-end;
-  background:var(--panel);flex-shrink:0;
-}
-.inp-wrap{
-  flex:1;display:flex;align-items:center;
-  background:rgba(0,0,0,0.35);border:1px solid var(--b1);
-  transition:border-color 0.2s;
-}
-.inp-wrap:focus-within{border-color:rgba(232,184,64,0.25);}
-.chat-inp{
-  flex:1;padding:10px 14px;
-  background:transparent;border:none;
-  color:var(--text);font-family:'Syne',sans-serif;font-size:0.82rem;
-  outline:none;resize:none;height:40px;max-height:120px;
-}
-.chat-inp::placeholder{color:var(--muted);}
-.send-btn{
-  padding:10px 20px;height:40px;
-  background:linear-gradient(135deg,var(--gold),var(--gold2));
-  border:none;color:#03050e;
-  font-family:'JetBrains Mono',monospace;font-size:0.52rem;
-  font-weight:700;letter-spacing:0.08em;
-  cursor:pointer;transition:all 0.2s;white-space:nowrap;
-  clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));
-}
-.send-btn:hover{box-shadow:0 0 16px rgba(232,184,64,0.3);}
-
-/* RIGHT PANEL */
-.right-panel{border-left:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
-.rp-tabs{display:flex;border-bottom:1px solid var(--b1);flex-shrink:0;}
-.rp-tab{flex:1;padding:11px 6px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.45rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);cursor:pointer;background:var(--panel);border-bottom:2px solid transparent;transition:all 0.2s;}
-.rp-tab:hover{color:var(--text);}
-.rp-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
-.rp-body{flex:1;overflow-y:auto;padding:14px;}
-.rp-body::-webkit-scrollbar{width:3px;}
-.rp-body::-webkit-scrollbar-thumb{background:var(--b2);}
-
-.ld-section{margin-bottom:16px;}
-.ld-lbl{font-family:'JetBrains Mono',monospace;font-size:0.44rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-.ld-val{font-size:0.8rem;font-weight:600;margin-bottom:3px;}
-.ld-sm{font-size:0.72rem;color:var(--muted);}
-.ld-div{border:none;border-top:1px solid var(--b1);margin:12px 0;}
-.status-btns{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
-.sb{padding:4px 10px;border:1px solid var(--b1);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.43rem;cursor:pointer;transition:all 0.2s;}
-.sb:hover{color:var(--gold);border-color:var(--gold-dim);}
-.sb.s-new{border-color:rgba(29,245,154,0.4);color:var(--green);}
-.sb.s-hot{border-color:rgba(255,77,109,0.4);color:var(--red);}
-.sb.s-done{border-color:rgba(232,184,64,0.3);color:var(--gold);}
-.note-area{width:100%;padding:8px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.75rem;resize:vertical;min-height:70px;outline:none;margin-top:6px;}
-.note-area:focus{border-color:var(--gold-dim);}
-.save-btn{width:100%;margin-top:6px;padding:7px;background:var(--gold-dim);border:1px solid var(--gold-dim);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:0.45rem;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;}
-.save-btn:hover{background:rgba(232,184,64,0.15);}
-.action-btn{width:100%;margin-top:5px;padding:7px;border:1px solid var(--b1);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.43rem;cursor:pointer;transition:all 0.2s;text-align:left;}
-.action-btn:hover{color:var(--gold);border-color:var(--gold-dim);}
-
-.sg-title{font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;margin-top:16px;}
-.sg-title:first-child{margin-top:0;}
-.sg-title::before{content:'// ';opacity:0.4;}
-.ctx-area{width:100%;padding:9px;background:rgba(0,0,0,0.4);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.62rem;line-height:1.7;resize:vertical;min-height:130px;outline:none;margin-top:6px;}
-.ctx-area:focus{border-color:var(--gold-dim);}
-.sel-fi{width:100%;padding:6px 8px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.52rem;outline:none;cursor:pointer;margin-top:6px;}
-.sel-fi:focus{border-color:var(--gold-dim);}
-option{background:#08101f;}
-.save-ctx{width:100%;margin-top:6px;padding:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#03050e;font-family:'JetBrains Mono',monospace;font-size:0.48rem;font-weight:700;cursor:pointer;}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b1);}
-.toggle-row:last-child{border-bottom:none;}
-.tr-lbl{font-size:0.75rem;font-weight:600;}
-.tr-sub{font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--muted);margin-top:1px;}
-.toggle{width:34px;height:18px;background:var(--b1);border-radius:9px;cursor:pointer;position:relative;border:1px solid var(--b2);transition:all 0.3s;flex-shrink:0;}
-.toggle.on{background:rgba(29,245,154,0.15);border-color:rgba(29,245,154,0.35);}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--muted);transition:all 0.3s;}
-.toggle.on::after{left:18px;background:var(--green);}
-.int-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b1);}
-.int-row:last-child{border-bottom:none;}
-.int-lbl{font-size:0.75rem;font-weight:600;}
-.int-sub{font-family:'JetBrains Mono',monospace;font-size:0.42rem;margin-top:1px;}
-.int-sub.ok{color:var(--green);}
-.int-sub.err{color:var(--red);}
-.int-btn{padding:3px 10px;border:1px solid var(--b1);background:transparent;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.42rem;cursor:pointer;}
-.int-btn.ok-btn{border-color:rgba(29,245,154,0.3);color:var(--green);}
-
-/* EMPTY */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--muted);}
-.empty-ico{font-size:2rem;opacity:0.25;}
-.empty-txt{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.1em;}
-
-/* NOTIF */
-.notif{position:fixed;bottom:18px;right:18px;z-index:999;padding:10px 16px;background:var(--panel);border:1px solid var(--green);color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.08em;animation:slideIn 0.3s ease;max-width:260px;}
-.notif.err{border-color:var(--red);color:var(--red);}
-@keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-
-.new-badge{display:inline-block;background:var(--green);color:#03050e;font-family:'JetBrains Mono',monospace;font-size:0.38rem;font-weight:700;padding:2px 5px;margin-left:6px;vertical-align:middle;animation:blink 1s infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.5;}}
-
-</style>
-</head>
-<body>
-
-<div class="topbar">
-  <div class="tb-logo">
-    <div class="tb-mark">L67</div>
-    <div>
-      <div class="tb-name"><em>LABS</em>67</div>
-    </div>
-    <div class="tb-badge">ADMIN PANEL</div>
   </div>
-  <div class="tb-nav">
-    <button class="tb-tab active" onclick="showPage('crm',this)">💬 CRM</button>
-    <button class="tb-tab" onclick="showPage('bot',this)">⚙️ Бот</button>
-    <button class="tb-tab" onclick="showPage('logs',this)">🤖 Логи</button>
-    <button class="tb-tab" onclick="showPage('office',this)">🏢 Офис</button>
-  </div>
-  <div class="tb-r">
-    <div class="tb-status"><div class="tb-dot"></div><span id="dbStatus">CONNECTING...</span></div>
-    <span class="tb-time" id="clock"></span>
-  </div>
-</div>
+  <div id="off-dash" style="display:none;flex-direction:column;flex:1;overflow:auto;">
 
-<div id="page-crm" class="layout">
-
-  <!-- COL 1: LEADS -->
-  <div class="pane">
-    <div class="pane-hdr">
-      <span class="pane-title">// Заявки</span>
-      <span class="pane-count" id="leadCount">0</span>
-    </div>
-    <div class="stats-bar">
-      <div class="stat-item"><span class="stat-num" id="sNew">0</span><span class="stat-lbl">Новые</span></div>
-      <div class="stat-item"><span class="stat-num" style="color:var(--red)" id="sHot">0</span><span class="stat-lbl">Горячие</span></div>
-      <div class="stat-item"><span class="stat-num" style="color:var(--green)" id="sDone">0</span><span class="stat-lbl">Закрыты</span></div>
-    </div>
-    <div class="filter-bar">
-      <button class="fb active" onclick="setFilter('all',this)">Все</button>
-      <button class="fb" onclick="setFilter('dental',this)">Dental</button>
-      <button class="fb" onclick="setFilter('trade',this)">Trade</button>
-      <button class="fb" onclick="setFilter('academi',this)">Academi</button>
-      <button class="fb" onclick="setFilter('franchise',this)">Franchise</button>
-    </div>
-    <div class="pane-body" id="leadsList">
-      <div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">Загрузка заявок...</div></div>
-    </div>
-  </div>
-
-  <!-- COL 2: CHAT -->
-  <div class="chat-area">
-    <div class="chat-bar" id="chatBar" style="display:none;">
-      <div class="cb-l">
-        <div class="cb-av" id="chatAv">?</div>
-        <div class="cb-info">
-          <div class="cb-name" id="chatName">—</div>
-          <div class="cb-meta" id="chatMeta">—</div>
-        </div>
-      </div>
-      <div class="cb-r">
-        <button class="cb-btn" onclick="setStatus('contacted')">✓ Contacted</button>
-        <button class="cb-btn" onclick="setStatus('hot')">🔥 Hot</button>
-        <button class="cb-btn red" onclick="setStatus('done')">✕ Archive</button>
-      </div>
-    </div>
-    <div class="msgs-area" id="msgsArea">
-      <div class="empty"><div class="empty-ico">💬</div><div class="empty-txt">Выберите заявку слева</div></div>
-    </div>
-    <div class="input-area" id="inputArea" style="display:none;">
-      <div class="inp-wrap">
-        <textarea class="chat-inp" id="adminInp" placeholder="Написать от имени менеджера..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminMsg();}"></textarea>
-      </div>
-      <button class="send-btn" onclick="sendAdminMsg()">→ SEND</button>
-    </div>
-  </div>
-
-  <!-- COL 3: RIGHT -->
-  <div class="right-panel">
-    <div class="rp-tabs">
-      <div class="rp-tab active" onclick="rpTab('detail',this)">Заявка</div>
-      <div class="rp-tab" onclick="rpTab('context',this)">AI Контекст</div>
-      <div class="rp-tab" onclick="rpTab('settings',this)">Настройки</div>
-    </div>
-    <div class="rp-body" id="rpBody">
-      <div class="empty" style="height:200px;"><div class="empty-ico">📋</div><div class="empty-txt">Выберите заявку</div></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- PAGE 2: БОТ -->
-<div id="page-bot" style="display:none;height:calc(100vh - 52px);margin-top:52px;display:none;grid-template-columns:350px 1fr;gap:0;background:var(--bg);">
-  <div style="border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;">
-    <div class="pane-hdr"><span class="pane-title">// Настройки бота</span></div>
-    <div style="padding:20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;flex:1;">
-      <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;">Системный промпт</label><textarea style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;resize:vertical;min-height:120px;" placeholder="Вы — ассистент LABS67. Помогаете клиентам выбрать направление..."></textarea></div>
-      <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;">Приветственное сообщение</label><input type="text" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;" value="Здравствуйте! Чем могу помочь?"></div>
-      <div><label style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;">Задержка ответа (мс)</label><input type="number" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;" value="800"></div>
-      <button onclick="alert('Настройки сохранены')" style="padding:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;color:#03050e;font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;">// СОХРАНИТЬ</button>
-    </div>
-  </div>
-  <div style="display:flex;flex-direction:column;overflow:hidden;background:var(--bg2);">
-    <div class="pane-hdr"><span class="pane-title" style="color:var(--cyan);">// РЕЖИМ ТЕСТИРОВАНИЯ</span></div>
-    <div id="bot-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;">
-      <div style="max-width:80%;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--b1);border-radius:0 8px 8px 8px;font-size:0.84rem;align-self:flex-start;"><span style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;color:var(--cyan);display:block;margin-bottom:4px;">// Бот</span>Здравствуйте! Чем могу помочь?</div>
-    </div>
-    <div style="padding:10px;border-top:1px solid var(--b1);display:flex;gap:8px;">
-      <input id="bot-inp" type="text" placeholder="Введите сообщение..." onkeydown="if(event.key==='Enter')botSend()" style="flex:1;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--b1);color:var(--text);font-family:'Syne',sans-serif;font-size:0.84rem;outline:none;">
-      <button onclick="botSend()" style="padding:9px 16px;background:var(--cyan);border:none;color:#03050e;font-weight:700;cursor:pointer;font-size:0.8rem;">→</button>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE 3: ЛОГИ -->
-<div id="page-logs" style="display:none;height:calc(100vh - 52px);margin-top:52px;display:none;flex-direction:column;background:var(--bg);">
-  <div style="padding:10px 16px;border-bottom:1px solid var(--b1);display:flex;gap:10px;align-items:center;background:var(--panel);flex-shrink:0;">
-    <select id="log-agent" onchange="renderLogs()" style="padding:6px 10px;background:var(--bg);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.5rem;outline:none;"><option value="">Все агенты</option><option value="Кай">Кай</option><option value="Степа">Степа</option></select>
-    <select id="log-status" onchange="renderLogs()" style="padding:6px 10px;background:var(--bg);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.5rem;outline:none;"><option value="">Все статусы</option><option value="success">Success</option><option value="error">Error</option></select>
-    <input id="log-date" type="date" onchange="renderLogs()" style="padding:6px 10px;background:var(--bg);border:1px solid var(--b1);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.5rem;outline:none;">
-    <button onclick="document.getElementById('log-agent').value='';document.getElementById('log-status').value='';document.getElementById('log-date').value='';renderLogs();" style="padding:6px 14px;background:transparent;border:1px solid var(--b1);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.48rem;cursor:pointer;">Сбросить</button>
-    <span style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--muted);margin-left:auto;">// AGENT LOGS</span>
-  </div>
-  <div style="flex:1;overflow-y:auto;">
-    <table id="log-table" style="width:100%;border-collapse:collapse;">
-      <thead><tr style="background:var(--panel);font-family:'JetBrains Mono',monospace;font-size:0.46rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">
-        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Время</th>
-        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Агент</th>
-        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Модель</th>
-        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Задача</th>
-        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Статус</th>
-        <th style="padding:10px 14px;text-align:left;border-bottom:1px solid var(--b1);">Стоимость</th>
-        <th style="padding:10px 14px;border-bottom:1px solid var(--b1);"></th>
-      </tr></thead>
-      <tbody id="log-tbody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- PAGE 4: ОФИС — AGENT DASHBOARD -->
-<div id="page-office">
 
   <!-- Левая панель -->
   <div class="hq-sidebar">
@@ -1253,6 +831,8 @@ option{background:#08101f;}
     </div>
   </div><!-- /hq-feed -->
 
+
+  </div>
 </div><!-- /page-office -->
 
 <script>
@@ -1618,7 +1198,20 @@ function initOffice() {
   window._offClockTimer = setInterval(() => {
     const el = document.getElementById('offClock');
     if (el) el.textContent = new Date().toLocaleTimeString('ru-RU');
+    const el2 = document.getElementById('hqClock');
+    if (el2) el2.textContent = new Date().toLocaleTimeString('ru-RU');
   }, 1000);
+}
+
+function switchOfficeTab(tab, btn) {
+  document.getElementById('off-pixel').style.display = tab === 'pixel' ? 'flex' : 'none';
+  document.getElementById('off-dash').style.display = tab === 'dash' ? 'flex' : 'none';
+  document.querySelectorAll('.office-tab').forEach(b => {
+    b.style.borderBottomColor = 'transparent';
+    b.style.color = 'var(--muted)';
+  });
+  btn.style.borderBottomColor = 'var(--gold)';
+  btn.style.color = 'var(--gold)';
 }
 function setAgentState(){}
 function syncControlButtons(){}

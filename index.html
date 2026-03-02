@@ -1500,88 +1500,187 @@ function drawOffice() {
     ctx.fillStyle = g;
     ctx.fillRect(px-20, py-20, 40, 40);
 
-    // ── Детальный пиксельный персонаж ──
+    // ── Персонаж: стоит / идёт / сидит ──
     const frame = agent.frame;
     const moving = agent.state === 'walking';
+    const sitting = agent.state === 'working' || agent.state === 'cafe' || agent.state === 'server';
 
-    // Тень
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(px, py+20, 13, 5, 0, 0, Math.PI*2);
-    ctx.fill();
+    if (sitting) {
+      // ── СИДЯЩИЙ персонаж (вид сбоку/сверху за столом) ──
 
-    // Ноги (анимация ходьбы)
-    const lly = moving ? (frame===0 ? 2 : -1) : 0;
-    const rly = moving ? (frame===0 ? -1 : 2) : 0;
-    ctx.fillStyle = col+'99';
-    ctx.fillRect(px-9, py+12+lly, 7, 10); // левая нога
-    ctx.fillRect(px+2, py+12+rly, 7, 10); // правая нога
-    // Обувь
-    ctx.fillStyle = '#111';
-    ctx.fillRect(px-10, py+20+lly, 9, 3);
-    ctx.fillRect(px+1, py+20+rly, 9, 3);
+      // Тень под стулом
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(px, py+10, 14, 4, 0, 0, Math.PI*2);
+      ctx.fill();
 
-    // Тело
-    ctx.fillStyle = col+'dd';
-    ctx.fillRect(px-10, py-2, 20, 15);
-    // Воротник/галстук
-    ctx.fillStyle = col;
-    ctx.fillRect(px-2, py-2, 4, 6);
-    // Карман
-    ctx.fillStyle = col+'66';
-    ctx.fillRect(px+4, py+3, 4, 4);
+      // Стул
+      ctx.fillStyle = agent.boss ? '#2a2010' : '#1a1a28';
+      ctx.fillRect(px-12, py+2, 24, 14);  // сиденье
+      ctx.fillStyle = agent.boss ? '#3a3018' : '#22223a';
+      ctx.fillRect(px-12, py-8, 4, 12);   // спинка лево
+      ctx.fillRect(px+8, py-8, 4, 12);    // спинка право
+      ctx.fillRect(px-12, py-8, 24, 4);   // верх спинки
+      // Ножки стула
+      ctx.fillStyle = '#111';
+      ctx.fillRect(px-11, py+14, 3, 6);
+      ctx.fillRect(px+8, py+14, 3, 6);
 
-    // Руки
-    const lax = moving ? (frame===0 ? -3 : 3) : 0;
-    const rax = moving ? (frame===0 ? 3 : -3) : 0;
-    ctx.fillStyle = col+'bb';
-    ctx.fillRect(px-14+lax, py-1, 5, 9); // левая рука
-    ctx.fillRect(px+9+rax, py-1, 5, 9);  // правая рука
-    // Кисти
-    ctx.fillStyle = '#f5d5a5';
-    ctx.fillRect(px-14+lax, py+6, 5, 5);
-    ctx.fillRect(px+9+rax, py+6, 5, 5);
+      // Ноги сидящего (согнуты)
+      ctx.fillStyle = col+'99';
+      ctx.fillRect(px-8, py+4, 6, 8);   // бедро лево
+      ctx.fillRect(px+2, py+4, 6, 8);   // бедро право
+      ctx.fillStyle = col+'77';
+      ctx.fillRect(px-8, py+10, 6, 6);  // голень лево
+      ctx.fillRect(px+2, py+10, 6, 6);  // голень право
+      // Обувь
+      ctx.fillStyle = '#111';
+      ctx.fillRect(px-9, py+14, 8, 4);
+      ctx.fillRect(px+1, py+14, 8, 4);
 
-    // Шея
-    ctx.fillStyle = '#f5d5a5';
-    ctx.fillRect(px-3, py-8, 6, 7);
+      // Тело
+      ctx.fillStyle = col+'dd';
+      ctx.fillRect(px-9, py-6, 18, 12);
+      ctx.fillStyle = col;
+      ctx.fillRect(px-2, py-6, 4, 5);  // галстук
 
-    // Голова
-    ctx.fillStyle = '#f5d5a5';
-    ctx.fillRect(px-8, py-20, 16, 14);
-    // Волосы
-    ctx.fillStyle = col+'cc';
-    ctx.fillRect(px-8, py-20, 16, 4);
-    ctx.fillRect(px-8, py-20, 3, 8);
-    // Глаза
-    ctx.fillStyle = '#111';
-    ctx.fillRect(px-5, py-14, 3, 3);
-    ctx.fillRect(px+2, py-14, 3, 3);
-    // Рот
-    ctx.fillStyle = col+'88';
-    ctx.fillRect(px-3, py-9, 6, 2);
-    // Ухо
-    ctx.fillStyle = '#e8c090';
-    ctx.fillRect(px-10, py-16, 3, 5);
-    ctx.fillRect(px+7, py-16, 3, 5);
+      // Анимация печатания — руки на столе
+      const typingOff = (agent.state === 'working' || agent.state === 'server')
+        ? (frame===0 ? -2 : 2) : 0;
+      ctx.fillStyle = '#f5d5a5';
+      ctx.fillRect(px-14, py-2+typingOff, 6, 5);  // левая рука
+      ctx.fillRect(px+8, py-2-typingOff, 6, 5);   // правая рука
+
+      // Шея
+      ctx.fillStyle = '#f5d5a5';
+      ctx.fillRect(px-3, py-12, 6, 7);
+
+      // Голова
+      ctx.fillStyle = '#f5d5a5';
+      ctx.fillRect(px-8, py-24, 16, 14);
+      ctx.fillStyle = col+'cc';
+      ctx.fillRect(px-8, py-24, 16, 4);   // волосы
+      ctx.fillRect(px-8, py-24, 3, 8);
+      ctx.fillStyle = '#111';
+      ctx.fillRect(px-5, py-18, 3, 3);    // глаза
+      ctx.fillRect(px+2, py-18, 3, 3);
+      // Наклон головы при работе
+      const headTilt = agent.state === 'working' ? 2 : 0;
+      ctx.fillStyle = col+'88';
+      ctx.fillRect(px-3, py-12+headTilt, 6, 2); // рот
+      ctx.fillStyle = '#e8c090';
+      ctx.fillRect(px-10, py-20, 3, 5);   // ухо
+      ctx.fillRect(px+7, py-20, 3, 5);
+
+      // Экран/ноутбук перед работающим
+      if (agent.state === 'working' || agent.state === 'server') {
+        const screenGlow = frame===0 ? col+'33' : col+'55';
+        ctx.fillStyle = '#0a0a14';
+        ctx.fillRect(px-10, py-18, 20, 14); // экран
+        ctx.strokeStyle = col+'88';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px-10, py-18, 20, 14);
+        // Строчки кода на экране
+        ctx.fillStyle = col+'99';
+        for (let li = 0; li < 3; li++) {
+          const lw = 6 + (li * 3 + frame * 2) % 10;
+          ctx.fillRect(px-8, py-15+li*4, lw, 2);
+        }
+        // Курсор мигает
+        if (frame === 0) {
+          ctx.fillStyle = col;
+          ctx.fillRect(px-8 + ((officeTime*0.05|0)%12), py-15, 2, 2);
+        }
+      }
+
+      // Чашка кофе в кафе
+      if (agent.state === 'cafe') {
+        ctx.fillStyle = '#3a2010';
+        ctx.fillRect(px+6, py-8, 8, 6);   // кружка
+        ctx.fillStyle = '#7a4520';
+        ctx.fillRect(px+7, py-7, 6, 4);   // кофе
+        ctx.strokeStyle = '#5a3015';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px+6, py-8, 8, 6);
+        // Пар
+        if (frame === 0) {
+          ctx.fillStyle = 'rgba(255,255,255,0.2)';
+          ctx.fillRect(px+9, py-10, 2, 3);
+        }
+      }
+
+    } else {
+      // ── СТОЯЩИЙ / ИДУЩИЙ персонаж ──
+
+      // Тень
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.beginPath();
+      ctx.ellipse(px, py+22, 13, 5, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      // Ноги
+      const lly = moving ? (frame===0 ? 3 : -2) : 0;
+      const rly = moving ? (frame===0 ? -2 : 3) : 0;
+      ctx.fillStyle = col+'99';
+      ctx.fillRect(px-9, py+10+lly, 7, 12);
+      ctx.fillRect(px+2, py+10+rly, 7, 12);
+      ctx.fillStyle = '#111';
+      ctx.fillRect(px-10, py+20+lly, 9, 4);
+      ctx.fillRect(px+1, py+20+rly, 9, 4);
+
+      // Тело
+      ctx.fillStyle = col+'dd';
+      ctx.fillRect(px-10, py-4, 20, 16);
+      ctx.fillStyle = col;
+      ctx.fillRect(px-2, py-4, 4, 6);
+
+      // Руки
+      const lax = moving ? (frame===0 ? -4 : 4) : 0;
+      const rax = moving ? (frame===0 ? 4 : -4) : 0;
+      ctx.fillStyle = col+'bb';
+      ctx.fillRect(px-14+lax, py-2, 5, 10);
+      ctx.fillRect(px+9+rax, py-2, 5, 10);
+      ctx.fillStyle = '#f5d5a5';
+      ctx.fillRect(px-14+lax, py+6, 5, 6);
+      ctx.fillRect(px+9+rax, py+6, 5, 6);
+
+      // Шея
+      ctx.fillStyle = '#f5d5a5';
+      ctx.fillRect(px-3, py-10, 6, 7);
+
+      // Голова
+      ctx.fillStyle = '#f5d5a5';
+      ctx.fillRect(px-8, py-22, 16, 14);
+      ctx.fillStyle = col+'cc';
+      ctx.fillRect(px-8, py-22, 16, 4);
+      ctx.fillRect(px-8, py-22, 3, 8);
+      ctx.fillStyle = '#111';
+      ctx.fillRect(px-5, py-16, 3, 3);
+      ctx.fillRect(px+2, py-16, 3, 3);
+      ctx.fillStyle = col+'88';
+      ctx.fillRect(px-3, py-11, 6, 2);
+      ctx.fillStyle = '#e8c090';
+      ctx.fillRect(px-10, py-18, 3, 5);
+      ctx.fillRect(px+7, py-18, 3, 5);
+    }
 
     // State indicator
     if (agent.state === 'working') {
       ctx.fillStyle = '#1df59a';
-      ctx.beginPath(); ctx.arc(px+10, py-22, 4, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+10, sitting ? py-26 : py-24, 4, 0, Math.PI*2); ctx.fill();
     } else if (agent.state === 'cafe') {
       ctx.fillStyle = '#e8a820';
-      ctx.beginPath(); ctx.arc(px+10, py-22, 4, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+10, sitting ? py-26 : py-24, 4, 0, Math.PI*2); ctx.fill();
     } else if (agent.state === 'server') {
       ctx.fillStyle = '#30dcff';
-      ctx.beginPath(); ctx.arc(px+10, py-22, 4, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+10, sitting ? py-26 : py-24, 4, 0, Math.PI*2); ctx.fill();
     }
 
     // Name tag
     ctx.font = 'bold 9px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillStyle = col;
-    ctx.fillText(agent.name, px, py-24);
+    ctx.fillText(agent.name, px, sitting ? py-28 : py-26);
 
     // Speech bubble
     if (agent.speechBubble && agent.speechTimer > 0) {

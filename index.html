@@ -705,173 +705,551 @@ function esc(s) {
 }
 
 
+
 // ═══ OFFICE CANVAS ═══
+const S = 24; // tile size px
+const W_TILES = 50, H_TILES = 20;
+
+// Rooms layout (tile coords)
+const ROOMS = {
+  work:    { x:0,  y:0,  w:22, h:20, label:'// РАБОЧЫ ПАКОЙ',  color:'#0e0e18' },
+  learn:   { x:22, y:0,  w:14, h:10, label:'// НАВУЧАННЕ',      color:'#0a0e18' },
+  server:  { x:22, y:10, w:14, h:10, label:'// СЕРВЕРНАЯ',      color:'#090e0a' },
+  cafe:    { x:36, y:0,  w:14, h:20, label:'// КАФЕ',           color:'#100e0a' },
+};
+
+const PALETTE = {
+  wall:      '#1a1a2e', wall2:'#16213e',
+  floor_work:'#12121e', floor_work2:'#131320',
+  floor_learn:'#0d1020',floor_server:'#0a120a',
+  floor_cafe:'#130f0a',
+  desk:      '#1e1a0e', desk_top:'#2a2414', desk_edge:'#3a3218',
+  desk_server:'#0e1a0e',
+  chair:     '#14141e', chair2:'#1c1c2a',
+  screen_off:'#060810', screen_on:'#050a06',
+  plant:     '#0a1f0a', plant2:'#0d280d',
+  table_oval:'#1e1a0e',
+  coffee_m:  '#1a1010',
+  border_dim:'rgba(255,255,255,0.04)',
+};
+
+const AGENT_COLORS = {
+  kai:     '#e8b840',
+  alexey:  '#4c8cff',
+  gennady: '#ff4d6d',
+  tatyana: '#1df59a',
+  stepa:   '#30dcff',
+};
+
+const AGENTS_DEF = [
+  { id:'kai',     name:'КАЙ',     emoji:'⚡', color:AGENT_COLORS.kai,     boss:true },
+  { id:'alexey',  name:'АЛЕКСЕЙ', emoji:'📋', color:AGENT_COLORS.alexey,  boss:false },
+  { id:'gennady', name:'ГЕННАДЫЙ',emoji:'🎨', color:AGENT_COLORS.gennady, boss:false },
+  { id:'tatyana', name:'ТАЦЦЯНА', emoji:'📊', color:AGENT_COLORS.tatyana, boss:false },
+  { id:'stepa',   name:'СЦЁПА',   emoji:'💻', color:AGENT_COLORS.stepa,   boss:false },
+];
+
+// Desk positions (oval table in work room, around it)
+// Oval table center: tile 10,9
+const OVAL_CENTER = {x:10, y:9};
+const DESK_SEATS = [
+  {x:10,y:6,  dir:'down'},  // top seat
+  {x:7, y:8,  dir:'right'}, // left-top
+  {x:7, y:10, dir:'right'}, // left-bottom
+  {x:13,y:8,  dir:'left'},  // right-top
+  {x:13,y:10, dir:'left'},  // right-bottom
+];
+// Kai seat at narrow end (bottom of oval)
+const KAI_SEAT = {x:10, y:12, dir:'up'};
+
+const SERVER_DESKS = [
+  {x:24,y:11},{x:26,y:11},{x:28,y:11},{x:30,y:11},{x:32,y:11},
+];
+
+const CAFE_SEATS = [
+  {x:38,y:3},{x:41,y:3},{x:38,y:7},{x:41,y:7},{x:38,y:11},{x:41,y:11},
+];
+
+// State
+let agents = AGENTS_DEF.map((def, i) => ({
+  ...def,
+  // pixel position (center)
+  px: (DESK_SEATS[i] ? DESK_SEATS[i].x : KAI_SEAT.x) * S + S/2,
+  py: (DESK_SEATS[i] ? DESK_SEATS[i].y : KAI_SEAT.y) * S + S/2,
+  tx: 0, ty: 0,   // target
+  state: 'working', // working | cafe | server | shout | walking
+  stateTimer: Math.random() * 300,
+  workDeskIdx: i,
+  sparking: false,
+  sparkTimer: 0,
+  speechBubble: '',
+  speechTimer: 0,
+  frame: 0,
+  frameTimer: 0,
+}));
+
+// Server monitors - random sparking
+let serverMonitors = SERVER_DESKS.map((d, i) => ({
+  x: d.x, y: d.y,
+  sparking: Math.random() > 0.5,
+  sparkTimer: Math.floor(Math.random() * 400),
+  fixedBy: null,    // agent id currently fixing
+  fixTimer: 0,
+}));
+
+let officeTime = 0;
+let hasActiveTask = false; // set from outside when Kai has a task
+
+function setOfficeTask(active) { hasActiveTask = active; }
+
+function getRoom(tx, ty) {
+  for (const [name, r] of Object.entries(ROOMS)) {
+    if (tx >= r.x && tx < r.x+r.w && ty >= r.y && ty < r.y+r.h) return name;
+  }
+  return 'work';
+}
+
+function walkTo(agent, tx, ty) {
+  agent.tx = tx * S + S/2;
+  agent.ty = ty * S + S/2;
+  agent.state = 'walking';
+}
+
+function updateAgents(dt) {
+  officeTime += dt;
+
+  // Update server monitors
+  serverMonitors.forEach(m => {
+    if (m.fixedBy) {
+      m.fixTimer -= dt;
+      if (m.fixTimer <= 0) {
+        m.fixedBy = null;
+        m.sparking = Math.random() > 0.6;
+      }
+    } else {
+      m.sparkTimer -= dt;
+      if (m.sparkTimer <= 0) {
+        m.sparking = !m.sparking;
+        m.sparkTimer = m.sparking ? 200 + Math.random()*400 : 300 + Math.random()*500;
+      }
+    }
+  });
+
+  agents.forEach((agent, idx) => {
+    // Move toward target
+    if (agent.state === 'walking') {
+      const dx = agent.tx - agent.px;
+      const dy = agent.ty - agent.py;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 2) {
+        agent.px = agent.tx; agent.py = agent.ty;
+        agent.state = agent.nextState || 'idle';
+        agent.nextState = null;
+      } else {
+        const speed = 1.2;
+        agent.px += (dx/dist)*speed;
+        agent.py += (dy/dist)*speed;
+      }
+    }
+
+    // Speech bubble timer
+    if (agent.speechTimer > 0) agent.speechTimer -= dt;
+    else agent.speechBubble = '';
+
+    // Animate frame
+    agent.frameTimer -= dt;
+    if (agent.frameTimer <= 0) { agent.frame = (agent.frame+1)%2; agent.frameTimer = 20; }
+
+    // State machine
+    agent.stateTimer -= dt;
+    if (agent.stateTimer > 0) return;
+
+    // Kai boss logic
+    if (agent.id === 'kai' && hasActiveTask) {
+      // Kai should be working
+      if (agent.state !== 'working') {
+        const seat = KAI_SEAT;
+        walkTo(agent, seat.x, seat.y);
+        agent.nextState = 'working';
+        agent.stateTimer = 60 + Math.random()*120;
+      }
+      // Find idle agents and shout
+      const idleAgents = agents.filter(a => a.id !== 'kai' && a.state !== 'working');
+      if (idleAgents.length > 0 && Math.random() < 0.3) {
+        const target = idleAgents[Math.floor(Math.random()*idleAgents.length)];
+        agent.state = 'shout';
+        agent.speechBubble = '⚡ ПРАЦАВАЦЬ!';
+        agent.speechTimer = 80;
+        // Target rushes to desk
+        target.state = 'walking';
+        const targetSeat = target.workDeskIdx < DESK_SEATS.length
+          ? DESK_SEATS[target.workDeskIdx] : KAI_SEAT;
+        walkTo(target, targetSeat.x, targetSeat.y);
+        target.nextState = 'working';
+        target.speechBubble = '😰';
+        target.speechTimer = 60;
+        target.stateTimer = 200 + Math.random()*200;
+        agent.stateTimer = 100;
+      } else {
+        agent.stateTimer = 30 + Math.random()*60;
+      }
+      return;
+    }
+
+    // Normal agents
+    const roll = Math.random();
+    if (roll < 0.55) {
+      // Go work
+      const seatIdx = agent.workDeskIdx < DESK_SEATS.length ? agent.workDeskIdx : 0;
+      const freeSeat = DESK_SEATS.find((s,i) =>
+        !agents.some(a => a.id !== agent.id && a.state === 'working' &&
+          a.workDeskIdx === i)
+      );
+      const seat = freeSeat || DESK_SEATS[seatIdx % DESK_SEATS.length];
+      const si = DESK_SEATS.indexOf(seat);
+      agent.workDeskIdx = si >= 0 ? si : agent.workDeskIdx;
+      walkTo(agent, seat.x, seat.y);
+      agent.nextState = 'working';
+      agent.stateTimer = 200 + Math.random()*400;
+    } else if (roll < 0.75) {
+      // Go cafe
+      const cafeSeat = CAFE_SEATS[Math.floor(Math.random()*CAFE_SEATS.length)];
+      walkTo(agent, cafeSeat.x, cafeSeat.y);
+      agent.nextState = 'cafe';
+      const phrases = ['☕ кава...','💬 як справы?','😴 хвілінка...','🍩 перапынак'];
+      agent.speechBubble = phrases[Math.floor(Math.random()*phrases.length)];
+      agent.speechTimer = 100;
+      agent.stateTimer = 150 + Math.random()*200;
+    } else if (roll < 0.9) {
+      // Fix server
+      const brokenMonitor = serverMonitors.find(m => m.sparking && !m.fixedBy);
+      if (brokenMonitor) {
+        brokenMonitor.fixedBy = agent.id;
+        brokenMonitor.fixTimer = 600;
+        brokenMonitor.sparking = false;
+        walkTo(agent, brokenMonitor.x, brokenMonitor.y);
+        agent.nextState = 'server';
+        agent.speechBubble = '🔧 чыню...';
+        agent.speechTimer = 120;
+        agent.stateTimer = 600;
+      } else {
+        agent.stateTimer = 60;
+      }
+    } else {
+      // Learn room
+      walkTo(agent, 24 + Math.floor(Math.random()*12), 1 + Math.floor(Math.random()*8));
+      agent.nextState = 'learn';
+      agent.stateTimer = 100 + Math.random()*200;
+    }
+  });
+}
+
+// ─── DRAW ───
 function drawOffice() {
   const canvas = document.getElementById('officeCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const S = 20; // tile size
+  ctx.imageSmoothingEnabled = false;
 
-  const COLORS = {
-    floor:    '#0e0e18',
-    floor2:   '#13131f',
-    wall:     '#1a1a28',
-    desk:     '#1e1a0e',
-    desk2:    '#2a2510',
-    screen:   '#030810',
-    glow_gold:'#e8b840',
-    glow_cyan:'#30dcff',
-    glow_green:'#1df59a',
-    glow_red: '#ff4d6d',
-    glow_blue:'#4c8cff',
-    plant:    '#1a3a1a',
-    plant2:   '#0d2b0d',
-    chair:    '#16161e',
-    carpet:   '#12101e',
-    border:   'rgba(255,255,255,0.04)',
-  };
+  // Background
+  ctx.fillStyle = '#09090f';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  function tile(x, y, color, alpha=1) {
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = color;
-    ctx.fillRect(x*S, y*S, S, S);
-    ctx.globalAlpha = 1;
-  }
-  function border(x, y) {
-    ctx.strokeStyle = COLORS.border;
-    ctx.lineWidth = 0.5;
-    ctx.strokeRect(x*S+0.5, y*S+0.5, S-1, S-1);
-  }
-  function glow(x, y, color, r=18) {
-    const g = ctx.createRadialGradient(x*S+S/2,y*S+S/2,0,x*S+S/2,y*S+S/2,r);
-    g.addColorStop(0, color+'55');
-    g.addColorStop(1, 'transparent');
-    ctx.fillStyle = g;
-    ctx.fillRect(x*S-r, y*S-r, S+r*2, S+r*2);
+  // Draw rooms
+  for (const [name, r] of Object.entries(ROOMS)) {
+    // Floor
+    for (let tx = r.x; tx < r.x+r.w; tx++) {
+      for (let ty = r.y; ty < r.y+r.h; ty++) {
+        const even = (tx+ty)%2===0;
+        let col = r.color;
+        if (name === 'work')   col = even ? '#11111e' : '#131320';
+        if (name === 'learn')  col = even ? '#0c0f1c' : '#0e1020';
+        if (name === 'server') col = even ? '#090d09' : '#0b100b';
+        if (name === 'cafe')   col = even ? '#120f09' : '#140e08';
+        ctx.fillStyle = col;
+        ctx.fillRect(tx*S, ty*S, S, S);
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(tx*S+0.5, ty*S+0.5, S-1, S-1);
+      }
+    }
+    // Room border
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(r.x*S+1, r.y*S+1, r.w*S-2, r.h*S-2);
+    // Label
+    ctx.font = '7px "JetBrains Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillText(r.label, r.x*S+6, r.y*S+10);
   }
 
-  // Floor
-  for (let x = 0; x < W/S; x++) for (let y = 0; y < H/S; y++) {
-    tile(x, y, (x+y)%2===0 ? COLORS.floor : COLORS.floor2);
-    border(x, y);
-  }
+  // ── WORK ROOM: Oval table ──
+  const ox = OVAL_CENTER.x * S, oy = OVAL_CENTER.y * S;
+  ctx.save();
+  ctx.translate(ox, oy);
+  // Table shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.ellipse(2, 3, 6*S, 3.5*S, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Table top
+  ctx.fillStyle = '#1e1a0e';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 6*S, 3.5*S, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Table edge highlight
+  ctx.strokeStyle = '#3a3218';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 6*S, 3.5*S, 0, 0, Math.PI*2);
+  ctx.stroke();
+  // Table surface texture
+  ctx.strokeStyle = 'rgba(232,184,64,0.05)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 5*S, 3*S, 0, 0, Math.PI*2);
+  ctx.stroke();
+  // LABS67 on table
+  ctx.fillStyle = 'rgba(232,184,64,0.12)';
+  ctx.font = 'bold 11px "JetBrains Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('LABS67', 0, 4);
+  ctx.restore();
 
-  // Carpet center
-  ctx.fillStyle = COLORS.carpet;
-  ctx.globalAlpha = 0.5;
-  ctx.fillRect(6*S, 2*S, 31*S, 11*S);
-  ctx.globalAlpha = 1;
-
-  // Back wall hint
-  ctx.fillStyle = COLORS.wall;
-  ctx.globalAlpha = 0.3;
-  ctx.fillRect(0, 0, W, S);
-  ctx.globalAlpha = 1;
-
-  const agents = [
-    { x:2,  y:2, color: COLORS.glow_gold, emoji:'⚡', name:'КАЙ' },
-    { x:9,  y:2, color: COLORS.glow_blue, emoji:'📋', name:'АЛЕКСЕЙ' },
-    { x:16, y:2, color: COLORS.glow_red,  emoji:'🎨', name:'ГЕННАДЫЙ' },
-    { x:23, y:2, color: COLORS.glow_green,emoji:'📊', name:'ТАЦЦЯНА' },
-    { x:30, y:2, color: COLORS.glow_cyan, emoji:'💻', name:'СЦЁПА' },
-  ];
-
-  agents.forEach(a => {
-    // Desk glow
-    glow(a.x+1, a.y+1, a.color, 30);
-
-    // Desk surface (3x2)
-    ctx.fillStyle = COLORS.desk;
-    ctx.fillRect(a.x*S, (a.y+1)*S, 6*S, 2*S);
-    ctx.fillStyle = COLORS.desk2;
-    ctx.fillRect(a.x*S, (a.y+1)*S, 6*S, S*0.3);
-
-    // Monitor
-    ctx.fillStyle = COLORS.screen;
-    ctx.fillRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
-    // Screen glow
-    ctx.fillStyle = a.color;
-    ctx.globalAlpha = 0.15;
-    ctx.fillRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
-    ctx.globalAlpha = 1;
-    // Screen border
-    ctx.strokeStyle = a.color;
-    ctx.globalAlpha = 0.6;
+  // ── WORK ROOM: Chairs around oval ──
+  [...DESK_SEATS, KAI_SEAT].forEach((seat, i) => {
+    const cx = seat.x*S + S/2, cy = seat.y*S + S/2;
+    const isKai = i === DESK_SEATS.length;
+    // Chair base
+    ctx.fillStyle = isKai ? '#2a2010' : '#14141e';
+    ctx.fillRect(cx-9, cy-9, 18, 18);
+    ctx.strokeStyle = isKai ? 'rgba(232,184,64,0.4)' : 'rgba(255,255,255,0.08)';
     ctx.lineWidth = 1;
-    ctx.strokeRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
-    ctx.globalAlpha = 1;
+    ctx.strokeRect(cx-9, cy-9, 18, 18);
+    // Chair back
+    ctx.fillStyle = isKai ? '#3a3018' : '#1c1c2a';
+    const backOffsets = {down:[0,-12,18,6], right:[-14,0,6,18], left:[8,0,6,18], up:[0,6,18,6]};
+    const bo = backOffsets[seat.dir] || [0,-12,18,6];
+    ctx.fillRect(cx+bo[0]-9, cy+bo[1]-9, bo[2], bo[3]);
+  });
 
-    // Chair
-    ctx.fillStyle = COLORS.chair;
-    ctx.fillRect((a.x+2)*S, (a.y+3)*S, 2*S, 2*S);
-    ctx.strokeStyle = a.color;
-    ctx.globalAlpha = 0.2;
-    ctx.strokeRect((a.x+2)*S, (a.y+3)*S, 2*S, 2*S);
-    ctx.globalAlpha = 1;
+  // ── LEARN ROOM: Desks + screen ──
+  const learnDesks = [{x:24,y:2},{x:27,y:2},{x:30,y:2},{x:24,y:5},{x:27,y:5},{x:30,y:5}];
+  learnDesks.forEach(d => {
+    ctx.fillStyle = '#131a2a';
+    ctx.fillRect(d.x*S, d.y*S, 2*S, S);
+    ctx.strokeStyle = 'rgba(76,140,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(d.x*S, d.y*S, 2*S, S);
+    // Mini screen
+    ctx.fillStyle = '#050812';
+    ctx.fillRect(d.x*S+4, d.y*S-8, S+4, 10);
+    ctx.strokeStyle = 'rgba(76,140,255,0.4)';
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(d.x*S+4, d.y*S-8, S+4, 10);
+  });
+  // Whiteboard
+  ctx.fillStyle = '#0d1530';
+  ctx.fillRect(23*S, 0, 13*S, S);
+  ctx.strokeStyle = 'rgba(76,140,255,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(23*S, 0, 13*S, S);
+  ctx.fillStyle = 'rgba(76,140,255,0.6)';
+  ctx.font = '8px "JetBrains Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('ACADEMI67 · НАВУЧАННЕ', 29.5*S, 14);
 
-    // Name tag
-    ctx.fillStyle = a.color;
-    ctx.globalAlpha = 0.9;
-    ctx.font = 'bold 8px JetBrains Mono, monospace';
+  // ── SERVER ROOM ──
+  SERVER_DESKS.forEach((d, i) => {
+    const mon = serverMonitors[i];
+    const t = officeTime;
+    // Server rack
+    ctx.fillStyle = '#0e1a0e';
+    ctx.fillRect(d.x*S, d.y*S, S+4, S*3);
+    ctx.strokeStyle = 'rgba(29,245,154,0.15)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(d.x*S, d.y*S, S+4, S*3);
+    // Monitor screen
+    const screenColor = mon.sparking
+      ? (Math.sin(t*0.3)*0.5+0.5 > 0.5 ? '#ff4d6d' : '#300010')
+      : '#051a05';
+    ctx.fillStyle = screenColor;
+    ctx.fillRect(d.x*S+3, d.y*S+3, S-2, 10);
+    // Glow
+    if (mon.sparking) {
+      const sg = ctx.createRadialGradient(d.x*S+S/2, d.y*S+8, 0, d.x*S+S/2, d.y*S+8, 20);
+      sg.addColorStop(0, 'rgba(255,77,109,0.3)');
+      sg.addColorStop(1, 'transparent');
+      ctx.fillStyle = sg; ctx.fillRect(d.x*S-10, d.y*S-10, S+24, 40);
+    } else {
+      const sg = ctx.createRadialGradient(d.x*S+S/2, d.y*S+8, 0, d.x*S+S/2, d.y*S+8, 18);
+      sg.addColorStop(0, 'rgba(29,245,154,0.2)');
+      sg.addColorStop(1, 'transparent');
+      ctx.fillStyle = sg; ctx.fillRect(d.x*S-8, d.y*S-5, S+20, 35);
+    }
+    // Agent info on monitor
+    const agentDef = AGENTS_DEF[i];
+    ctx.fillStyle = mon.sparking ? 'rgba(255,77,109,0.8)' : 'rgba(29,245,154,0.7)';
+    ctx.font = '5px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(a.name, (a.x+3)*S, (a.y+1)*S - 3);
-    ctx.globalAlpha = 1;
+    ctx.fillText(agentDef.name, d.x*S+S/2+2, d.y*S+10);
+    // Status dots
+    for (let j = 0; j < 3; j++) {
+      const dotColor = mon.sparking && j === Math.floor(t*0.1)%3 ? '#ff4d6d' : '#1df59a';
+      ctx.fillStyle = dotColor;
+      ctx.fillRect(d.x*S + 3 + j*6, d.y*S + 14, 4, 4);
+    }
+    // Version text
+    ctx.fillStyle = 'rgba(29,245,154,0.4)';
+    ctx.font = '4px "JetBrains Mono", monospace';
+    ctx.fillText('v4.1.2', d.x*S+S/2+2, d.y*S+22);
+  });
 
-    // Emoji
-    ctx.font = '11px serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(a.emoji, (a.x+3)*S, (a.y+0.9)*S);
+  // ── CAFE ──
+  // Coffee machine
+  ctx.fillStyle = '#1a1010';
+  ctx.fillRect(37*S, S, 3*S, 2*S);
+  ctx.strokeStyle = 'rgba(200,100,50,0.4)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(37*S, S, 3*S, 2*S);
+  ctx.fillStyle = 'rgba(200,100,50,0.6)';
+  ctx.font = '6px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('☕', 38.5*S, 2.2*S);
+  // Steam animation
+  const steamY = Math.sin(officeTime*0.05)*2;
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(38*S+4, S-4+steamY, 2, 4);
+  ctx.fillRect(38*S+10, S-6+steamY, 2, 6);
+
+  // Cafe tables
+  [{x:38,y:4},{x:40,y:8},{x:38,y:12}].forEach(t => {
+    ctx.fillStyle = '#1a1208';
+    ctx.beginPath();
+    ctx.arc(t.x*S+S, t.y*S+S, S*0.9, 0, Math.PI*2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(200,150,50,0.2)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
   });
 
   // Plants in corners
-  [[0,0],[41,0],[0,13],[41,13]].forEach(([x,y]) => {
-    ctx.fillStyle = COLORS.plant;
+  [[0,0],[20,0],[0,18],[20,18],[36,0],[48,0],[36,18],[48,18]].forEach(([x,y]) => {
+    ctx.fillStyle = '#0a1f0a';
     ctx.fillRect(x*S, y*S, 2*S, 2*S);
-    ctx.fillStyle = COLORS.plant2;
-    ctx.fillRect((x+0.5)*S, (y+0.5)*S, S, S);
-    ctx.fillStyle = '#2d5a2d';
     ctx.font = '14px serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🌿', (x+1)*S, (y+1.3)*S);
+    ctx.fillText('🌿', x*S+S, y*S+S+4);
   });
 
-  // LABS67 label
-  ctx.fillStyle = 'rgba(232,184,64,0.06)';
-  ctx.fillRect(15*S, 8*S, 13*S, 5*S);
-  ctx.fillStyle = 'rgba(232,184,64,0.15)';
-  ctx.font = 'bold 22px JetBrains Mono, monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('LABS67', 21.5*S, 11.5*S);
-  ctx.font = '9px JetBrains Mono, monospace';
-  ctx.fillStyle = 'rgba(232,184,64,0.4)';
-  ctx.fillText('// ГАЛОЎНЫ ОФІС', 21.5*S, 13*S);
+  // ── AGENTS ──
+  agents.forEach(agent => {
+    const px = agent.px, py = agent.py;
+    const col = agent.color;
 
-  // Animate screen flicker
-  const t = Date.now() / 1000;
-  agents.forEach((a, i) => {
-    const flicker = 0.05 + 0.03 * Math.sin(t * 2 + i);
-    ctx.fillStyle = a.color;
-    ctx.globalAlpha = flicker;
-    ctx.fillRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
-    ctx.globalAlpha = 1;
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(px+1, py+10, 8, 4, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // Body glow
+    const g = ctx.createRadialGradient(px, py, 0, px, py, 20);
+    g.addColorStop(0, col+'40');
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.fillRect(px-20, py-20, 40, 40);
+
+    // Body (pixel character top-down)
+    // Head
+    ctx.fillStyle = col;
+    ctx.fillRect(px-5, py-5, 10, 10);
+    // Body
+    ctx.fillStyle = col+'cc';
+    ctx.fillRect(px-6, py+5, 12, 8);
+    // Legs
+    const legOff = agent.frame === 0 ? 0 : 1;
+    ctx.fillStyle = col+'88';
+    ctx.fillRect(px-5, py+13, 4, 4+legOff);
+    ctx.fillRect(px+1, py+13, 4, 4-legOff);
+
+    // State indicator
+    if (agent.state === 'working') {
+      ctx.fillStyle = '#1df59a';
+      ctx.beginPath(); ctx.arc(px+7, py-7, 3, 0, Math.PI*2); ctx.fill();
+    } else if (agent.state === 'cafe') {
+      ctx.fillStyle = '#e8a820';
+      ctx.beginPath(); ctx.arc(px+7, py-7, 3, 0, Math.PI*2); ctx.fill();
+    } else if (agent.state === 'server') {
+      ctx.fillStyle = '#30dcff';
+      ctx.beginPath(); ctx.arc(px+7, py-7, 3, 0, Math.PI*2); ctx.fill();
+    }
+
+    // Name tag
+    ctx.font = 'bold 6px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = col;
+    ctx.fillText(agent.name, px, py-10);
+
+    // Speech bubble
+    if (agent.speechBubble && agent.speechTimer > 0) {
+      const bw = agent.speechBubble.length * 5 + 10;
+      ctx.fillStyle = 'rgba(10,10,20,0.92)';
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 1;
+      const bx = px - bw/2, by = py - 32;
+      ctx.fillRect(bx, by, bw, 14);
+      ctx.strokeRect(bx, by, bw, 14);
+      // Tail
+      ctx.fillStyle = 'rgba(10,10,20,0.92)';
+      ctx.beginPath();
+      ctx.moveTo(px-3, by+14);
+      ctx.lineTo(px+3, by+14);
+      ctx.lineTo(px, by+20);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = col;
+      ctx.stroke();
+      ctx.fillStyle = col;
+      ctx.font = '6px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(agent.speechBubble, px, by+10);
+    }
+  });
+
+  // Room labels overlay
+  const roomLabels = [
+    {x:1,y:19,text:'🖥️ РАБОЧЫ',color:'rgba(232,184,64,0.5)'},
+    {x:23,y:9,text:'📚 НАВУЧ.',color:'rgba(76,140,255,0.5)'},
+    {x:23,y:19,text:'⚙️ СЕРВЕР',color:'rgba(29,245,154,0.5)'},
+    {x:37,y:19,text:'☕ КАФЕ',color:'rgba(200,150,50,0.5)'},
+  ];
+  roomLabels.forEach(l => {
+    ctx.fillStyle = l.color;
+    ctx.font = '7px "JetBrains Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(l.text, l.x*S, l.y*S+S-4);
   });
 }
 
 function pingAgent(name) {
   const msgs = {
-    kai: 'Кай анлайн ⚡ — гатовы да задач',
-    alexey: 'Алексей — сістэмы і аперацыі 📋',
+    kai:     'Кай анлайн ⚡ — гатовы да задач',
+    alexey:  'Алексей — сістэмы і аперацыі 📋',
     gennady: 'Геннадый — дызайн і брэндынг 🎨',
     tatyana: 'Таццяна — аналітыка і дадзеныя 📊',
-    stepa: 'Сцёпа — код і архітэктура 💻',
+    stepa:   'Сцёпа — код і архітэктура 💻',
   };
   showToast(msgs[name] || 'Агент гатовы');
 }
 
-// Start animation loop for office
 let officeAnimFrame;
-function startOfficeAnim() {
+let lastT = 0;
+function startOfficeAnim(ts=0) {
+  const dt = Math.min(ts - lastT, 50);
+  lastT = ts;
+  updateAgents(dt > 0 ? dt/16 : 1);
   drawOffice();
   officeAnimFrame = requestAnimationFrame(startOfficeAnim);
 }

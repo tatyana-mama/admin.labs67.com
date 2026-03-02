@@ -211,6 +211,7 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
   </div>
   <div class="sb-section">
     <div class="sb-section-label">Сістэма</div>
+    <div class="sb-item" onclick="showPage('office')"><span class="ico">🏢</span> Офіс</div>
     <div class="sb-item" onclick="showPage('settings')"><span class="ico">⚙️</span> Налады</div>
     <div class="sb-item" onclick="showPage('deploy')"><span class="ico">🚀</span> Публікацыя</div>
   </div>
@@ -674,6 +675,7 @@ function showPage(id) {
   if (id === 'deploy') loadDeployStatus();
   if (id === 'activity') loadActivity();
   if (id === 'leads') loadLeads();
+  if (id === 'office') { stopOfficeAnim(); startOfficeAnim(); } else { stopOfficeAnim(); }
 }
 
 function selectSite(site, el) {
@@ -700,6 +702,181 @@ function showToast(msg, isErr=false) {
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+
+// ═══ OFFICE CANVAS ═══
+function drawOffice() {
+  const canvas = document.getElementById('officeCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const S = 20; // tile size
+
+  const COLORS = {
+    floor:    '#0e0e18',
+    floor2:   '#13131f',
+    wall:     '#1a1a28',
+    desk:     '#1e1a0e',
+    desk2:    '#2a2510',
+    screen:   '#030810',
+    glow_gold:'#e8b840',
+    glow_cyan:'#30dcff',
+    glow_green:'#1df59a',
+    glow_red: '#ff4d6d',
+    glow_blue:'#4c8cff',
+    plant:    '#1a3a1a',
+    plant2:   '#0d2b0d',
+    chair:    '#16161e',
+    carpet:   '#12101e',
+    border:   'rgba(255,255,255,0.04)',
+  };
+
+  function tile(x, y, color, alpha=1) {
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.fillRect(x*S, y*S, S, S);
+    ctx.globalAlpha = 1;
+  }
+  function border(x, y) {
+    ctx.strokeStyle = COLORS.border;
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(x*S+0.5, y*S+0.5, S-1, S-1);
+  }
+  function glow(x, y, color, r=18) {
+    const g = ctx.createRadialGradient(x*S+S/2,y*S+S/2,0,x*S+S/2,y*S+S/2,r);
+    g.addColorStop(0, color+'55');
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.fillRect(x*S-r, y*S-r, S+r*2, S+r*2);
+  }
+
+  // Floor
+  for (let x = 0; x < W/S; x++) for (let y = 0; y < H/S; y++) {
+    tile(x, y, (x+y)%2===0 ? COLORS.floor : COLORS.floor2);
+    border(x, y);
+  }
+
+  // Carpet center
+  ctx.fillStyle = COLORS.carpet;
+  ctx.globalAlpha = 0.5;
+  ctx.fillRect(6*S, 2*S, 31*S, 11*S);
+  ctx.globalAlpha = 1;
+
+  // Back wall hint
+  ctx.fillStyle = COLORS.wall;
+  ctx.globalAlpha = 0.3;
+  ctx.fillRect(0, 0, W, S);
+  ctx.globalAlpha = 1;
+
+  const agents = [
+    { x:2,  y:2, color: COLORS.glow_gold, emoji:'⚡', name:'КАЙ' },
+    { x:9,  y:2, color: COLORS.glow_blue, emoji:'📋', name:'АЛЕКСЕЙ' },
+    { x:16, y:2, color: COLORS.glow_red,  emoji:'🎨', name:'ГЕННАДЫЙ' },
+    { x:23, y:2, color: COLORS.glow_green,emoji:'📊', name:'ТАЦЦЯНА' },
+    { x:30, y:2, color: COLORS.glow_cyan, emoji:'💻', name:'СЦЁПА' },
+  ];
+
+  agents.forEach(a => {
+    // Desk glow
+    glow(a.x+1, a.y+1, a.color, 30);
+
+    // Desk surface (3x2)
+    ctx.fillStyle = COLORS.desk;
+    ctx.fillRect(a.x*S, (a.y+1)*S, 6*S, 2*S);
+    ctx.fillStyle = COLORS.desk2;
+    ctx.fillRect(a.x*S, (a.y+1)*S, 6*S, S*0.3);
+
+    // Monitor
+    ctx.fillStyle = COLORS.screen;
+    ctx.fillRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
+    // Screen glow
+    ctx.fillStyle = a.color;
+    ctx.globalAlpha = 0.15;
+    ctx.fillRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
+    ctx.globalAlpha = 1;
+    // Screen border
+    ctx.strokeStyle = a.color;
+    ctx.globalAlpha = 0.6;
+    ctx.lineWidth = 1;
+    ctx.strokeRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
+    ctx.globalAlpha = 1;
+
+    // Chair
+    ctx.fillStyle = COLORS.chair;
+    ctx.fillRect((a.x+2)*S, (a.y+3)*S, 2*S, 2*S);
+    ctx.strokeStyle = a.color;
+    ctx.globalAlpha = 0.2;
+    ctx.strokeRect((a.x+2)*S, (a.y+3)*S, 2*S, 2*S);
+    ctx.globalAlpha = 1;
+
+    // Name tag
+    ctx.fillStyle = a.color;
+    ctx.globalAlpha = 0.9;
+    ctx.font = 'bold 8px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(a.name, (a.x+3)*S, (a.y+1)*S - 3);
+    ctx.globalAlpha = 1;
+
+    // Emoji
+    ctx.font = '11px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(a.emoji, (a.x+3)*S, (a.y+0.9)*S);
+  });
+
+  // Plants in corners
+  [[0,0],[41,0],[0,13],[41,13]].forEach(([x,y]) => {
+    ctx.fillStyle = COLORS.plant;
+    ctx.fillRect(x*S, y*S, 2*S, 2*S);
+    ctx.fillStyle = COLORS.plant2;
+    ctx.fillRect((x+0.5)*S, (y+0.5)*S, S, S);
+    ctx.fillStyle = '#2d5a2d';
+    ctx.font = '14px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🌿', (x+1)*S, (y+1.3)*S);
+  });
+
+  // LABS67 label
+  ctx.fillStyle = 'rgba(232,184,64,0.06)';
+  ctx.fillRect(15*S, 8*S, 13*S, 5*S);
+  ctx.fillStyle = 'rgba(232,184,64,0.15)';
+  ctx.font = 'bold 22px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('LABS67', 21.5*S, 11.5*S);
+  ctx.font = '9px JetBrains Mono, monospace';
+  ctx.fillStyle = 'rgba(232,184,64,0.4)';
+  ctx.fillText('// ГАЛОЎНЫ ОФІС', 21.5*S, 13*S);
+
+  // Animate screen flicker
+  const t = Date.now() / 1000;
+  agents.forEach((a, i) => {
+    const flicker = 0.05 + 0.03 * Math.sin(t * 2 + i);
+    ctx.fillStyle = a.color;
+    ctx.globalAlpha = flicker;
+    ctx.fillRect((a.x+1)*S, a.y*S, 4*S, 1.5*S);
+    ctx.globalAlpha = 1;
+  });
+}
+
+function pingAgent(name) {
+  const msgs = {
+    kai: 'Кай анлайн ⚡ — гатовы да задач',
+    alexey: 'Алексей — сістэмы і аперацыі 📋',
+    gennady: 'Геннадый — дызайн і брэндынг 🎨',
+    tatyana: 'Таццяна — аналітыка і дадзеныя 📊',
+    stepa: 'Сцёпа — код і архітэктура 💻',
+  };
+  showToast(msgs[name] || 'Агент гатовы');
+}
+
+// Start animation loop for office
+let officeAnimFrame;
+function startOfficeAnim() {
+  drawOffice();
+  officeAnimFrame = requestAnimationFrame(startOfficeAnim);
+}
+function stopOfficeAnim() {
+  cancelAnimationFrame(officeAnimFrame);
 }
 
 // ═══ INIT ═══

@@ -421,6 +421,74 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
       <div class="panel-box">
         <div id="activity-log"><div class="empty-state"><span class="loader"></span> Загрузка...</div></div>
       </div>
+
+    <!-- OFFICE -->
+    <div class="page" id="page-office">
+      <div class="sec-hdr">
+        <div class="sec-hdr-title">Офіс <span class="tag">AI-каманда</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.52rem;color:var(--muted)">● Усе агенты анлайн</div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);margin-bottom:20px;overflow:hidden;position:relative;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);padding:12px 20px 6px;">// LABS67 · ГАЛОЎНЫ ОФІС · 2 ПАВЕРХ</div>
+        <canvas id="officeCanvas" width="1200" height="480" style="width:100%;display:block;image-rendering:pixelated;cursor:pointer"></canvas>
+        <div style="display:flex;gap:16px;padding:8px 20px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:0.46rem;color:var(--muted)">
+          <span><span style="color:var(--green)">●</span> Працуе</span>
+          <span><span style="color:#e8a820">●</span> Кафе</span>
+          <span><span style="color:var(--cyan)">●</span> Серверная</span>
+          <span><span style="color:var(--blue)">●</span> Навучанне</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px">
+        <div class="stat-card" style="border-color:rgba(232,184,64,0.3);cursor:pointer" onclick="pingAgent('kai')">
+          <div style="position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pdot 2s infinite"></div>
+          <div style="font-size:1.6rem;margin-bottom:6px">⚡</div>
+          <div style="font-size:0.88rem;font-weight:800;color:var(--gold)">Кай</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--muted);margin-bottom:6px">Галоўны · CEO</div>
+          <div style="font-size:0.7rem;color:var(--muted);line-height:1.5">Архітэктура, стратэгія</div>
+          <div style="margin-top:8px"><span class="badge badge-green">● Актыўны</span></div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(76,140,255,0.25);cursor:pointer;position:relative" onclick="pingAgent('alexey')">
+          <div style="position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px var(--blue);animation:pdot 2.3s infinite"></div>
+          <div style="font-size:1.6rem;margin-bottom:6px">📋</div>
+          <div style="font-size:0.88rem;font-weight:800;color:var(--blue)">Алексей</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--muted);margin-bottom:6px">COO · McKinsey</div>
+          <div style="font-size:0.7rem;color:var(--muted);line-height:1.5">Аперацыі, сістэмы</div>
+          <div style="margin-top:8px"><span class="badge badge-blue">● Гатовы</span></div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(255,77,109,0.25);cursor:pointer;position:relative" onclick="pingAgent('gennady')">
+          <div style="position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);animation:pdot 1.8s infinite"></div>
+          <div style="font-size:1.6rem;margin-bottom:6px">🎨</div>
+          <div style="font-size:0.88rem;font-weight:800;color:var(--red)">Геннадый</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--muted);margin-bottom:6px">CDO · Harvard</div>
+          <div style="font-size:0.7rem;color:var(--muted);line-height:1.5">Дызайн, брэндынг</div>
+          <div style="margin-top:8px"><span class="badge badge-red">● Гатовы</span></div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(29,245,154,0.25);cursor:pointer;position:relative" onclick="pingAgent('tatyana')">
+          <div style="position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pdot 2.5s infinite"></div>
+          <div style="font-size:1.6rem;margin-bottom:6px">📊</div>
+          <div style="font-size:0.88rem;font-weight:800;color:var(--green)">Таццяна</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--muted);margin-bottom:6px">Data Sci · Oxford</div>
+          <div style="font-size:0.7rem;color:var(--muted);line-height:1.5">Аналітыка, дадзеныя</div>
+          <div style="margin-top:8px"><span class="badge badge-green">● Гатовы</span></div>
+        </div>
+        <div class="stat-card" style="border-color:rgba(48,220,255,0.25);cursor:pointer;position:relative" onclick="pingAgent('stepa')">
+          <div style="position:absolute;top:10px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan);animation:pdot 2.1s infinite"></div>
+          <div style="font-size:1.6rem;margin-bottom:6px">💻</div>
+          <div style="font-size:0.88rem;font-weight:800;color:var(--cyan)">Сцёпа</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.42rem;color:var(--muted);margin-bottom:6px">Engineer · MIT</div>
+          <div style="font-size:0.7rem;color:var(--muted);line-height:1.5">Код, архітэктура</div>
+          <div style="margin-top:8px"><span class="badge" style="background:rgba(48,220,255,0.1);color:var(--cyan);border:1px solid rgba(48,220,255,0.2)">● Гатовы</span></div>
+        </div>
+      </div>
+      <div class="sec-hdr"><div class="sec-hdr-title">Апошняя актыўнасць</div></div>
+      <div class="panel-box">
+        <div class="activity-item"><div class="act-ico">⚡</div><div class="act-content"><div class="act-text"><strong>Кай</strong> — задэплоіў 5 сайтаў, пофіксіў i18n, наладзіў 3 скілы, зрабіў офіс</div><div class="act-time">Сёння · 17:49</div></div></div>
+        <div class="activity-item"><div class="act-ico">💻</div><div class="act-content"><div class="act-text"><strong>Сцёпа</strong> — аўдыт JS сінтаксісу, скрыпты deploy.py + audit.py + fix_apostrophes.py</div><div class="act-time">Сёння · 08:30</div></div></div>
+        <div class="activity-item"><div class="act-ico">🎨</div><div class="act-content"><div class="act-text"><strong>Геннадый</strong> — i18n 6 моў, lang-switcher дызайн, pixel art офіс</div><div class="act-time">28.02 · 04:35</div></div></div>
+        <div class="activity-item"><div class="act-ico">📊</div><div class="act-content"><div class="act-text"><strong>Таццяна</strong> — Supabase leads, RLS, аналітыка</div><div class="act-time">28.02 · 02:00</div></div></div>
+        <div class="activity-item"><div class="act-ico">📋</div><div class="act-content"><div class="act-text"><strong>Алексей</strong> — структура концерна, 5 сайтаў, архітэктура</div><div class="act-time">26.02 · старт</div></div></div>
+      </div>
+    </div>
     </div>
 
   </div>

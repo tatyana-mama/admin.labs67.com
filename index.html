@@ -996,8 +996,9 @@ function showPage(id) {
   if (id === 'deploy') loadDeployStatus();
   if (id === 'activity') loadActivity();
   if (id === 'leads') loadLeads();
+  stopOfficeAnim();
+  lastT = null;
   if (id === 'office') {
-    stopOfficeAnim();
     requestAnimationFrame(() => requestAnimationFrame(() => startOfficeAnim()));
   } else { stopOfficeAnim(); }
 }
@@ -1576,12 +1577,15 @@ function startOfficeAnim(ts) {
   if (lastT === null) lastT = ts;
   const dt = Math.min((ts - lastT) / 16, 3);
   lastT = ts;
-  updateAgents(dt > 0 ? dt : 1);
-  drawOffice();
+  try { updateAgents(dt > 0 ? dt : 1); } catch(e) {}
+  try { drawOffice(); } catch(e) {}
   officeAnimFrame = requestAnimationFrame(startOfficeAnim);
 }
 function stopOfficeAnim() {
-  cancelAnimationFrame(officeAnimFrame);
+  if (officeAnimFrame) {
+    cancelAnimationFrame(officeAnimFrame);
+    officeAnimFrame = null;
+  }
 }
 
 

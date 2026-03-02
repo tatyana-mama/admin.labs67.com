@@ -27,19 +27,13 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 html,body { height:100%; overflow:hidden; }
 body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; display:flex; }
-
-/* SIDEBAR */
 .sidebar {
   width:var(--sidebar); min-width:var(--sidebar);
   background:var(--bg2); border-right:1px solid var(--border);
   display:flex; flex-direction:column; height:100vh; overflow-y:auto;
   position:relative; z-index:10;
 }
-.sb-logo {
-  padding:20px 18px 16px;
-  border-bottom:1px solid var(--border);
-  display:flex; align-items:center; gap:10px;
-}
+.sb-logo { padding:20px 18px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
 .sb-logo-mark {
   width:28px; height:28px; min-width:28px;
   background:linear-gradient(135deg,var(--gold),var(--gold2));
@@ -50,12 +44,8 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
 .sb-logo-text { font-size:0.85rem; font-weight:800; letter-spacing:0.12em; }
 .sb-logo-text em { color:var(--gold); font-style:normal; }
 .sb-logo-sub { font-family:'JetBrains Mono',monospace; font-size:0.38rem; letter-spacing:0.2em; color:var(--muted); }
-
 .sb-section { padding:12px 0; border-bottom:1px solid var(--border); }
-.sb-section-label {
-  font-family:'JetBrains Mono',monospace; font-size:0.42rem; letter-spacing:0.28em;
-  text-transform:uppercase; color:var(--muted); padding:0 18px 8px;
-}
+.sb-section-label { font-family:'JetBrains Mono',monospace; font-size:0.42rem; letter-spacing:0.28em; text-transform:uppercase; color:var(--muted); padding:0 18px 8px; }
 .sb-item {
   display:flex; align-items:center; gap:10px;
   padding:8px 18px; cursor:pointer; transition:all 0.2s;
@@ -65,209 +55,102 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
 .sb-item:hover { color:var(--text); background:rgba(255,255,255,0.03); }
 .sb-item.active { color:var(--gold); background:rgba(232,184,64,0.06); border-left-color:var(--gold); }
 .sb-item .ico { font-size:0.9rem; width:18px; text-align:center; }
-.sb-item .badge {
-  margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:0.42rem;
-  padding:2px 6px; border-radius:2px; background:rgba(232,184,64,0.15); color:var(--gold);
-}
-
+.sb-item .badge { margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:0.42rem; padding:2px 6px; border-radius:2px; background:rgba(232,184,64,0.15); color:var(--gold); }
+.sb-item .badge-red { background:rgba(255,77,109,0.15); color:var(--red); }
 .sb-site-item {
   display:flex; align-items:center; gap:8px;
   padding:7px 18px 7px 28px; cursor:pointer; transition:all 0.2s;
-  font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.08em;
-  color:var(--muted);
+  font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.08em; color:var(--muted);
 }
 .sb-site-item:hover { color:var(--text); }
 .sb-site-item.active { color:var(--cyan); }
 .sb-site-dot { width:5px; height:5px; border-radius:50%; min-width:5px; }
-
-.sb-bottom {
-  margin-top:auto; padding:16px 18px;
-  border-top:1px solid var(--border);
-}
-.sb-user {
-  display:flex; align-items:center; gap:10px;
-}
-.sb-avatar {
-  width:28px; height:28px; border-radius:50%;
-  background:linear-gradient(135deg,var(--gold),var(--cyan));
-  display:flex; align-items:center; justify-content:center;
-  font-size:0.6rem; font-weight:700; color:#09090f;
-}
+.sb-bottom { margin-top:auto; padding:16px 18px; border-top:1px solid var(--border); }
+.sb-user { display:flex; align-items:center; gap:10px; }
+.sb-avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--cyan)); display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:700; color:#09090f; }
 .sb-uname { font-size:0.78rem; font-weight:600; }
 .sb-urole { font-family:'JetBrains Mono',monospace; font-size:0.42rem; letter-spacing:0.12em; color:var(--muted); }
-
-/* MAIN */
-.main {
-  flex:1; display:flex; flex-direction:column; overflow:hidden;
-}
-
-/* TOP BAR */
-.topbar {
-  height:52px; background:var(--bg2); border-bottom:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:0 28px; flex-shrink:0;
-}
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.topbar { height:52px; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 28px; flex-shrink:0; }
 .topbar-left { display:flex; align-items:center; gap:16px; }
-.topbar-breadcrumb {
-  font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em;
-  color:var(--muted); display:flex; align-items:center; gap:6px;
-}
+.topbar-breadcrumb { font-family:'JetBrains Mono',monospace; font-size:0.58rem; letter-spacing:0.12em; color:var(--muted); display:flex; align-items:center; gap:6px; }
 .topbar-breadcrumb span { color:var(--text); }
 .topbar-right { display:flex; align-items:center; gap:12px; }
-.tb-btn {
-  display:flex; align-items:center; gap:6px;
-  padding:6px 14px; border:1px solid var(--border2);
-  background:transparent; color:var(--muted);
-  font-family:'JetBrains Mono',monospace; font-size:0.52rem; letter-spacing:0.1em;
-  text-transform:uppercase; cursor:pointer; transition:all 0.2s;
-}
+.tb-btn { display:flex; align-items:center; gap:6px; padding:6px 14px; border:1px solid var(--border2); background:transparent; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:0.52rem; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
 .tb-btn:hover { border-color:var(--gold-dim); color:var(--gold); }
-.tb-btn-primary {
-  background:rgba(232,184,64,0.1); border-color:var(--gold-dim); color:var(--gold);
-}
+.tb-btn-primary { background:rgba(232,184,64,0.1); border-color:var(--gold-dim); color:var(--gold); }
 .tb-btn-primary:hover { background:rgba(232,184,64,0.18); }
 .online-indicator { display:flex; align-items:center; gap:6px; }
 .online-dot { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pdot 2.5s infinite; }
 @keyframes pdot { 0%,100%{opacity:1}50%{opacity:0.3} }
 .online-txt { font-family:'JetBrains Mono',monospace; font-size:0.52rem; letter-spacing:0.1em; color:var(--green); }
-
-/* CONTENT */
-.content {
-  flex:1; overflow-y:auto; padding:28px;
-}
-
-/* PAGE */
+.content { flex:1; overflow-y:auto; padding:28px; }
 .page { display:none; }
 .page.active { display:block; }
-
-/* CARDS GRID */
-.cards-grid {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px;
-}
-.stat-card {
-  background:var(--panel); border:1px solid var(--border); padding:20px;
-  transition:all 0.3s;
-}
+.cards-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
+.stat-card { background:var(--panel); border:1px solid var(--border); padding:20px; transition:all 0.3s; }
 .stat-card:hover { border-color:var(--border2); }
 .sc-label { font-family:'JetBrains Mono',monospace; font-size:0.48rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
 .sc-value { font-size:1.6rem; font-weight:800; color:var(--gold); line-height:1; margin-bottom:4px; }
 .sc-sub { font-family:'JetBrains Mono',monospace; font-size:0.5rem; letter-spacing:0.1em; color:var(--muted); }
 .sc-trend { display:flex; align-items:center; gap:4px; margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.5rem; }
 .trend-up { color:var(--green); }
-.trend-down { color:var(--red); }
-
-/* SECTION HEADER */
-.sec-hdr {
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:16px;
-}
-.sec-hdr-title {
-  font-size:1rem; font-weight:700; display:flex; align-items:center; gap:8px;
-}
-.sec-hdr-title .tag {
-  font-family:'JetBrains Mono',monospace; font-size:0.44rem; letter-spacing:0.2em;
-  text-transform:uppercase; padding:3px 8px; border:1px solid var(--border2);
-  color:var(--muted);
-}
-
-/* TABLE */
+.sec-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.sec-hdr-title { font-size:1rem; font-weight:700; display:flex; align-items:center; gap:8px; }
+.sec-hdr-title .tag { font-family:'JetBrains Mono',monospace; font-size:0.44rem; letter-spacing:0.2em; text-transform:uppercase; padding:3px 8px; border:1px solid var(--border2); color:var(--muted); }
 .admin-table { width:100%; border-collapse:collapse; margin-bottom:24px; }
-.admin-table th {
-  text-align:left; padding:10px 14px;
-  font-family:'JetBrains Mono',monospace; font-size:0.48rem; letter-spacing:0.2em;
-  text-transform:uppercase; color:var(--muted);
-  border-bottom:1px solid var(--border); background:var(--panel);
-}
-.admin-table td {
-  padding:11px 14px; border-bottom:1px solid var(--border);
-  font-size:0.85rem; vertical-align:middle;
-}
+.admin-table th { text-align:left; padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.48rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); background:var(--panel); }
+.admin-table td { padding:11px 14px; border-bottom:1px solid var(--border); font-size:0.85rem; vertical-align:middle; }
 .admin-table tr:hover td { background:rgba(255,255,255,0.02); }
 .admin-table tr:last-child td { border-bottom:none; }
-
-/* STATUS BADGES */
-.badge {
-  display:inline-flex; align-items:center; gap:4px;
-  font-family:'JetBrains Mono',monospace; font-size:0.46rem; letter-spacing:0.12em;
-  text-transform:uppercase; padding:3px 8px; border-radius:2px;
-}
+.badge { display:inline-flex; align-items:center; gap:4px; font-family:'JetBrains Mono',monospace; font-size:0.46rem; letter-spacing:0.12em; text-transform:uppercase; padding:3px 8px; border-radius:2px; }
 .badge-green { background:rgba(29,245,154,0.1); color:var(--green); border:1px solid rgba(29,245,154,0.2); }
 .badge-gold { background:rgba(232,184,64,0.1); color:var(--gold); border:1px solid rgba(232,184,64,0.2); }
 .badge-red { background:rgba(255,77,109,0.1); color:var(--red); border:1px solid rgba(255,77,109,0.2); }
 .badge-blue { background:rgba(76,140,255,0.1); color:var(--blue); border:1px solid rgba(76,140,255,0.2); }
-.badge-cyan { background:rgba(48,220,255,0.1); color:var(--cyan); border:1px solid rgba(48,220,255,0.2); }
-
-/* ACTION BUTTONS */
-.act-btn {
-  padding:5px 10px; border:1px solid var(--border);
-  background:transparent; color:var(--muted);
-  font-family:'JetBrains Mono',monospace; font-size:0.46rem;
-  letter-spacing:0.08em; cursor:pointer; transition:all 0.2s; margin-right:4px;
-}
+.act-btn { padding:5px 10px; border:1px solid var(--border); background:transparent; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:0.46rem; letter-spacing:0.08em; cursor:pointer; transition:all 0.2s; margin-right:4px; }
 .act-btn:hover { border-color:var(--gold-dim); color:var(--gold); }
 .act-btn.danger:hover { border-color:rgba(255,77,109,0.4); color:var(--red); }
-
-/* PANEL BOXES */
-.panel-box {
-  background:var(--panel); border:1px solid var(--border); padding:24px;
-  margin-bottom:16px;
-}
-.panel-box-title {
-  font-family:'JetBrains Mono',monospace; font-size:0.52rem; letter-spacing:0.22em;
-  text-transform:uppercase; color:var(--gold); margin-bottom:16px;
-  padding-bottom:12px; border-bottom:1px solid var(--border);
-}
-
-/* FORM ELEMENTS */
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.panel-box { background:var(--panel); border:1px solid var(--border); padding:24px; margin-bottom:16px; }
+.panel-box-title { font-family:'JetBrains Mono',monospace; font-size:0.52rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border); }
 .form-group { margin-bottom:14px; }
-.form-label {
-  display:block; font-family:'JetBrains Mono',monospace; font-size:0.48rem;
-  letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-bottom:6px;
-}
-.form-input, .form-select, .form-textarea {
-  width:100%; background:var(--panel2); border:1px solid var(--border);
-  color:var(--text); padding:9px 12px; font-family:'Syne',sans-serif; font-size:0.85rem;
-  outline:none; transition:all 0.2s;
-}
+.form-label { display:block; font-family:'JetBrains Mono',monospace; font-size:0.48rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.form-input, .form-select, .form-textarea { width:100%; background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:9px 12px; font-family:'Syne',sans-serif; font-size:0.85rem; outline:none; transition:all 0.2s; }
 .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--gold-dim); }
 .form-textarea { min-height:80px; resize:vertical; }
 .form-select { appearance:none; cursor:pointer; }
-
-/* LANG GRID */
-.lang-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;
-}
-.lang-card {
-  background:var(--panel2); border:1px solid var(--border); padding:14px;
-  cursor:pointer; transition:all 0.2s; position:relative;
-}
-.lang-card:hover { border-color:var(--border2); }
-.lang-card.active { border-color:var(--gold-dim); background:rgba(232,184,64,0.04); }
-.lang-card.base { border-color:rgba(29,245,154,0.3); background:rgba(29,245,154,0.03); }
-.lc-flag { font-size:1.4rem; margin-bottom:6px; display:block; }
-.lc-name { font-size:0.82rem; font-weight:600; margin-bottom:2px; }
-.lc-code {
-  font-family:'JetBrains Mono',monospace; font-size:0.44rem;
-  letter-spacing:0.18em; color:var(--muted);
-}
-.lc-status {
-  position:absolute; top:8px; right:8px;
-  width:8px; height:8px; border-radius:50%;
-}
-.lc-status.on { background:var(--green); box-shadow:0 0 5px var(--green); }
-.lc-status.base-mark { background:var(--gold); box-shadow:0 0 5px var(--gold); }
-
-/* SITES OVERVIEW */
+.tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:20px; }
+.tab { padding:10px 18px; font-family:'JetBrains Mono',monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; margin-bottom:-1px; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.activity-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+.activity-item:last-child { border-bottom:none; }
+.act-ico { width:28px; height:28px; min-width:28px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.75rem; }
+.act-content { flex:1; }
+.act-text { font-size:0.82rem; line-height:1.5; }
+.act-text strong { color:var(--gold); }
+.act-time { font-family:'JetBrains Mono',monospace; font-size:0.44rem; letter-spacing:0.1em; color:var(--muted); margin-top:2px; }
+.toast { position:fixed; bottom:24px; right:24px; background:var(--panel); border:1px solid rgba(29,245,154,0.3); padding:12px 20px; display:flex; align-items:center; gap:10px; opacity:0; transform:translateY(10px); transition:all 0.3s; z-index:999; }
+.toast.show { opacity:1; transform:translateY(0); }
+.toast-icon { font-size:1rem; }
+.toast-text { font-size:0.82rem; }
+.toast.err { border-color:rgba(255,77,109,0.4); }
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:none; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--panel); border:1px solid var(--border2); width:min(700px,94vw); max-height:88vh; overflow-y:auto; }
+.modal-header { padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.modal-title { font-size:1rem; font-weight:700; }
+.modal-close { background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+.modal-body { padding:24px; }
+.modal-footer { padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; }
+.price-row { display:grid; grid-template-columns:1fr 120px 120px 80px; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+.price-row:last-child { border-bottom:none; }
+.price-row-header { font-family:'JetBrains Mono',monospace; font-size:0.46rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); }
+.price-input { background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:7px 10px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; outline:none; width:100%; transition:border 0.2s; }
+.price-input:focus { border-color:var(--gold-dim); }
 .sites-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:24px; }
-.site-card {
-  background:var(--panel); border:1px solid var(--border); padding:20px;
-  position:relative; overflow:hidden; transition:all 0.3s; cursor:pointer;
-}
-.site-card::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  transform:scaleX(0); transition:transform 0.3s;
-}
+.site-card { background:var(--panel); border:1px solid var(--border); padding:20px; position:relative; overflow:hidden; transition:all 0.3s; cursor:pointer; }
+.site-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; transform:scaleX(0); transition:transform 0.3s; }
 .sc-dental::before { background:linear-gradient(90deg,var(--gold),var(--gold2)); }
 .sc-academi::before { background:linear-gradient(90deg,var(--green),#80ffcc); }
 .sc-trade::before { background:linear-gradient(90deg,var(--cyan),#80f0ff); }
@@ -279,103 +162,18 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
 .site-name { font-size:1rem; font-weight:700; }
 .site-url { font-family:'JetBrains Mono',monospace; font-size:0.5rem; letter-spacing:0.1em; color:var(--muted); margin-bottom:10px; }
 .site-stats { display:flex; gap:16px; }
-.site-stat { }
 .ss-num { font-size:1.1rem; font-weight:700; }
 .ss-label { font-family:'JetBrains Mono',monospace; font-size:0.42rem; letter-spacing:0.14em; color:var(--muted); }
-
-/* PRICE TABLE */
-.price-row { display:grid; grid-template-columns:1fr 120px 120px 80px; gap:12px; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
-.price-row:last-child { border-bottom:none; }
-.price-row-header { font-family:'JetBrains Mono',monospace; font-size:0.46rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); }
-.price-input { background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:7px 10px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; outline:none; width:100%; transition:border 0.2s; }
-.price-input:focus { border-color:var(--gold-dim); }
-.price-currency { font-family:'JetBrains Mono',monospace; font-size:0.52rem; color:var(--muted); }
-
-/* TRANSLATION TABLE */
-.trans-row { display:grid; grid-template-columns:140px 1fr; gap:12px; align-items:start; padding:8px 0; border-bottom:1px solid var(--border); }
-.trans-key { font-family:'JetBrains Mono',monospace; font-size:0.52rem; letter-spacing:0.08em; color:var(--cyan); padding-top:8px; }
-
-/* TABS */
-.tabs { display:flex; border-bottom:1px solid var(--border); margin-bottom:20px; }
-.tab {
-  padding:10px 18px; font-family:'JetBrains Mono',monospace; font-size:0.52rem;
-  letter-spacing:0.12em; text-transform:uppercase; color:var(--muted);
-  cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s;
-  margin-bottom:-1px;
-}
-.tab:hover { color:var(--text); }
-.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
-
-/* ACTIVITY FEED */
-.activity-item {
-  display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);
-}
-.activity-item:last-child { border-bottom:none; }
-.act-ico { width:28px; height:28px; min-width:28px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.75rem; }
-.act-content { flex:1; }
-.act-text { font-size:0.82rem; line-height:1.5; }
-.act-text strong { color:var(--gold); }
-.act-time { font-family:'JetBrains Mono',monospace; font-size:0.44rem; letter-spacing:0.1em; color:var(--muted); margin-top:2px; }
-
-/* SAVE BAR */
-.save-bar {
-  display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-  background:var(--panel); border:1px solid var(--gold-dim);
-  padding:12px 24px; display:flex; align-items:center; gap:16px;
-  box-shadow:0 0 40px rgba(0,0,0,0.5);
-  z-index:100;
-}
-.save-bar-text { font-size:0.82rem; color:var(--muted); }
-.save-bar-text strong { color:var(--gold); }
-.btn-save {
-  padding:8px 20px; background:linear-gradient(135deg,var(--gold),var(--gold2));
-  color:#09090f; font-weight:700; font-family:'JetBrains Mono',monospace;
-  font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase;
-  border:none; cursor:pointer; transition:all 0.2s;
-}
-.btn-save:hover { box-shadow:0 0 20px rgba(232,184,64,0.4); }
-
-/* TOAST */
-.toast {
-  position:fixed; bottom:24px; right:24px;
-  background:var(--panel); border:1px solid rgba(29,245,154,0.3);
-  padding:12px 20px; display:flex; align-items:center; gap:10px;
-  opacity:0; transform:translateY(10px); transition:all 0.3s;
-  z-index:999;
-}
-.toast.show { opacity:1; transform:translateY(0); }
-.toast-icon { color:var(--green); font-size:1rem; }
-.toast-text { font-size:0.82rem; }
-
-/* 2-COL LAYOUT */
-.two-col { display:grid; grid-template-columns:1fr 320px; gap:16px; }
-
-/* SCROLLBAR */
+.lead-status-new { color:var(--gold); }
+.lead-status-done { color:var(--green); }
+.lead-status-spam { color:var(--red); }
+.empty-state { text-align:center; padding:60px 20px; color:var(--muted); font-size:0.85rem; }
+.loader { display:inline-block; width:14px; height:14px; border:2px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; vertical-align:middle; margin-right:6px; }
+@keyframes spin { to{transform:rotate(360deg)} }
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
-
-/* MODAL */
-.modal-overlay {
-  position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200;
-  display:none; align-items:center; justify-content:center;
-}
-.modal-overlay.open { display:flex; }
-.modal {
-  background:var(--panel); border:1px solid var(--border2);
-  width:min(600px,90vw); max-height:80vh; overflow-y:auto;
-}
-.modal-header {
-  padding:18px 24px; border-bottom:1px solid var(--border);
-  display:flex; align-items:center; justify-content:space-between;
-}
-.modal-title { font-size:1rem; font-weight:700; }
-.modal-close { background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
-.modal-body { padding:24px; }
-.modal-footer {
-  padding:16px 24px; border-top:1px solid var(--border);
-  display:flex; justify-content:flex-end; gap:10px;
-}
+.two-col { display:grid; grid-template-columns:1fr 320px; gap:16px; }
 </style>
 </head>
 <body>
@@ -389,71 +187,33 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
       <div class="sb-logo-sub">Адміністрацыя</div>
     </div>
   </div>
-
   <div class="sb-section">
     <div class="sb-section-label">Галоўная</div>
-    <div class="sb-item active" onclick="showPage('dashboard')">
-      <span class="ico">⬛</span> Дашборд
-      <span class="badge">7 сайтаў</span>
+    <div class="sb-item active" onclick="showPage('dashboard')"><span class="ico">⬛</span> Дашборд</div>
+    <div class="sb-item" onclick="showPage('leads')">
+      <span class="ico">📩</span> Заяўкі
+      <span class="badge badge-red" id="leads-badge">...</span>
     </div>
-    <div class="sb-item" onclick="showPage('activity')">
-      <span class="ico">📋</span> Актыўнасць
-    </div>
+    <div class="sb-item" onclick="showPage('activity')"><span class="ico">📋</span> Актыўнасць</div>
   </div>
-
   <div class="sb-section">
     <div class="sb-section-label">Сайты</div>
-    <div class="sb-site-item active" onclick="selectSite('main')">
-      <div class="sb-site-dot" style="background:var(--gold)"></div> labs67.com
-    </div>
-    <div class="sb-site-item" onclick="selectSite('dental')">
-      <div class="sb-site-dot" style="background:var(--gold)"></div> dental.labs67.com
-    </div>
-    <div class="sb-site-item" onclick="selectSite('academi')">
-      <div class="sb-site-dot" style="background:var(--green)"></div> academi.labs67.com
-    </div>
-    <div class="sb-site-item" onclick="selectSite('trade')">
-      <div class="sb-site-dot" style="background:var(--cyan)"></div> trade.labs67.com
-    </div>
-    <div class="sb-site-item" onclick="selectSite('franchise')">
-      <div class="sb-site-dot" style="background:var(--red)"></div> franchise.labs67.com
-    </div>
+    <div class="sb-site-item active" onclick="selectSite('main',this)"><div class="sb-site-dot" style="background:var(--gold)"></div> labs67.com</div>
+    <div class="sb-site-item" onclick="selectSite('dental',this)"><div class="sb-site-dot" style="background:var(--gold)"></div> dental.labs67.com</div>
+    <div class="sb-site-item" onclick="selectSite('academi',this)"><div class="sb-site-dot" style="background:var(--green)"></div> academi.labs67.com</div>
+    <div class="sb-site-item" onclick="selectSite('trade',this)"><div class="sb-site-dot" style="background:var(--cyan)"></div> trade.labs67.com</div>
+    <div class="sb-site-item" onclick="selectSite('franchise',this)"><div class="sb-site-dot" style="background:var(--red)"></div> franchise.labs67.com</div>
   </div>
-
   <div class="sb-section">
     <div class="sb-section-label">Кантэнт</div>
-    <div class="sb-item" onclick="showPage('translations')">
-      <span class="ico">🌐</span> Пераклады
-    </div>
-    <div class="sb-item" onclick="showPage('prices')">
-      <span class="ico">💶</span> Цэны PLN / EUR
-    </div>
-    <div class="sb-item" onclick="showPage('pages')">
-      <span class="ico">📄</span> Старонкі
-    </div>
-    <div class="sb-item" onclick="showPage('nav')">
-      <span class="ico">🔗</span> Навігацыя
-    </div>
+    <div class="sb-item" onclick="showPage('prices')"><span class="ico">💶</span> Цэны PLN / EUR</div>
+    <div class="sb-item" onclick="showPage('nav')"><span class="ico">🔗</span> Навігацыя</div>
   </div>
-
-  <div class="sb-section">
-    <div class="sb-section-label">Мовы</div>
-    <div class="sb-item" onclick="showPage('languages')">
-      <span class="ico">🗣️</span> Кіраванне мовамі
-      <span class="badge">6 моў</span>
-    </div>
-  </div>
-
   <div class="sb-section">
     <div class="sb-section-label">Сістэма</div>
-    <div class="sb-item" onclick="showPage('settings')">
-      <span class="ico">⚙️</span> Налады
-    </div>
-    <div class="sb-item" onclick="showPage('deploy')">
-      <span class="ico">🚀</span> Публікацыя
-    </div>
+    <div class="sb-item" onclick="showPage('settings')"><span class="ico">⚙️</span> Налады</div>
+    <div class="sb-item" onclick="showPage('deploy')"><span class="ico">🚀</span> Публікацыя</div>
   </div>
-
   <div class="sb-bottom">
     <div class="sb-user">
       <div class="sb-avatar">A</div>
@@ -467,894 +227,498 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
 
 <!-- MAIN -->
 <div class="main">
-
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-left">
-      <div class="topbar-breadcrumb" id="breadcrumb">
-        LABS67 <span>/</span> <span>Дашборд</span>
-      </div>
+      <div class="topbar-breadcrumb" id="breadcrumb">LABS67 <span>/</span> <span>Дашборд</span></div>
     </div>
     <div class="topbar-right">
-      <div class="online-indicator">
-        <div class="online-dot"></div>
-        <span class="online-txt">Усе сайты актыўны</span>
-      </div>
+      <div class="online-indicator"><div class="online-dot"></div><span class="online-txt" id="online-txt">Праверка...</span></div>
       <button class="tb-btn" onclick="showPage('deploy')">🚀 Апублікаваць</button>
-      <button class="tb-btn tb-btn-primary" onclick="saveAll()">💾 Захаваць усё</button>
     </div>
   </div>
 
-  <!-- CONTENT -->
   <div class="content">
 
-    <!-- ═══════════════ DASHBOARD ═══════════════ -->
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="cards-grid">
         <div class="stat-card">
-          <div class="sc-label">Усяго сайтаў</div>
+          <div class="sc-label">Усяго заяўак</div>
+          <div class="sc-value" id="stat-total">—</div>
+          <div class="sc-sub">З усіх сайтаў</div>
+          <div class="sc-trend" id="stat-trend">Загрузка...</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">Новых сёння</div>
+          <div class="sc-value" id="stat-today">—</div>
+          <div class="sc-sub">Чакаюць апрацоўкі</div>
+          <div class="sc-trend"><span class="trend-up">● </span><span id="stat-new-count">—</span> new</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-label">Сайтаў актыўных</div>
           <div class="sc-value">5</div>
-          <div class="sc-sub">Усе актыўны</div>
-          <div class="sc-trend"><span class="trend-up">↑ 100%</span> uptime</div>
+          <div class="sc-sub">GitHub Pages</div>
+          <div class="sc-trend"><span style="color:var(--green)">✓</span> Усе онлайн</div>
         </div>
         <div class="stat-card">
-          <div class="sc-label">Мовы</div>
-          <div class="sc-value">6</div>
-          <div class="sc-sub">BY · EN · PL · UA · FR · DE · ES</div>
-          <div class="sc-trend"><span style="color:var(--green)">✓</span> Базавая: Беларуская</div>
-        </div>
-        <div class="stat-card">
-          <div class="sc-label">Валюты</div>
-          <div class="sc-value">PLN / EUR</div>
-          <div class="sc-sub">Польскі злоты + Еўра</div>
-          <div class="sc-trend"><span style="color:var(--gold)">1 EUR = 4.28 PLN</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="sc-label">Перакладоў</div>
-          <div class="sc-value" id="trans-count">148</div>
-          <div class="sc-sub">Радкоў кантэнту</div>
-          <div class="sc-trend"><span class="trend-up">↑</span> Без рускай мовы</div>
+          <div class="sc-label">Курс EUR/PLN</div>
+          <div class="sc-value" id="stat-rate">4.28</div>
+          <div class="sc-sub">Народны Банк Польшчы</div>
+          <div class="sc-trend"><span style="color:var(--gold)" id="rate-date">—</span></div>
         </div>
       </div>
 
       <div class="sec-hdr">
-        <div class="sec-hdr-title">Сайты концерну <span class="tag">5 доменаў</span></div>
-        <button class="tb-btn" onclick="showPage('pages')">Кіраваць старонкамі</button>
+        <div class="sec-hdr-title">Апошнія заяўкі <span class="tag">Supabase live</span></div>
+        <button class="tb-btn" onclick="showPage('leads')">Усе заяўкі →</button>
+      </div>
+      <div class="panel-box">
+        <table class="admin-table">
+          <thead><tr><th>Імя</th><th>Кірунак</th><th>Тэлефон</th><th>Статус</th><th>Дата</th><th>Дзеянні</th></tr></thead>
+          <tbody id="dashboard-leads-body"><tr><td colspan="6" class="empty-state"><span class="loader"></span> Загрузка...</td></tr></tbody>
+        </table>
       </div>
 
+      <div class="sec-hdr"><div class="sec-hdr-title">Сайты концерну</div></div>
       <div class="sites-grid">
-        <div class="site-card sc-main" onclick="selectSite('main');showPage('pages')">
-          <div class="site-card-header">
-            <div>
-              <div class="site-name">LABS67 <span style="color:var(--gold)">Галоўны</span></div>
-              <div class="site-url">labs67.com</div>
-            </div>
-            <span class="badge badge-green">● Актыўны</span>
-          </div>
-          <div class="site-stats">
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div>
-            <div class="site-stat"><div class="ss-num">4</div><div class="ss-label">Секцыі</div></div>
-            <div class="site-stat"><div class="ss-num" style="color:var(--green)">✓</div><div class="ss-label">Без RU</div></div>
-          </div>
+        <div class="site-card sc-main" onclick="selectSite('main');showPage('leads')">
+          <div class="site-card-header"><div><div class="site-name">LABS67 <span style="color:var(--gold)">Галоўны</span></div><div class="site-url">labs67.com</div></div><span class="badge badge-green">● Актыўны</span></div>
+          <div class="site-stats"><div class="site-stat"><div class="ss-num" id="count-main">—</div><div class="ss-label">Заяўак</div></div><div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div></div>
         </div>
-        <div class="site-card sc-dental" onclick="selectSite('dental');showPage('pages')">
-          <div class="site-card-header">
-            <div>
-              <div class="site-name">Dental<span style="color:var(--gold)">AI</span></div>
-              <div class="site-url">dental.labs67.com</div>
-            </div>
-            <span class="badge badge-green">● Актыўны</span>
-          </div>
-          <div class="site-stats">
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div>
-            <div class="site-stat"><div class="ss-num">6</div><div class="ss-label">Секцыі</div></div>
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">PLN/EUR</div><div class="ss-label">Цэны</div></div>
-          </div>
+        <div class="site-card sc-dental" onclick="selectSite('dental');showPage('leads')">
+          <div class="site-card-header"><div><div class="site-name">Dental<span style="color:var(--gold)">AI</span></div><div class="site-url">dental.labs67.com</div></div><span class="badge badge-green">● Актыўны</span></div>
+          <div class="site-stats"><div class="site-stat"><div class="ss-num" id="count-dental">—</div><div class="ss-label">Заяўак</div></div><div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div></div>
         </div>
-        <div class="site-card sc-academi" onclick="selectSite('academi');showPage('pages')">
-          <div class="site-card-header">
-            <div>
-              <div class="site-name">Academi<span style="color:var(--green)">67</span></div>
-              <div class="site-url">academi.labs67.com</div>
-            </div>
-            <span class="badge badge-green">● Актыўны</span>
-          </div>
-          <div class="site-stats">
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div>
-            <div class="site-stat"><div class="ss-num">5</div><div class="ss-label">Секцыі</div></div>
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">PLN/EUR</div><div class="ss-label">Цэны</div></div>
-          </div>
+        <div class="site-card sc-academi" onclick="selectSite('academi');showPage('leads')">
+          <div class="site-card-header"><div><div class="site-name">Academi<span style="color:var(--green)">67</span></div><div class="site-url">academi.labs67.com</div></div><span class="badge badge-green">● Актыўны</span></div>
+          <div class="site-stats"><div class="site-stat"><div class="ss-num" id="count-academi">—</div><div class="ss-label">Заяўак</div></div><div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div></div>
         </div>
-        <div class="site-card sc-trade" onclick="selectSite('trade');showPage('pages')">
-          <div class="site-card-header">
-            <div>
-              <div class="site-name">Trade<span style="color:var(--cyan)">AI</span></div>
-              <div class="site-url">trade.labs67.com</div>
-            </div>
-            <span class="badge badge-green">● Актыўны</span>
-          </div>
-          <div class="site-stats">
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div>
-            <div class="site-stat"><div class="ss-num">5</div><div class="ss-label">Секцыі</div></div>
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">PLN/EUR</div><div class="ss-label">Цэны</div></div>
-          </div>
+        <div class="site-card sc-trade" onclick="selectSite('trade');showPage('leads')">
+          <div class="site-card-header"><div><div class="site-name">Trade<span style="color:var(--cyan)">AI</span></div><div class="site-url">trade.labs67.com</div></div><span class="badge badge-green">● Актыўны</span></div>
+          <div class="site-stats"><div class="site-stat"><div class="ss-num" id="count-trade">—</div><div class="ss-label">Заяўак</div></div><div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div></div>
         </div>
-        <div class="site-card sc-franchise" onclick="selectSite('franchise');showPage('pages')" style="grid-column:span 2">
-          <div class="site-card-header">
-            <div>
-              <div class="site-name">Franchise<span style="color:var(--red)">67</span></div>
-              <div class="site-url">franchise.labs67.com</div>
-            </div>
-            <span class="badge badge-green">● Актыўны</span>
-          </div>
-          <div class="site-stats">
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div>
-            <div class="site-stat"><div class="ss-num">5</div><div class="ss-label">Секцыі</div></div>
-            <div class="site-stat"><div class="ss-num" style="color:var(--gold)">PLN/EUR</div><div class="ss-label">Цэны</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sec-hdr"><div class="sec-hdr-title">Апошнія змены</div></div>
-      <div class="panel-box">
-        <div class="activity-item">
-          <div class="act-ico">🌐</div>
-          <div class="act-content">
-            <div class="act-text">Выдалена <strong>руская мова</strong> з усіх сайтаў · базавая мова — <strong>Беларуская</strong></div>
-            <div class="act-time">зараз</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="act-ico">💶</div>
-          <div class="act-content">
-            <div class="act-text">Усе цэны сканвертаваны ў <strong>PLN і EUR</strong></div>
-            <div class="act-time">зараз</div>
-          </div>
-        </div>
-        <div class="activity-item">
-          <div class="act-ico">🔗</div>
-          <div class="act-content">
-            <div class="act-text">Усе <strong>5 сайтаў звязаны</strong> адзінай навігацыяй</div>
-            <div class="act-time">зараз</div>
-          </div>
+        <div class="site-card sc-franchise" onclick="selectSite('franchise');showPage('leads')" style="grid-column:span 2">
+          <div class="site-card-header"><div><div class="site-name">Franchise<span style="color:var(--red)">67</span></div><div class="site-url">franchise.labs67.com</div></div><span class="badge badge-green">● Актыўны</span></div>
+          <div class="site-stats"><div class="site-stat"><div class="ss-num" id="count-franchise">—</div><div class="ss-label">Заяўак</div></div><div class="site-stat"><div class="ss-num" style="color:var(--gold)">6</div><div class="ss-label">Моў</div></div></div>
         </div>
       </div>
     </div>
 
-    <!-- ═══════════════ LANGUAGES ═══════════════ -->
-    <div class="page" id="page-languages">
+    <!-- LEADS -->
+    <div class="page" id="page-leads">
       <div class="sec-hdr">
-        <div class="sec-hdr-title">Кіраванне мовамі <span class="tag">Без рускай</span></div>
-        <button class="tb-btn tb-btn-primary" onclick="showToast('Мовы захаваны')">💾 Захаваць</button>
-      </div>
-
-      <div class="panel-box">
-        <div class="panel-box-title">⚠️ Руская мова выключана назаўжды на ўсіх сайтах</div>
-        <p style="font-size:0.85rem;color:var(--muted);line-height:1.7">Базавая мова ўсіх сайтаў концерну — <strong style="color:var(--gold)">Беларуская</strong>. Руская мова цалкам выдалена з усіх 5 сайтаў і не будзе дададзена.</p>
-      </div>
-
-      <div class="lang-grid">
-        <div class="lang-card base">
-          <div class="lc-status base-mark"></div>
-          <span class="lc-flag">🇧🇾</span>
-          <div class="lc-name">Беларуская</div>
-          <div class="lc-code">BY · Базавая мова</div>
-          <div style="margin-top:8px"><span class="badge badge-gold">БАЗАВАЯ</span></div>
-        </div>
-        <div class="lang-card active" onclick="toggleLang(this)">
-          <div class="lc-status on"></div>
-          <span class="lc-flag">🇬🇧</span>
-          <div class="lc-name">English</div>
-          <div class="lc-code">EN · Актыўная</div>
-        </div>
-        <div class="lang-card active" onclick="toggleLang(this)">
-          <div class="lc-status on"></div>
-          <span class="lc-flag">🇵🇱</span>
-          <div class="lc-name">Polski</div>
-          <div class="lc-code">PL · Актыўная</div>
-        </div>
-        <div class="lang-card active" onclick="toggleLang(this)">
-          <div class="lc-status on"></div>
-          <span class="lc-flag">🇺🇦</span>
-          <div class="lc-name">Українська</div>
-          <div class="lc-code">UA · Актыўная</div>
-        </div>
-        <div class="lang-card active" onclick="toggleLang(this)">
-          <div class="lc-status on"></div>
-          <span class="lc-flag">🇫🇷</span>
-          <div class="lc-name">Français</div>
-          <div class="lc-code">FR · Актыўная</div>
-        </div>
-        <div class="lang-card active" onclick="toggleLang(this)">
-          <div class="lc-status on"></div>
-          <span class="lc-flag">🇩🇪</span>
-          <div class="lc-name">Deutsch</div>
-          <div class="lc-code">DE · Актыўная</div>
-        </div>
-        <div class="lang-card active" onclick="toggleLang(this)">
-          <div class="lc-status on"></div>
-          <span class="lc-flag">🇪🇸</span>
-          <div class="lc-name">Español</div>
-          <div class="lc-code">ES · Актыўная</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══════════════ PRICES ═══════════════ -->
-    <div class="page" id="page-prices">
-      <div class="sec-hdr">
-        <div class="sec-hdr-title">Цэны PLN / EUR <span class="tag">Усе сайты</span></div>
+        <div class="sec-hdr-title">Заяўкі <span class="tag" id="leads-site-label">Усе сайты</span></div>
         <div style="display:flex;gap:8px;align-items:center">
-          <select class="form-select" style="width:160px;font-size:0.72rem" onchange="filterSitePrices(this.value)">
-            <option value="all">Усе сайты</option>
+          <select class="form-select" style="width:160px;font-size:0.72rem" id="leads-filter-source" onchange="filterLeads()">
+            <option value="">Усе сайты</option>
+            <option value="main">labs67.com</option>
             <option value="dental">DentalAI</option>
             <option value="academi">Academi67</option>
             <option value="trade">TradeAI</option>
             <option value="franchise">Franchise67</option>
           </select>
-          <button class="tb-btn tb-btn-primary" onclick="savePrices()">💾 Захаваць цэны</button>
-        </div>
-      </div>
-
-      <!-- Курс валют -->
-      <div class="panel-box" style="margin-bottom:16px">
-        <div class="panel-box-title">Курс канвертацыі</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
-          <div class="form-group">
-            <label class="form-label">1 EUR = PLN</label>
-            <input class="form-input" id="eur-pln-rate" value="4.28" type="number" step="0.01" oninput="recalcAll()">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Аўтаканвертацыя</label>
-            <select class="form-select">
-              <option>Уключана</option>
-              <option>Выключана</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Аснова</label>
-            <select class="form-select">
-              <option>EUR → PLN</option>
-              <option>PLN → EUR</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- DentalAI Prices -->
-      <div class="panel-box" data-site="dental">
-        <div class="panel-box-title">🦷 DentalAI — Цэны на паслугі</div>
-        <div class="price-row price-row-header">
-          <div>Паслуга</div><div>EUR</div><div>PLN</div><div>Дзеянне</div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Кансультацыя</div><div style="font-size:0.72rem;color:var(--muted)">Першасны прыём</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="50" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="214" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">AI-дыягностыка</div><div style="font-size:0.72rem;color:var(--muted)">Поўны аналіз</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="120" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="514" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Лячэнне кары</div><div style="font-size:0.72rem;color:var(--muted)">1 зуб</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="80" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="342" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Імплант</div><div style="font-size:0.72rem;color:var(--muted)">Уключаючы каронку</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="1200" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="5136" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Адбельванне</div><div style="font-size:0.72rem;color:var(--muted)">Laser Pro</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="300" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="1284" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div style="margin-top:14px">
-          <button class="act-btn" onclick="addPriceRow('dental')">+ Дадаць паслугу</button>
-        </div>
-      </div>
-
-      <!-- Academi67 Prices -->
-      <div class="panel-box" data-site="academi">
-        <div class="panel-box-title">🎓 Academi67 — Цэны на навучанне</div>
-        <div class="price-row price-row-header">
-          <div>Праграма</div><div>EUR</div><div>PLN</div><div>Дзеянне</div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Базавы курс</div><div style="font-size:0.72rem;color:var(--muted)">3 месяцы</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="990" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="4237" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Прафесійная сертыфікацыя</div><div style="font-size:0.72rem;color:var(--muted)">6 месяцаў</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="2400" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="10272" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">LABS67 Master</div><div style="font-size:0.72rem;color:var(--muted)">12 месяцаў · усё ўключана</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="5500" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="23540" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-      </div>
-
-      <!-- Franchise67 Prices -->
-      <div class="panel-box" data-site="franchise">
-        <div class="panel-box-title">🏢 Franchise67 — Партнёрскія пакеты</div>
-        <div class="price-row price-row-header">
-          <div>Пакет</div><div>EUR</div><div>PLN</div><div>Дзеянне</div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Старт</div><div style="font-size:0.72rem;color:var(--muted)">Мінімальная клініка</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="25000" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="107000" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Стандарт</div><div style="font-size:0.72rem;color:var(--muted)">Поўная клініка</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="65000" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="278200" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-        <div class="price-row">
-          <div><div style="font-size:0.88rem;font-weight:600">Premium</div><div style="font-size:0.72rem;color:var(--muted)">Флагман + AI-інфраструктура</div></div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="150000" oninput="syncPrice(this,'eur')">€</div>
-          <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="642000" oninput="syncPrice(this,'pln')">zł</div>
-          <div><button class="act-btn">✏️</button></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══════════════ TRANSLATIONS ═══════════════ -->
-    <div class="page" id="page-translations">
-      <div class="sec-hdr">
-        <div class="sec-hdr-title">Пераклады <span class="tag">6 моў</span></div>
-        <div style="display:flex;gap:8px">
-          <select class="form-select" style="width:140px;font-size:0.72rem" id="trans-site-filter">
-            <option>Усе сайты</option>
-            <option>labs67.com</option>
-            <option>dental</option>
-            <option>academi</option>
-            <option>trade</option>
-            <option>franchise</option>
+          <select class="form-select" style="width:130px;font-size:0.72rem" id="leads-filter-status" onchange="filterLeads()">
+            <option value="">Усе статусы</option>
+            <option value="new">Новыя</option>
+            <option value="done">Апрацаваныя</option>
+            <option value="spam">Спам</option>
           </select>
-          <button class="tb-btn tb-btn-primary" onclick="showToast('Пераклады захаваны ва ўсіх сайтах')">💾 Захаваць</button>
+          <button class="tb-btn" onclick="loadLeads()">🔄 Абнавіць</button>
         </div>
       </div>
-
-      <div class="panel-box" style="margin-bottom:16px">
-        <div class="panel-box-title">⚠️ Статус перакладу</div>
-        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
-          <div style="text-align:center"><div style="font-size:1.4rem">🇧🇾</div><div style="font-size:0.72rem;color:var(--gold);margin-top:4px">BY</div><div style="font-size:0.65rem;color:var(--green)">Базавая · 100%</div></div>
-          <div style="text-align:center"><div style="font-size:1.4rem">🇬🇧</div><div style="font-size:0.72rem;color:var(--muted);margin-top:4px">EN</div><div style="font-size:0.65rem;color:var(--green)">98%</div></div>
-          <div style="text-align:center"><div style="font-size:1.4rem">🇵🇱</div><div style="font-size:0.72rem;color:var(--muted);margin-top:4px">PL</div><div style="font-size:0.65rem;color:var(--green)">97%</div></div>
-          <div style="text-align:center"><div style="font-size:1.4rem">🇺🇦</div><div style="font-size:0.72rem;color:var(--muted);margin-top:4px">UA</div><div style="font-size:0.65rem;color:var(--green)">96%</div></div>
-          <div style="text-align:center"><div style="font-size:1.4rem">🇫🇷</div><div style="font-size:0.72rem;color:var(--muted);margin-top:4px">FR</div><div style="font-size:0.65rem;color:var(--green)">95%</div></div>
-          <div style="text-align:center"><div style="font-size:1.4rem">🇩🇪</div><div style="font-size:0.72rem;color:var(--muted);margin-top:4px">DE</div><div style="font-size:0.65rem;color:var(--gold)">94%</div></div>
-        </div>
-      </div>
-
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab(this,'tab-hero')">Hero</div>
-        <div class="tab" onclick="switchTab(this,'tab-brands')">Брэнды</div>
-        <div class="tab" onclick="switchTab(this,'tab-nav')">Навігацыя</div>
-        <div class="tab" onclick="switchTab(this,'tab-footer')">Футэр</div>
-        <div class="tab" onclick="switchTab(this,'tab-forms')">Формы</div>
-      </div>
-
-      <div id="tab-hero" class="panel-box">
-        <div class="panel-box-title">Hero секцыя — Галоўная старонка</div>
-
-        <div style="margin-bottom:16px">
-          <div style="display:grid;grid-template-columns:120px repeat(6,1fr);gap:6px;margin-bottom:6px">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;letter-spacing:0.15em;color:var(--muted)">Ключ</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;text-align:center;color:var(--gold)">🇧🇾 BY</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;text-align:center;color:var(--muted)">🇬🇧 EN</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;text-align:center;color:var(--muted)">🇵🇱 PL</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;text-align:center;color:var(--muted)">🇺🇦 UA</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;text-align:center;color:var(--muted)">🇫🇷 FR</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;text-align:center;color:var(--muted)">🇩🇪 DE</div>
-          </div>
-          <div id="trans-rows">
-            <!-- Filled by JS -->
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-brands" class="panel-box" style="display:none">
-        <div class="panel-box-title">Брэнды — назвы і апісанні</div>
-        <div style="font-size:0.85rem;color:var(--muted)">Абярыце канкрэтны брэнд для рэдагавання перакладаў...</div>
-        <div style="display:flex;gap:8px;margin-top:14px">
-          <button class="act-btn" onclick="showToast('DentalAI пераклады адкрыты')">DentalAI</button>
-          <button class="act-btn" onclick="showToast('Academi67 пераклады адкрыты')">Academi67</button>
-          <button class="act-btn" onclick="showToast('TradeAI пераклады адкрыты')">TradeAI</button>
-          <button class="act-btn" onclick="showToast('Franchise67 пераклады адкрыты')">Franchise67</button>
-        </div>
-      </div>
-      <div id="tab-nav" class="panel-box" style="display:none">
-        <div class="panel-box-title">Навігацыя — агульная для ўсіх сайтаў</div>
-        <div id="nav-trans-rows"></div>
-      </div>
-      <div id="tab-footer" class="panel-box" style="display:none">
-        <div class="panel-box-title">Футэр</div>
-        <div style="font-size:0.85rem;color:var(--muted)">Рэдактар футэра</div>
-      </div>
-      <div id="tab-forms" class="panel-box" style="display:none">
-        <div class="panel-box-title">Формы зваротнай сувязі</div>
-        <div style="font-size:0.85rem;color:var(--muted)">Рэдактар форм</div>
+      <div class="panel-box" style="padding:0">
+        <table class="admin-table">
+          <thead><tr><th>Імя</th><th>Тэлефон</th><th>Email</th><th>Кірунак</th><th>Паведамленне</th><th>Мова</th><th>Статус</th><th>Дата</th><th>Дзеянні</th></tr></thead>
+          <tbody id="leads-table-body"><tr><td colspan="9" class="empty-state"><span class="loader"></span> Загрузка...</td></tr></tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ═══════════════ PAGES ═══════════════ -->
-    <div class="page" id="page-pages">
+    <!-- PRICES -->
+    <div class="page" id="page-prices">
       <div class="sec-hdr">
-        <div class="sec-hdr-title">Старонкі сайта <span class="tag" id="current-site-label">labs67.com</span></div>
-        <button class="tb-btn tb-btn-primary" onclick="openAddPageModal()">+ Новая старонка</button>
+        <div class="sec-hdr-title">Цэны PLN / EUR <span class="tag">Інфармацыйна</span></div>
       </div>
-
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Назва старонкі</th>
-            <th>URL</th>
-            <th>Статус</th>
-            <th>Мовы</th>
-            <th>Апошняе абнаўленне</th>
-            <th>Дзеянні</th>
-          </tr>
-        </thead>
-        <tbody id="pages-table-body">
-        </tbody>
-      </table>
+      <div class="panel-box" style="margin-bottom:16px">
+        <div class="panel-box-title">Бягучы курс (NBP)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+          <div class="form-group"><label class="form-label">1 EUR = PLN</label><input class="form-input" id="eur-pln-rate" value="..." readonly></div>
+          <div class="form-group"><label class="form-label">Крыніца</label><input class="form-input" value="api.nbp.pl" readonly></div>
+          <div class="form-group"><label class="form-label">Дата</label><input class="form-input" id="rate-date-input" value="..." readonly></div>
+        </div>
+      </div>
+      <div class="panel-box">
+        <div class="panel-box-title">🦷 DentalAI — Цэны</div>
+        <div class="price-row price-row-header"><div>Паслуга</div><div>EUR</div><div>PLN</div><div></div></div>
+        <div class="price-row"><div><b>Кансультацыя</b></div><div>50 €</div><div id="pr-consult-pln">214 zł</div><div></div></div>
+        <div class="price-row"><div><b>AI-дыягностыка</b></div><div>120 €</div><div id="pr-diag-pln">514 zł</div><div></div></div>
+        <div class="price-row"><div><b>Лячэнне кары</b></div><div>80 €</div><div id="pr-caries-pln">342 zł</div><div></div></div>
+        <div class="price-row"><div><b>Імплант</b></div><div>1200 €</div><div id="pr-impl-pln">5136 zł</div><div></div></div>
+        <div class="price-row"><div><b>Адбельванне</b></div><div>300 €</div><div id="pr-white-pln">1284 zł</div><div></div></div>
+      </div>
     </div>
 
-    <!-- ═══════════════ NAV ═══════════════ -->
+    <!-- NAV -->
     <div class="page" id="page-nav">
       <div class="sec-hdr">
-        <div class="sec-hdr-title">Навігацыя <span class="tag">Усе сайты звязаны</span></div>
-        <button class="tb-btn tb-btn-primary" onclick="showToast('Навігацыя захавана')">💾 Захаваць</button>
+        <div class="sec-hdr-title">Навігацыя <span class="tag">Агляд</span></div>
       </div>
-
       <div class="panel-box">
-        <div class="panel-box-title">Глабальная навігацыя — адлюстроўваецца на ўсіх сайтах</div>
-        <div id="nav-items">
-          <div class="price-row">
-            <div><input class="form-input" value="Кірункі" placeholder="Назва пункта"></div>
-            <div><input class="form-input" value="#brands" placeholder="URL"></div>
-            <div><select class="form-select"><option>Усе сайты</option><option>Толькі галоўны</option></select></div>
-            <div><button class="act-btn danger">✕</button></div>
-          </div>
-          <div class="price-row">
-            <div><input class="form-input" value="Стаматалогія" placeholder="Назва пункта"></div>
-            <div><input class="form-input" value="dental.labs67.com" placeholder="URL"></div>
-            <div><select class="form-select"><option>Усе сайты</option></select></div>
-            <div><button class="act-btn danger">✕</button></div>
-          </div>
-          <div class="price-row">
-            <div><input class="form-input" value="Адукацыя" placeholder="Назва пункта"></div>
-            <div><input class="form-input" value="academi.labs67.com" placeholder="URL"></div>
-            <div><select class="form-select"><option>Усе сайты</option></select></div>
-            <div><button class="act-btn danger">✕</button></div>
-          </div>
-          <div class="price-row">
-            <div><input class="form-input" value="Тэхналогіі" placeholder="Назва пункта"></div>
-            <div><input class="form-input" value="trade.labs67.com" placeholder="URL"></div>
-            <div><select class="form-select"><option>Усе сайты</option></select></div>
-            <div><button class="act-btn danger">✕</button></div>
-          </div>
-          <div class="price-row">
-            <div><input class="form-input" value="Франшыза" placeholder="Назва пункта"></div>
-            <div><input class="form-input" value="franchise.labs67.com" placeholder="URL"></div>
-            <div><select class="form-select"><option>Усе сайты</option></select></div>
-            <div><button class="act-btn danger">✕</button></div>
-          </div>
-          <div class="price-row">
-            <div><input class="form-input" value="Кантакты" placeholder="Назва пункта"></div>
-            <div><input class="form-input" value="#contact" placeholder="URL"></div>
-            <div><select class="form-select"><option>Усе сайты</option></select></div>
-            <div><button class="act-btn danger">✕</button></div>
-          </div>
-        </div>
-        <button class="act-btn" style="margin-top:14px" onclick="addNavItem()">+ Дадаць пункт</button>
-      </div>
-
-      <div class="panel-box">
-        <div class="panel-box-title">Міжсайтавыя спасылкі (Header → Footer)</div>
+        <div class="panel-box-title">Структура сайтаў</div>
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
           <div style="background:var(--panel2);border:1px solid rgba(232,184,64,0.2);padding:14px;text-align:center">
             <div style="font-size:0.75rem;font-weight:700;color:var(--gold)">labs67.com</div>
-            <div style="font-size:0.62rem;color:var(--muted);margin-top:4px">Галоўны</div>
-            <div style="margin-top:8px;font-size:0.6rem;color:var(--green)">↔ Усе 4</div>
+            <div style="font-size:0.55rem;color:var(--muted);margin-top:8px;line-height:1.8">DentalAI ↗<br>Academi67 ↗<br>TradeAI ↗<br>Franchise67 ↗</div>
           </div>
           <div style="background:var(--panel2);border:1px solid rgba(232,184,64,0.15);padding:14px;text-align:center">
             <div style="font-size:0.75rem;font-weight:700;color:var(--gold)">DentalAI</div>
-            <div style="font-size:0.62rem;color:var(--muted);margin-top:4px">dental.</div>
-            <div style="margin-top:8px;font-size:0.6rem;color:var(--green)">↔ Галоўны</div>
+            <div style="font-size:0.55rem;color:var(--muted);margin-top:8px;line-height:1.8">← LABS67<br>О клинике<br>Услуги<br>Запись</div>
           </div>
           <div style="background:var(--panel2);border:1px solid rgba(29,245,154,0.15);padding:14px;text-align:center">
             <div style="font-size:0.75rem;font-weight:700;color:var(--green)">Academi67</div>
-            <div style="font-size:0.62rem;color:var(--muted);margin-top:4px">academi.</div>
-            <div style="margin-top:8px;font-size:0.6rem;color:var(--green)">↔ Галоўны</div>
+            <div style="font-size:0.55rem;color:var(--muted);margin-top:8px;line-height:1.8">← LABS67<br>Треки<br>О нас<br>Контакт</div>
           </div>
           <div style="background:var(--panel2);border:1px solid rgba(48,220,255,0.15);padding:14px;text-align:center">
             <div style="font-size:0.75rem;font-weight:700;color:var(--cyan)">TradeAI</div>
-            <div style="font-size:0.62rem;color:var(--muted);margin-top:4px">trade.</div>
-            <div style="margin-top:8px;font-size:0.6rem;color:var(--green)">↔ Галоўны</div>
+            <div style="font-size:0.55rem;color:var(--muted);margin-top:8px;line-height:1.8">← LABS67<br>Продукты<br>Каталог<br>Контакт</div>
           </div>
           <div style="background:var(--panel2);border:1px solid rgba(255,77,109,0.15);padding:14px;text-align:center">
             <div style="font-size:0.75rem;font-weight:700;color:var(--red)">Franchise67</div>
-            <div style="font-size:0.62rem;color:var(--muted);margin-top:4px">franchise.</div>
-            <div style="margin-top:8px;font-size:0.6rem;color:var(--green)">↔ Галоўны</div>
+            <div style="font-size:0.55rem;color:var(--muted);margin-top:8px;line-height:1.8">← LABS67<br>Пакеты<br>Партнёры<br>Кантакт</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ═══════════════ SETTINGS ═══════════════ -->
+    <!-- SETTINGS -->
     <div class="page" id="page-settings">
-      <div class="sec-hdr">
-        <div class="sec-hdr-title">Налады сістэмы</div>
-        <button class="tb-btn tb-btn-primary" onclick="showToast('Налады захаваны')">💾 Захаваць</button>
-      </div>
-      <div class="two-col">
-        <div>
-          <div class="panel-box">
-            <div class="panel-box-title">Глабальныя налады</div>
-            <div class="form-group"><label class="form-label">Назва канцэрна</label><input class="form-input" value="LABS67"></div>
-            <div class="form-group"><label class="form-label">Галоўны дамен</label><input class="form-input" value="labs67.com"></div>
-            <div class="form-group"><label class="form-label">Базавая мова</label><select class="form-select"><option>Беларуская (BY)</option></select></div>
-            <div class="form-group"><label class="form-label">Руская мова</label><input class="form-input" value="НАЗАЎЖДЫ АДКЛЮЧАНА" disabled style="opacity:0.4;cursor:not-allowed"></div>
-            <div class="form-group"><label class="form-label">Email для формаў</label><input class="form-input" value="hello@labs67.com"></div>
-          </div>
-          <div class="panel-box">
-            <div class="panel-box-title">Валюты</div>
-            <div class="form-group"><label class="form-label">Асноўная валюта</label><select class="form-select"><option>EUR (Еўра)</option><option>PLN (Польскі злоты)</option></select></div>
-            <div class="form-group"><label class="form-label">Другасная валюта</label><select class="form-select"><option>PLN (Польскі злоты)</option><option>EUR (Еўра)</option></select></div>
-            <div class="form-group"><label class="form-label">Паказваць абедзве</label><select class="form-select"><option>Так — EUR + PLN</option><option>Толькі EUR</option><option>Толькі PLN</option></select></div>
-          </div>
-        </div>
-        <div>
-          <div class="panel-box">
-            <div class="panel-box-title">Інфармацыя аб сайтах</div>
-            <table class="admin-table">
-              <tr><td style="font-size:0.75rem">labs67.com</td><td><span class="badge badge-green">● Онлайн</span></td></tr>
-              <tr><td style="font-size:0.75rem">dental.labs67.com</td><td><span class="badge badge-green">● Онлайн</span></td></tr>
-              <tr><td style="font-size:0.75rem">academi.labs67.com</td><td><span class="badge badge-green">● Онлайн</span></td></tr>
-              <tr><td style="font-size:0.75rem">trade.labs67.com</td><td><span class="badge badge-green">● Онлайн</span></td></tr>
-              <tr><td style="font-size:0.75rem">franchise.labs67.com</td><td><span class="badge badge-green">● Онлайн</span></td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══════════════ DEPLOY ═══════════════ -->
-    <div class="page" id="page-deploy">
-      <div class="sec-hdr">
-        <div class="sec-hdr-title">Публікацыя <span class="tag">Усе сайты</span></div>
-      </div>
-      <div class="panel-box" style="border-color:rgba(232,184,64,0.2)">
-        <div class="panel-box-title">🚀 Апублікаваць змены</div>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;line-height:1.7">Усе змены будуць адначасова прымянены на ўсіх 5 сайтах канцэрна. Мовы: BY·EN·PL·UA·FR·DE·ES. Цэны: PLN + EUR.</p>
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px">
-          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem"><input type="checkbox" checked> labs67.com</label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem"><input type="checkbox" checked> dental.</label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem"><input type="checkbox" checked> academi.</label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem"><input type="checkbox" checked> trade.</label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem"><input type="checkbox" checked> franchise.</label>
-        </div>
-        <button class="btn-save" onclick="deployAll()" style="padding:12px 32px;font-size:0.65rem">🚀 АПУБЛІКАВАЦЬ УСЕ САЙТЫ</button>
-      </div>
-      <div class="panel-box" id="deploy-log" style="display:none">
-        <div class="panel-box-title">Лог публікацыі</div>
-        <div id="deploy-log-content" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;line-height:2;color:var(--green)"></div>
-      </div>
-    </div>
-
-    <!-- ═══════════════ ACTIVITY ═══════════════ -->
-    <div class="page" id="page-activity">
-      <div class="sec-hdr"><div class="sec-hdr-title">Гісторыя змен</div></div>
+      <div class="sec-hdr"><div class="sec-hdr-title">Налады сістэмы</div></div>
       <div class="panel-box">
-        <div id="activity-log">
-          <div class="activity-item"><div class="act-ico">🌐</div><div class="act-content"><div class="act-text">Выдалена <strong>руская мова</strong> з усіх 5 сайтаў</div><div class="act-time">Сёння · 07:34</div></div></div>
-          <div class="activity-item"><div class="act-ico">🇧🇾</div><div class="act-content"><div class="act-text">Базавая мова ўсіх сайтаў усталявана: <strong>Беларуская</strong></div><div class="act-time">Сёння · 07:34</div></div></div>
-          <div class="activity-item"><div class="act-ico">💶</div><div class="act-content"><div class="act-text">Усе цэны сканвертаваны ў <strong>PLN і EUR</strong></div><div class="act-time">Сёння · 07:34</div></div></div>
-          <div class="activity-item"><div class="act-ico">🔗</div><div class="act-content"><div class="act-text">Міжсайтавая навігацыя наладжана для ўсіх <strong>5 сайтаў</strong></div><div class="act-time">Сёння · 07:34</div></div></div>
-        </div>
+        <div class="panel-box-title">Падключэнні</div>
+        <div class="form-group"><label class="form-label">Supabase URL</label><input class="form-input" value="https://ctdleobjnzniqkqomlrq.supabase.co" readonly></div>
+        <div class="form-group"><label class="form-label">GitHub Org</label><input class="form-input" value="tatyana-mama" readonly></div>
+        <div class="form-group"><label class="form-label">Базавая мова</label><input class="form-input" value="Беларуская (BY)" readonly></div>
+        <div class="form-group"><label class="form-label">Статус Supabase</label><input class="form-input" id="sb-status" value="Праверка..." readonly></div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+    <!-- DEPLOY -->
+    <div class="page" id="page-deploy">
+      <div class="sec-hdr"><div class="sec-hdr-title">Публікацыя <span class="tag">GitHub Pages</span></div></div>
+      <div class="panel-box" style="border-color:rgba(232,184,64,0.2)">
+        <div class="panel-box-title">🚀 Статус рэпазіторыяў</div>
+        <table class="admin-table" id="deploy-status-table">
+          <thead><tr><th>Сайт</th><th>Апошні коміт</th><th>Апошняя дата</th><th>Статус</th></tr></thead>
+          <tbody id="deploy-table-body"><tr><td colspan="4" class="empty-state"><span class="loader"></span> Загрузка...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon">✓</span>
-  <span class="toast-text" id="toast-text">Захавана</span>
+    <!-- ACTIVITY -->
+    <div class="page" id="page-activity">
+      <div class="sec-hdr"><div class="sec-hdr-title">Гісторыя змен <span class="tag">GitHub commits</span></div></div>
+      <div class="panel-box">
+        <div id="activity-log"><div class="empty-state"><span class="loader"></span> Загрузка...</div></div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<!-- ADD PAGE MODAL -->
-<div class="modal-overlay" id="modal-addpage">
+<!-- LEAD DETAIL MODAL -->
+<div class="modal-overlay" id="modal-lead">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">Новая старонка</div>
-      <button class="modal-close" onclick="closeModal('modal-addpage')">✕</button>
+      <div class="modal-title" id="modal-lead-title">Заяўка</div>
+      <button class="modal-close" onclick="closeModal('modal-lead')">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="form-group"><label class="form-label">Назва старонкі (BY)</label><input class="form-input" placeholder="напр. Аб нас"></div>
-      <div class="form-group"><label class="form-label">URL Slug</label><input class="form-input" placeholder="about"></div>
-      <div class="form-group"><label class="form-label">Сайт</label><select class="form-select"><option>labs67.com</option><option>dental.labs67.com</option><option>academi.labs67.com</option><option>trade.labs67.com</option><option>franchise.labs67.com</option></select></div>
-      <div class="form-group"><label class="form-label">Статус</label><select class="form-select"><option>Апублікавана</option><option>Чарнавік</option></select></div>
-    </div>
+    <div class="modal-body" id="modal-lead-body"></div>
     <div class="modal-footer">
-      <button class="act-btn" onclick="closeModal('modal-addpage')">Адмена</button>
-      <button class="btn-save" onclick="closeModal('modal-addpage');showToast('Старонка створана')">Стварыць</button>
+      <button class="act-btn" onclick="closeModal('modal-lead')">Закрыць</button>
+      <button class="act-btn" id="modal-btn-spam" onclick="updateLeadStatus(currentLeadId,'spam')">Спам</button>
+      <button class="act-btn tb-btn-primary" id="modal-btn-done" onclick="updateLeadStatus(currentLeadId,'done')">✓ Апрацавана</button>
     </div>
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span class="toast-text" id="toast-text">Захавана</span>
+</div>
+
 <script>
-// ═══════════════════════════════════
-// DATA
-// ═══════════════════════════════════
-const SITES = {
-  main: { label:'labs67.com', color:'var(--gold)' },
-  dental: { label:'dental.labs67.com', color:'var(--gold)' },
-  academi: { label:'academi.labs67.com', color:'var(--green)' },
-  trade: { label:'trade.labs67.com', color:'var(--cyan)' },
-  franchise: { label:'franchise.labs67.com', color:'var(--red)' },
-};
+// ═══ CONFIG ═══
+const SB_URL = 'https://ctdleobjnzniqkqomlrq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0ZGxlb2JqbnpuaXFrcW9tbHJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMzE4MTEsImV4cCI6MjA4NzgwNzgxMX0.AMHtY7zGPemKYCxMy2bqRTOEAp8trA_Slor9wmg7C38';
+const GH_REPOS = ['labs67.com','dental.labs67.com','academi.labs67.com','trade.labs67.com','franchise.labs67.com'];
+const GH_ORG = 'tatyana-mama';
 
+let allLeads = [];
+let currentLeadId = null;
 let currentSite = 'main';
+let eurRate = 4.28;
 
-const TRANS_DATA = {
-  'hero.line1': { by:'Мы мяняем', en:'We are changing', pl:'Zmieniamy', ua:'Ми змінюємо', fr:'Nous transformons', de:'Wir verändern' },
-  'hero.line2': { by:'медыцыну', en:'medicine', pl:'medycynę', ua:'медицину', fr:'la médecine', de:'die Medizin' },
-  'hero.eyebrow': { by:'// Канцэрн · 4 кірункі · Медтэх', en:'// Concern · 4 Directions · MedTech', pl:'// Koncern · 4 kierunki · MedTech', ua:'// Концерн · 4 напрямки · Медтех', fr:'// Groupe · 4 directions · MedTech', de:'// Konzern · 4 Bereiche · MedTech' },
-  'hero.btn1': { by:'Нашы кірункі →', en:'Our directions →', pl:'Nasze kierunki →', ua:'Наші напрямки →', fr:'Nos directions →', de:'Unsere Bereiche →' },
-  'hero.sub': { by:'Тэхналагічны канцэрн новага пакалення', en:'Next-generation technology concern', pl:'Koncern technologiczny nowej generacji', ua:'Технологічний концерн нового покоління', fr:'Groupe technologique de nouvelle génération', de:'Technologiekonzern der nächsten Generation' },
-};
+// ═══ SUPABASE ═══
+async function sbFetch(path, opts={}) {
+  const r = await fetch(SB_URL + path, {
+    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', Prefer: 'return=representation', ...opts.headers },
+    ...opts
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
 
-const NAV_DATA = {
-  'nav.directions': { by:'Кірункі', en:'Directions', pl:'Kierunki', ua:'Напрямки', fr:'Directions', de:'Bereiche' },
-  'nav.contact': { by:'Кантакты', en:'Contact', pl:'Kontakt', ua:'Контакти', fr:'Contact', de:'Kontakt' },
-  'nav.cta': { by:'Звязацца', en:'Contact us', pl:'Skontaktuj się', ua:'Зв\'язатися', fr:'Nous contacter', de:'Kontaktieren' },
-  'nav.online': { by:'анлайн', en:'online', pl:'online', ua:'онлайн', fr:'en ligne', de:'online' },
-};
+async function loadLeads() {
+  try {
+    const data = await sbFetch('/rest/v1/leads?order=created_at.desc&limit=200');
+    allLeads = data;
+    renderLeadsTable(allLeads);
+    renderDashboardLeads(allLeads.slice(0,5));
+    updateStats(allLeads);
+    showToast('Заяўкі абноўлены · ' + allLeads.length + ' усяго');
+  } catch(e) {
+    showToast('Памылка Supabase: ' + e.message, true);
+    document.getElementById('leads-table-body').innerHTML = `<tr><td colspan="9" class="empty-state">Памылка загрузкі: ${e.message}</td></tr>`;
+  }
+}
 
-const PAGES_DATA = {
-  main: [
-    { name:'Галоўная старонка', url:'/', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Аб концерне', url:'/about', status:'draft', langs:4, updated:'01.03.2026' },
-    { name:'Кантакты', url:'/contact', status:'published', langs:6, updated:'02.03.2026' },
-  ],
-  dental: [
-    { name:'Галоўная', url:'/', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Паслугі', url:'/services', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Цэны', url:'/prices', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Кантакты', url:'/contact', status:'published', langs:6, updated:'02.03.2026' },
-  ],
-  academi: [
-    { name:'Галоўная', url:'/', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Праграмы', url:'/programs', status:'published', langs:5, updated:'01.03.2026' },
-    { name:'Запіс', url:'/apply', status:'published', langs:6, updated:'02.03.2026' },
-  ],
-  trade: [
-    { name:'Галоўная', url:'/', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Каталог', url:'/catalog', status:'draft', langs:3, updated:'28.02.2026' },
-  ],
-  franchise: [
-    { name:'Галоўная', url:'/', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Пакеты', url:'/packages', status:'published', langs:6, updated:'02.03.2026' },
-    { name:'Кантакты', url:'/contact', status:'published', langs:6, updated:'02.03.2026' },
-  ],
-};
+function updateStats(leads) {
+  document.getElementById('stat-total').textContent = leads.length;
+  const today = new Date().toISOString().slice(0,10);
+  const todayLeads = leads.filter(l => l.created_at && l.created_at.startsWith(today));
+  document.getElementById('stat-today').textContent = todayLeads.length;
+  const newCount = leads.filter(l => l.status === 'new').length;
+  document.getElementById('stat-new-count').textContent = newCount;
+  document.getElementById('leads-badge').textContent = newCount;
 
-// ═══════════════════════════════════
-// FUNCTIONS
-// ═══════════════════════════════════
+  // По сайтам
+  const sources = ['main','dental','academi','trade','franchise'];
+  sources.forEach(s => {
+    const el = document.getElementById('count-' + s);
+    if (el) el.textContent = leads.filter(l => l.source === s).length;
+  });
+}
+
+function renderLeadsTable(leads) {
+  const tbody = document.getElementById('leads-table-body');
+  if (!leads.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">Заяўак не знойдзена</td></tr>'; return; }
+  tbody.innerHTML = leads.map(l => {
+    const d = l.created_at ? new Date(l.created_at).toLocaleString('be') : '—';
+    const statusBadge = l.status === 'new' ? '<span class="badge badge-gold">● Новая</span>'
+      : l.status === 'done' ? '<span class="badge badge-green">✓ Гатова</span>'
+      : '<span class="badge badge-red">✕ Спам</span>';
+    const src = l.source || 'main';
+    const srcColor = {dental:'var(--gold)',academi:'var(--green)',trade:'var(--cyan)',franchise:'var(--red)',main:'var(--muted)'}[src]||'var(--muted)';
+    return `<tr>
+      <td style="font-weight:600">${esc(l.name||'—')}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">${esc(l.phone||'—')}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted)">${esc(l.email||'—')}</td>
+      <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:${srcColor}">${esc(src)}</span></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.78rem;color:var(--muted)">${esc(l.message||'—')}</td>
+      <td><span class="badge badge-blue">${(l.lang||'by').toUpperCase()}</span></td>
+      <td>${statusBadge}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted)">${d}</td>
+      <td><button class="act-btn" onclick="openLead('${l.id}')">👁 Глядзець</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDashboardLeads(leads) {
+  const tbody = document.getElementById('dashboard-leads-body');
+  if (!leads.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Заяўак пакуль няма</td></tr>'; return; }
+  tbody.innerHTML = leads.map(l => {
+    const d = l.created_at ? new Date(l.created_at).toLocaleDateString('be') : '—';
+    const statusBadge = l.status === 'new' ? '<span class="badge badge-gold">Новая</span>'
+      : l.status === 'done' ? '<span class="badge badge-green">Гатова</span>'
+      : '<span class="badge badge-red">Спам</span>';
+    return `<tr>
+      <td style="font-weight:600">${esc(l.name||'—')}</td>
+      <td style="font-size:0.75rem;color:var(--muted)">${esc(l.source||'main')}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">${esc(l.phone||'—')}</td>
+      <td>${statusBadge}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--muted)">${d}</td>
+      <td><button class="act-btn" onclick="openLead('${l.id}')">👁</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterLeads() {
+  const src = document.getElementById('leads-filter-source').value;
+  const st = document.getElementById('leads-filter-status').value;
+  const filtered = allLeads.filter(l =>
+    (!src || l.source === src) && (!st || l.status === st)
+  );
+  renderLeadsTable(filtered);
+}
+
+function openLead(id) {
+  const l = allLeads.find(x => x.id == id);
+  if (!l) return;
+  currentLeadId = id;
+  document.getElementById('modal-lead-title').textContent = 'Заяўка ад ' + (l.name||'—');
+  const d = l.created_at ? new Date(l.created_at).toLocaleString() : '—';
+  document.getElementById('modal-lead-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+      <div><div class="form-label">Імя</div><div style="font-size:0.9rem;font-weight:600">${esc(l.name||'—')}</div></div>
+      <div><div class="form-label">Тэлефон</div><div style="font-family:'JetBrains Mono',monospace">${esc(l.phone||'—')}</div></div>
+      <div><div class="form-label">Email</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem">${esc(l.email||'—')}</div></div>
+      <div><div class="form-label">Крыніца</div><div style="font-family:'JetBrains Mono',monospace">${esc(l.source||'—')}</div></div>
+      <div><div class="form-label">Мова</div><div><span class="badge badge-blue">${(l.lang||'by').toUpperCase()}</span></div></div>
+      <div><div class="form-label">Дата</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem">${d}</div></div>
+    </div>
+    <div class="form-group"><div class="form-label">Паведамленне</div><div style="background:var(--panel2);border:1px solid var(--border);padding:12px;font-size:0.85rem;line-height:1.6;min-height:60px">${esc(l.message||'—')}</div></div>
+    ${l.note ? `<div class="form-group"><div class="form-label">Нататка</div><div style="background:var(--panel2);border:1px solid var(--border);padding:12px;font-size:0.85rem">${esc(l.note)}</div></div>` : ''}
+  `;
+  document.getElementById('modal-lead').classList.add('open');
+}
+
+async function updateLeadStatus(id, status) {
+  try {
+    await sbFetch(`/rest/v1/leads?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+    const lead = allLeads.find(l => l.id == id);
+    if (lead) lead.status = status;
+    closeModal('modal-lead');
+    renderLeadsTable(allLeads);
+    renderDashboardLeads(allLeads.slice(0,5));
+    updateStats(allLeads);
+    showToast('Статус абноўлены: ' + status);
+  } catch(e) {
+    showToast('Памылка: ' + e.message, true);
+  }
+}
+
+// ═══ EXCHANGE RATE (NBP) ═══
+async function loadRate() {
+  try {
+    const r = await fetch('https://api.nbp.pl/api/exchangerates/rates/a/eur/?format=json');
+    const d = await r.json();
+    eurRate = d.rates[0].mid;
+    document.getElementById('stat-rate').textContent = eurRate.toFixed(4);
+    document.getElementById('rate-date').textContent = d.rates[0].effectiveDate;
+    document.getElementById('eur-pln-rate').value = eurRate.toFixed(4);
+    document.getElementById('rate-date-input').value = d.rates[0].effectiveDate;
+    updatePrices();
+  } catch(e) {
+    document.getElementById('stat-rate').textContent = '4.28';
+  }
+}
+
+function updatePrices() {
+  const prices = {consult:50, diag:120, caries:80, impl:1200, white:300};
+  Object.entries(prices).forEach(([k,v]) => {
+    const el = document.getElementById('pr-' + k + '-pln');
+    if (el) el.textContent = Math.round(v * eurRate) + ' zł';
+  });
+}
+
+// ═══ GITHUB ═══
+async function loadDeployStatus() {
+  const tbody = document.getElementById('deploy-table-body');
+  tbody.innerHTML = '';
+  for (const repo of GH_REPOS) {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${GH_ORG}/${repo}/commits?per_page=1`);
+      const commits = await r.json();
+      const c = commits[0];
+      const d = new Date(c.commit.author.date).toLocaleString();
+      const msg = c.commit.message.slice(0,60);
+      tbody.innerHTML += `<tr>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:0.72rem">${repo}</td>
+        <td style="font-size:0.78rem;color:var(--muted)">${esc(msg)}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted)">${d}</td>
+        <td><span class="badge badge-green">● Live</span></td>
+      </tr>`;
+    } catch(e) {
+      tbody.innerHTML += `<tr><td>${repo}</td><td colspan="2" style="color:var(--red);font-size:0.75rem">Памылка: ${e.message}</td><td><span class="badge badge-red">✕</span></td></tr>`;
+    }
+  }
+}
+
+async function loadActivity() {
+  const log = document.getElementById('activity-log');
+  log.innerHTML = '<div class="empty-state"><span class="loader"></span> Загрузка...</div>';
+  try {
+    const commits = [];
+    for (const repo of GH_REPOS.slice(0,2)) {
+      const r = await fetch(`https://api.github.com/repos/${GH_ORG}/${repo}/commits?per_page=5`);
+      const data = await r.json();
+      data.forEach(c => commits.push({ repo, msg: c.commit.message, date: c.commit.author.date }));
+    }
+    commits.sort((a,b) => new Date(b.date) - new Date(a.date));
+    log.innerHTML = commits.slice(0,15).map(c => {
+      const d = new Date(c.date).toLocaleString();
+      return `<div class="activity-item">
+        <div class="act-ico">🔀</div>
+        <div class="act-content">
+          <div class="act-text"><strong>${esc(c.repo)}</strong> — ${esc(c.msg.split('\n')[0].slice(0,80))}</div>
+          <div class="act-time">${d}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    log.innerHTML = `<div class="empty-state">Памылка: ${e.message}</div>`;
+  }
+}
+
+// ═══ UI ═══
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-
-  const labels = {
-    dashboard:'Дашборд', languages:'Мовы', prices:'Цэны PLN/EUR',
-    translations:'Пераклады', pages:'Старонкі', nav:'Навігацыя',
-    settings:'Налады', deploy:'Публікацыя', activity:'Актыўнасць'
-  };
+  document.getElementById('page-'+id)?.classList.add('active');
+  const labels = { dashboard:'Дашборд', leads:'Заяўкі', prices:'Цэны', nav:'Навігацыя', settings:'Налады', deploy:'Публікацыя', activity:'Актыўнасць' };
   document.getElementById('breadcrumb').innerHTML = `LABS67 <span>/</span> <span>${labels[id]||id}</span>`;
-
-  if (id === 'pages') renderPagesTable();
-  if (id === 'translations') renderTransTable();
+  if (id === 'deploy') loadDeployStatus();
+  if (id === 'activity') loadActivity();
+  if (id === 'leads') loadLeads();
 }
 
-function selectSite(site) {
+function selectSite(site, el) {
   currentSite = site;
   document.querySelectorAll('.sb-site-item').forEach(i => i.classList.remove('active'));
-  event && event.target && event.target.classList.add('active');
-  document.getElementById('current-site-label').textContent = SITES[site].label;
-  renderPagesTable();
+  if (el) el.classList.add('active');
+  const srcMap = { main:'main', dental:'dental', academi:'academi', trade:'trade', franchise:'franchise' };
+  document.getElementById('leads-filter-source').value = srcMap[site] || '';
+  filterLeads();
 }
 
-function renderPagesTable() {
-  const tbody = document.getElementById('pages-table-body');
-  const pages = PAGES_DATA[currentSite] || [];
-  tbody.innerHTML = pages.map(p => `
-    <tr>
-      <td style="font-weight:600">${p.name}</td>
-      <td><span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted)">${p.url}</span></td>
-      <td>${p.status==='published'
-        ? '<span class="badge badge-green">● Апублікавана</span>'
-        : '<span class="badge badge-gold">○ Чарнавік</span>'}</td>
-      <td><span class="badge badge-blue">${p.langs} моў</span></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--muted)">${p.updated}</td>
-      <td>
-        <button class="act-btn" onclick="showToast('Рэдактар адкрыты')">✏️ Рэдагаваць</button>
-        <button class="act-btn" onclick="showToast('Перакладач адкрыты')">🌐 Пераклады</button>
-        <button class="act-btn danger" onclick="showToast('Выдалена')">✕</button>
-      </td>
-    </tr>
-  `).join('');
-}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function renderTransTable() {
-  const container = document.getElementById('trans-rows');
-  const langs = ['by','en','pl','ua','fr','de'];
-  container.innerHTML = Object.entries(TRANS_DATA).map(([key, vals]) => `
-    <div style="display:grid;grid-template-columns:120px repeat(6,1fr);gap:6px;margin-bottom:6px;align-items:start">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--cyan);padding-top:8px;word-break:break-all">${key}</div>
-      ${langs.map(l => `<input class="form-input" style="font-size:0.72rem" value="${vals[l]||''}" oninput="markDirty()">`).join('')}
-    </div>
-  `).join('');
-
-  const navContainer = document.getElementById('nav-trans-rows');
-  navContainer.innerHTML = Object.entries(NAV_DATA).map(([key, vals]) => `
-    <div style="display:grid;grid-template-columns:120px repeat(6,1fr);gap:6px;margin-bottom:6px;align-items:start">
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.48rem;color:var(--cyan);padding-top:8px">${key}</div>
-      ${langs.map(l => `<input class="form-input" style="font-size:0.72rem" value="${vals[l]||''}" oninput="markDirty()">`).join('')}
-    </div>
-  `).join('');
-}
-
-function switchTab(el, tabId) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  ['tab-hero','tab-brands','tab-nav','tab-footer','tab-forms'].forEach(id => {
-    const el2 = document.getElementById(id);
-    if (el2) el2.style.display = id === tabId ? 'block' : 'none';
-  });
-}
-
-function toggleLang(card) {
-  if (card.classList.contains('base')) return;
-  card.classList.toggle('active');
-  const dot = card.querySelector('.lc-status');
-  dot.classList.toggle('on', card.classList.contains('active'));
-  markDirty();
-}
-
-function syncPrice(input, from) {
-  const rate = parseFloat(document.getElementById('eur-pln-rate').value) || 4.28;
-  const row = input.closest('.price-row');
-  const inputs = row.querySelectorAll('.price-input');
-  if (from === 'eur') {
-    inputs[1].value = Math.round(parseFloat(input.value) * rate);
-  } else {
-    inputs[0].value = (parseFloat(input.value) / rate).toFixed(2);
-  }
-  markDirty();
-}
-
-function recalcAll() {
-  document.querySelectorAll('.price-row:not(.price-row-header)').forEach(row => {
-    const inputs = row.querySelectorAll('.price-input');
-    if (inputs.length >= 2) {
-      const rate = parseFloat(document.getElementById('eur-pln-rate').value) || 4.28;
-      inputs[1].value = Math.round(parseFloat(inputs[0].value) * rate);
-    }
-  });
-}
-
-function filterSitePrices(site) {
-  document.querySelectorAll('[data-site]').forEach(el => {
-    el.style.display = (site === 'all' || el.dataset.site === site) ? 'block' : 'none';
-  });
-}
-
-function savePrices() { showToast('Цэны захаваны на ўсіх сайтах'); markClean(); }
-function saveAll() { showToast('Усе змены захаваны'); markClean(); }
-
-let dirty = false;
-function markDirty() { dirty = true; }
-function markClean() { dirty = false; }
-
-function showToast(msg) {
+let toastTimer;
+function showToast(msg, isErr=false) {
   const t = document.getElementById('toast');
   document.getElementById('toast-text').textContent = msg;
+  document.getElementById('toast-icon').textContent = isErr ? '✕' : '✓';
+  t.className = 'toast' + (isErr ? ' err' : '');
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-function openAddPageModal() {
-  document.getElementById('modal-addpage').classList.add('open');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function addNavItem() {
-  const container = document.getElementById('nav-items');
-  const div = document.createElement('div');
-  div.className = 'price-row';
-  div.innerHTML = `
-    <div><input class="form-input" placeholder="Назва пункта"></div>
-    <div><input class="form-input" placeholder="URL"></div>
-    <div><select class="form-select"><option>Усе сайты</option><option>Толькі галоўны</option></select></div>
-    <div><button class="act-btn danger" onclick="this.closest('.price-row').remove()">✕</button></div>
-  `;
-  container.appendChild(div);
+// ═══ INIT ═══
+async function init() {
+  // Supabase check
+  try {
+    await sbFetch('/rest/v1/leads?limit=1&select=id');
+    document.getElementById('online-txt').textContent = 'Supabase падключана';
+    document.getElementById('sb-status').value = 'Падключана ✓';
+  } catch(e) {
+    document.getElementById('online-txt').textContent = 'Памылка падключэння';
+    document.getElementById('online-txt').style.color = 'var(--red)';
+    document.getElementById('sb-status').value = 'Памылка: ' + e.message;
+  }
+
+  await Promise.all([loadLeads(), loadRate()]);
 }
 
-function addPriceRow(site) {
-  const box = document.querySelector(`[data-site="${site}"]`);
-  const div = document.createElement('div');
-  div.className = 'price-row';
-  div.innerHTML = `
-    <div><input class="form-input" style="font-size:0.82rem" placeholder="Назва паслугі"></div>
-    <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="0" oninput="syncPrice(this,'eur')">€</div>
-    <div style="display:flex;align-items:center;gap:6px"><input class="price-input" value="0" oninput="syncPrice(this,'pln')">zł</div>
-    <div><button class="act-btn danger" onclick="this.closest('.price-row').remove()">✕</button></div>
-  `;
-  box.querySelector('.act-btn').before(div);
-}
-
-let deployInterval;
-function deployAll() {
-  const log = document.getElementById('deploy-log');
-  const logContent = document.getElementById('deploy-log-content');
-  log.style.display = 'block';
-  const lines = [
-    '▶ Запуск публікацыі...',
-    '✓ Мовы: BY·EN·PL·UA·FR·DE·ES',
-    '✓ Выдалена: руская мова (RU)',
-    '✓ Цэны: PLN + EUR абноўлены',
-    '✓ labs67.com → апублікавана',
-    '✓ dental.labs67.com → апублікавана',
-    '✓ academi.labs67.com → апублікавана',
-    '✓ trade.labs67.com → апублікавана',
-    '✓ franchise.labs67.com → апублікавана',
-    '✓ Міжсайтавыя спасылкі актыўны',
-    '━━━━━━━━━━━━━━━━━━━━━',
-    '🚀 Публікацыя завершана паспяхова!',
-  ];
-  logContent.innerHTML = '';
-  let i = 0;
-  clearInterval(deployInterval);
-  deployInterval = setInterval(() => {
-    if (i < lines.length) {
-      logContent.innerHTML += lines[i] + '\n';
-      i++;
-    } else {
-      clearInterval(deployInterval);
-      showToast('Усе 5 сайтаў апублікаваны!');
-    }
-  }, 280);
-}
-
-// Init
-renderTransTable();
-renderPagesTable();
+init();
 </script>
 </body>
 </html>

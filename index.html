@@ -996,7 +996,7 @@ function showPage(id) {
   if (id === 'deploy') loadDeployStatus();
   if (id === 'activity') loadActivity();
   if (id === 'leads') loadLeads();
-  if (id === 'office') { stopOfficeAnim(); setTimeout(() => startOfficeAnim(), 50); } else { stopOfficeAnim(); }
+  if (id === 'office') { stopOfficeAnim(); requestAnimationFrame(() => setTimeout(() => startOfficeAnim(), 100)); } else { stopOfficeAnim(); }
 }
 
 function selectSite(site, el) {
@@ -1269,10 +1269,9 @@ function updateAgents(dt) {
 function drawOffice() {
   const canvas = document.getElementById('officeCanvas');
   if (!canvas) return;
+  if (canvas.offsetWidth === 0) { setTimeout(drawOffice, 100); return; }
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  // Убедимся что канвас видимый
-  if (canvas.offsetWidth === 0) return;
   ctx.imageSmoothingEnabled = false;
 
   // Background

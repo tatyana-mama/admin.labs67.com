@@ -743,7 +743,7 @@ function showPage(id) {
   if (id === 'deploy') loadDeployStatus();
   if (id === 'activity') loadActivity();
   if (id === 'leads') loadLeads();
-  if (id === 'office') { stopOfficeAnim(); startOfficeAnim(); } else { stopOfficeAnim(); }
+  if (id === 'office') { stopOfficeAnim(); setTimeout(() => startOfficeAnim(), 50); } else { stopOfficeAnim(); }
 }
 
 function selectSite(site, el) {
@@ -1017,6 +1017,9 @@ function drawOffice() {
   const canvas = document.getElementById('officeCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  // Убедимся что канвас видимый
+  if (canvas.offsetWidth === 0) return;
   ctx.imageSmoothingEnabled = false;
 
   // Background
@@ -1313,8 +1316,9 @@ function pingAgent(name) {
 }
 
 let officeAnimFrame;
-let lastT = 0;
+let lastT = null;
 function startOfficeAnim(ts=0) {
+  if (lastT === null) lastT = ts;
   const dt = Math.min(ts - lastT, 50);
   lastT = ts;
   updateAgents(dt > 0 ? dt/16 : 1);

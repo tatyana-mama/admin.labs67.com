@@ -996,7 +996,10 @@ function showPage(id) {
   if (id === 'deploy') loadDeployStatus();
   if (id === 'activity') loadActivity();
   if (id === 'leads') loadLeads();
-  if (id === 'office') { stopOfficeAnim(); requestAnimationFrame(() => setTimeout(() => startOfficeAnim(), 100)); } else { stopOfficeAnim(); }
+  if (id === 'office') {
+    stopOfficeAnim();
+    requestAnimationFrame(() => requestAnimationFrame(() => startOfficeAnim()));
+  } else { stopOfficeAnim(); }
 }
 
 function selectSite(site, el) {
@@ -1269,7 +1272,6 @@ function updateAgents(dt) {
 function drawOffice() {
   const canvas = document.getElementById('officeCanvas');
   if (!canvas) return;
-  if (canvas.offsetWidth === 0) { setTimeout(drawOffice, 100); return; }
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   ctx.imageSmoothingEnabled = false;
@@ -1569,11 +1571,12 @@ function pingAgent(name) {
 
 let officeAnimFrame;
 let lastT = null;
-function startOfficeAnim(ts=0) {
+function startOfficeAnim(ts) {
+  if (!ts) ts = performance.now();
   if (lastT === null) lastT = ts;
-  const dt = Math.min(ts - lastT, 50);
+  const dt = Math.min((ts - lastT) / 16, 3);
   lastT = ts;
-  updateAgents(dt > 0 ? dt/16 : 1);
+  updateAgents(dt > 0 ? dt : 1);
   drawOffice();
   officeAnimFrame = requestAnimationFrame(startOfficeAnim);
 }

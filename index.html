@@ -443,7 +443,7 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
       </div>
       <div style="background:var(--panel);border:1px solid var(--border);margin-bottom:20px;overflow:hidden;position:relative;">
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.44rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);padding:12px 20px 6px;">// LABS67 · ГАЛОЎНЫ ОФІС · 2 ПАВЕРХ</div>
-        <canvas id="officeCanvas" width="1200" height="480" style="width:100%;display:block;image-rendering:pixelated;cursor:pointer"></canvas>
+        <canvas id="officeCanvas" width="1280" height="480" style="width:100%;display:block;image-rendering:pixelated;cursor:pointer"></canvas>
         <div style="display:flex;gap:16px;padding:8px 20px;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:0.46rem;color:var(--muted)">
           <span><span style="color:var(--green)">●</span> Працуе</span>
           <span><span style="color:#e8a820">●</span> Кафе</span>
@@ -1045,15 +1045,15 @@ function esc(s) {
 
 
 // ═══ OFFICE CANVAS ═══
-const S = 24; // tile size px
-const W_TILES = 50, H_TILES = 20;
+const S = 32; // tile size px
+const W_TILES = 40, H_TILES = 15;
 
 // Rooms layout (tile coords)
 const ROOMS = {
-  work:    { x:0,  y:0,  w:22, h:20, label:'// РАБОЧЫ ПАКОЙ',  color:'#0e0e18' },
-  learn:   { x:22, y:0,  w:14, h:10, label:'// НАВУЧАННЕ',      color:'#0a0e18' },
-  server:  { x:22, y:10, w:14, h:10, label:'// СЕРВЕРНАЯ',      color:'#090e0a' },
-  cafe:    { x:36, y:0,  w:14, h:20, label:'// КАФЕ',           color:'#100e0a' },
+  work:    { x:0,  y:0,  w:18, h:15, label:'// РАБОЧЫ ПАКОЙ',  color:'#0e0e18' },
+  learn:   { x:18, y:0,  w:11, h:8,  label:'// НАВУЧАННЕ',      color:'#0a0e18' },
+  server:  { x:18, y:8,  w:11, h:7,  label:'// СЕРВЕРНАЯ',      color:'#090e0a' },
+  cafe:    { x:29, y:0,  w:11, h:15, label:'// КАФЕ',           color:'#100e0a' },
 };
 
 const PALETTE = {
@@ -1089,23 +1089,22 @@ const AGENTS_DEF = [
 
 // Desk positions (oval table in work room, around it)
 // Oval table center: tile 10,9
-const OVAL_CENTER = {x:10, y:9};
+const OVAL_CENTER = {x:8, y:7};
 const DESK_SEATS = [
-  {x:10,y:6,  dir:'down'},  // top seat
-  {x:7, y:8,  dir:'right'}, // left-top
-  {x:7, y:10, dir:'right'}, // left-bottom
-  {x:13,y:8,  dir:'left'},  // right-top
-  {x:13,y:10, dir:'left'},  // right-bottom
+  {x:8, y:4,  dir:'down'},
+  {x:5, y:6,  dir:'right'},
+  {x:5, y:8,  dir:'right'},
+  {x:11,y:6,  dir:'left'},
+  {x:11,y:8,  dir:'left'},
 ];
-// Kai seat at narrow end (bottom of oval)
-const KAI_SEAT = {x:10, y:12, dir:'up'};
+const KAI_SEAT = {x:8, y:10, dir:'up'};
 
 const SERVER_DESKS = [
-  {x:24,y:11},{x:26,y:11},{x:28,y:11},{x:30,y:11},{x:32,y:11},
+  {x:19,y:9},{x:21,y:9},{x:23,y:9},{x:25,y:9},{x:19,y:12},
 ];
 
 const CAFE_SEATS = [
-  {x:38,y:3},{x:41,y:3},{x:38,y:7},{x:41,y:7},{x:38,y:11},{x:41,y:11},
+  {x:30,y:2},{x:33,y:2},{x:30,y:6},{x:33,y:6},{x:30,y:10},{x:33,y:10},
 ];
 
 // State
@@ -1375,7 +1374,7 @@ function drawOffice() {
   });
 
   // ── LEARN ROOM: Desks + screen ──
-  const learnDesks = [{x:24,y:2},{x:27,y:2},{x:30,y:2},{x:24,y:5},{x:27,y:5},{x:30,y:5}];
+  const learnDesks = [{x:19,y:1},{x:22,y:1},{x:25,y:1},{x:19,y:4},{x:22,y:4},{x:25,y:4}];
   learnDesks.forEach(d => {
     ctx.fillStyle = '#131a2a';
     ctx.fillRect(d.x*S, d.y*S, 2*S, S);
@@ -1391,14 +1390,14 @@ function drawOffice() {
   });
   // Whiteboard
   ctx.fillStyle = '#0d1530';
-  ctx.fillRect(23*S, 0, 13*S, S);
+  ctx.fillRect(18*S, 0, 11*S, S);
   ctx.strokeStyle = 'rgba(76,140,255,0.5)';
   ctx.lineWidth = 1.5;
-  ctx.strokeRect(23*S, 0, 13*S, S);
+  ctx.strokeRect(18*S, 0, 11*S, S);
   ctx.fillStyle = 'rgba(76,140,255,0.6)';
   ctx.font = '8px "JetBrains Mono", monospace';
   ctx.textAlign = 'center';
-  ctx.fillText('ACADEMI67 · НАВУЧАННЕ', 29.5*S, 14);
+  ctx.fillText('ACADEMI67 · НАВУЧАННЕ', 23.5*S, 14);
 
   // ── SERVER ROOM ──
   SERVER_DESKS.forEach((d, i) => {
@@ -1449,14 +1448,14 @@ function drawOffice() {
   // ── CAFE ──
   // Coffee machine
   ctx.fillStyle = '#1a1010';
-  ctx.fillRect(37*S, S, 3*S, 2*S);
+  ctx.fillRect(30*S, S, 2*S, 2*S);
   ctx.strokeStyle = 'rgba(200,100,50,0.4)';
   ctx.lineWidth = 1;
-  ctx.strokeRect(37*S, S, 3*S, 2*S);
+  ctx.strokeRect(30*S, S, 2*S, 2*S);
   ctx.fillStyle = 'rgba(200,100,50,0.6)';
   ctx.font = '6px serif';
   ctx.textAlign = 'center';
-  ctx.fillText('☕', 38.5*S, 2.2*S);
+  ctx.fillText('☕', 31*S, 2.2*S);
   // Steam animation
   const steamY = Math.sin(officeTime*0.05)*2;
   ctx.fillStyle = 'rgba(255,255,255,0.15)';
@@ -1464,7 +1463,7 @@ function drawOffice() {
   ctx.fillRect(38*S+10, S-6+steamY, 2, 6);
 
   // Cafe tables
-  [{x:38,y:4},{x:40,y:8},{x:38,y:12}].forEach(t => {
+  [{x:30,y:3},{x:33,y:7},{x:30,y:10}].forEach(t => {
     ctx.fillStyle = '#1a1208';
     ctx.beginPath();
     ctx.arc(t.x*S+S, t.y*S+S, S*0.9, 0, Math.PI*2);
@@ -1475,7 +1474,7 @@ function drawOffice() {
   });
 
   // Plants in corners
-  [[0,0],[20,0],[0,18],[20,18],[36,0],[48,0],[36,18],[48,18]].forEach(([x,y]) => {
+  [[0,0],[16,0],[0,13],[16,13],[28,0],[38,0],[28,13],[38,13]].forEach(([x,y]) => {
     ctx.fillStyle = '#0a1f0a';
     ctx.fillRect(x*S, y*S, 2*S, 2*S);
     ctx.font = '14px serif';
@@ -1491,11 +1490,11 @@ function drawOffice() {
     // Shadow
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
-    ctx.ellipse(px+1, py+10, 8, 4, 0, 0, Math.PI*2);
+    ctx.ellipse(px+1, py+14, 11, 5, 0, 0, Math.PI*2);
     ctx.fill();
 
     // Body glow
-    const g = ctx.createRadialGradient(px, py, 0, px, py, 20);
+    const g = ctx.createRadialGradient(px, py, 0, px, py, 28);
     g.addColorStop(0, col+'40');
     g.addColorStop(1, 'transparent');
     ctx.fillStyle = g;
@@ -1504,65 +1503,65 @@ function drawOffice() {
     // Body (pixel character top-down)
     // Head
     ctx.fillStyle = col;
-    ctx.fillRect(px-5, py-5, 10, 10);
+    ctx.fillRect(px-7, py-7, 14, 14);
     // Body
     ctx.fillStyle = col+'cc';
-    ctx.fillRect(px-6, py+5, 12, 8);
+    ctx.fillRect(px-8, py+7, 16, 10);
     // Legs
-    const legOff = agent.frame === 0 ? 0 : 1;
+    const legOff = agent.frame === 0 ? 0 : 2;
     ctx.fillStyle = col+'88';
-    ctx.fillRect(px-5, py+13, 4, 4+legOff);
-    ctx.fillRect(px+1, py+13, 4, 4-legOff);
+    ctx.fillRect(px-7, py+17, 6, 6+legOff);
+    ctx.fillRect(px+1, py+17, 6, 6-legOff);
 
     // State indicator
     if (agent.state === 'working') {
       ctx.fillStyle = '#1df59a';
-      ctx.beginPath(); ctx.arc(px+7, py-7, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+9, py-9, 4, 0, Math.PI*2); ctx.fill();
     } else if (agent.state === 'cafe') {
       ctx.fillStyle = '#e8a820';
-      ctx.beginPath(); ctx.arc(px+7, py-7, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+9, py-9, 4, 0, Math.PI*2); ctx.fill();
     } else if (agent.state === 'server') {
       ctx.fillStyle = '#30dcff';
-      ctx.beginPath(); ctx.arc(px+7, py-7, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(px+9, py-9, 4, 0, Math.PI*2); ctx.fill();
     }
 
     // Name tag
-    ctx.font = 'bold 6px "JetBrains Mono", monospace';
+    ctx.font = 'bold 8px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillStyle = col;
-    ctx.fillText(agent.name, px, py-10);
+    ctx.fillText(agent.name, px, py-12);
 
     // Speech bubble
     if (agent.speechBubble && agent.speechTimer > 0) {
-      const bw = agent.speechBubble.length * 5 + 10;
-      ctx.fillStyle = 'rgba(10,10,20,0.92)';
+      const bw = agent.speechBubble.length * 7 + 16;
+      ctx.fillStyle = 'rgba(10,10,20,0.95)';
       ctx.strokeStyle = col;
-      ctx.lineWidth = 1;
-      const bx = px - bw/2, by = py - 32;
-      ctx.fillRect(bx, by, bw, 14);
-      ctx.strokeRect(bx, by, bw, 14);
+      ctx.lineWidth = 1.5;
+      const bx = px - bw/2, by = py - 40;
+      ctx.fillRect(bx, by, bw, 18);
+      ctx.strokeRect(bx, by, bw, 18);
       // Tail
-      ctx.fillStyle = 'rgba(10,10,20,0.92)';
+      ctx.fillStyle = 'rgba(10,10,20,0.95)';
       ctx.beginPath();
-      ctx.moveTo(px-3, by+14);
-      ctx.lineTo(px+3, by+14);
-      ctx.lineTo(px, by+20);
+      ctx.moveTo(px-4, by+18);
+      ctx.lineTo(px+4, by+18);
+      ctx.lineTo(px, by+26);
       ctx.closePath(); ctx.fill();
       ctx.strokeStyle = col;
       ctx.stroke();
       ctx.fillStyle = col;
-      ctx.font = '6px "JetBrains Mono", monospace';
+      ctx.font = 'bold 8px "JetBrains Mono", monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(agent.speechBubble, px, by+10);
+      ctx.fillText(agent.speechBubble, px, by+13);
     }
   });
 
   // Room labels overlay
   const roomLabels = [
-    {x:1,y:19,text:'🖥️ РАБОЧЫ',color:'rgba(232,184,64,0.5)'},
-    {x:23,y:9,text:'📚 НАВУЧ.',color:'rgba(76,140,255,0.5)'},
-    {x:23,y:19,text:'⚙️ СЕРВЕР',color:'rgba(29,245,154,0.5)'},
-    {x:37,y:19,text:'☕ КАФЕ',color:'rgba(200,150,50,0.5)'},
+    {x:1,y:14,text:'🖥️ РАБОЧЫ',color:'rgba(232,184,64,0.5)'},
+    {x:19,y:7,text:'📚 НАВУЧ.',color:'rgba(76,140,255,0.5)'},
+    {x:19,y:14,text:'⚙️ СЕРВЕР',color:'rgba(29,245,154,0.5)'},
+    {x:30,y:14,text:'☕ КАФЕ',color:'rgba(200,150,50,0.5)'},
   ];
   roomLabels.forEach(l => {
     ctx.fillStyle = l.color;

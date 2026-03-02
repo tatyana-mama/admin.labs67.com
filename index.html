@@ -1099,6 +1099,24 @@ const DESK_SEATS = [
 ];
 const KAI_SEAT = {x:6, y:8, dir:'up'};
 
+// Трекер занятых мест
+function isSeatTaken(seatX, seatY, excludeAgentId) {
+  return agents.some(a =>
+    a.id !== excludeAgentId &&
+    (a.state === 'working' || a.state === 'walking') &&
+    Math.abs(a.tx - (seatX * S + S/2)) < 4 &&
+    Math.abs(a.ty - (seatY * S + S/2)) < 4
+  );
+}
+
+function getFreeSeat(seats, agentId) {
+  return seats.find(s => !isSeatTaken(s.x, s.y, agentId));
+}
+
+function getCafeSeat(agentId) {
+  return CAFE_SEATS.find(s => !isSeatTaken(s.x, s.y, agentId));
+}
+
 const SERVER_DESKS = [
   {x:15,y:7},{x:17,y:7},{x:19,y:7},{x:21,y:7},{x:15,y:10},
 ];
@@ -1108,11 +1126,12 @@ const CAFE_SEATS = [
 ];
 
 // State
-let agents = AGENTS_DEF.map((def, i) => ({
+let agents = AGENTS_DEF.map((def, i) => {
+  const seat = def.boss ? KAI_SEAT : (DESK_SEATS[i] || DESK_SEATS[i % DESK_SEATS.length]);
+  return {
   ...def,
-  // pixel position (center)
-  px: (DESK_SEATS[i] ? DESK_SEATS[i].x : KAI_SEAT.x) * S + S/2,
-  py: (DESK_SEATS[i] ? DESK_SEATS[i].y : KAI_SEAT.y) * S + S/2,
+  px: seat.x * S + S/2,
+  py: seat.y * S + S/2,
   tx: 0, ty: 0,   // target
   state: 'working', // working | cafe | server | shout | walking
   stateTimer: Math.random() * 300,
@@ -1123,7 +1142,8 @@ let agents = AGENTS_DEF.map((def, i) => ({
   speechTimer: 0,
   frame: 0,
   frameTimer: 0,
-}));
+  }; // end return
+});
 
 // Server monitors - random sparking
 let serverMonitors = SERVER_DESKS.map((d, i) => ({
@@ -1236,28 +1256,50 @@ function updateAgents(dt) {
     // Normal agents
     const roll = Math.random();
     if (roll < 0.55) {
-      // Go work
-      const seatIdx = agent.workDeskIdx < DESK_SEATS.length ? agent.workDeskIdx : 0;
-      const freeSeat = DESK_SEATS.find((s,i) =>
-        !agents.some(a => a.id !== agent.id && a.state === 'working' &&
-          a.workDeskIdx === i)
-      );
-      const seat = freeSeat || DESK_SEATS[seatIdx % DESK_SEATS.length];
-      const si = DESK_SEATS.indexOf(seat);
-      agent.workDeskIdx = si >= 0 ? si : agent.workDeskIdx;
-      walkTo(agent, seat.x, seat.y);
-      agent.nextState = 'working';
-      agent.stateTimer = 200 + Math.random()*400;
+      // Go work — только свободные места
+      // Кай всегда на своём месте
+      if (agent.id === 'kai') {
+        if (!isSeatTaken(KAI_SEAT.x, KAI_SEAT.y, 'kai')) {
+          walkTo(agent, KAI_SEAT.x, KAI_SEAT.y);
+          agent.nextState = 'working';
+          agent.stateTimer = 300 + Math.random()*400;
+        } else {
+          agent.stateTimer = 30; // ждём
+        }
+      } else {
+        const freeSeat = getFreeSeat(DESK_SEATS, agent.id);
+        if (freeSeat) {
+          const si = DESK_SEATS.indexOf(freeSeat);
+          agent.workDeskIdx = si;
+          walkTo(agent, freeSeat.x, freeSeat.y);
+          agent.nextState = 'working';
+          agent.stateTimer = 200 + Math.random()*400;
+        } else {
+          // Нет свободных мест — идём в кафе подождать
+          const cafeSeat = getCafeSeat(agent.id);
+          if (cafeSeat) {
+            walkTo(agent, cafeSeat.x, cafeSeat.y);
+            agent.nextState = 'cafe';
+            agent.speechBubble = '⏳ жду стол...';
+            agent.speechTimer = 80;
+          }
+          agent.stateTimer = 60 + Math.random()*60;
+        }
+      }
     } else if (roll < 0.75) {
-      // Go cafe
-      const cafeSeat = CAFE_SEATS[Math.floor(Math.random()*CAFE_SEATS.length)];
-      walkTo(agent, cafeSeat.x, cafeSeat.y);
-      agent.nextState = 'cafe';
-      const phrases = ['☕ кава...','💬 як справы?','😴 хвілінка...','🍩 перапынак'];
-      agent.speechBubble = phrases[Math.floor(Math.random()*phrases.length)];
-      agent.speechTimer = 100;
-      agent.stateTimer = 150 + Math.random()*200;
-    } else if (roll < 0.9) {
+ // Go cafe — только свободное место
+      const freeCafe = getCafeSeat(agent.id);
+      if (freeCafe) {
+        walkTo(agent, freeCafe.x, freeCafe.y);
+        agent.nextState = 'cafe';
+        const phrases = ['☕ кава...','💬 як справы?','😴 хвілінка...','🍩 перапынак'];
+        agent.speechBubble = phrases[Math.floor(Math.random()*phrases.length)];
+        agent.speechTimer = 100;
+        agent.stateTimer = 150 + Math.random()*200;
+      } else {
+        agent.stateTimer = 40;
+      }
+      } else if (roll < 0.9) {
       // Fix server
       const brokenMonitor = serverMonitors.find(m => m.sparking && !m.fixedBy);
       if (brokenMonitor) {

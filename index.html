@@ -174,6 +174,16 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:2px; }
 .two-col { display:grid; grid-template-columns:1fr 320px; gap:16px; }
+
+.skill-card { background:var(--panel); border:1px solid var(--border); padding:14px; display:flex; gap:12px; align-items:flex-start; cursor:pointer; transition:border-color 0.2s; position:relative; }
+.skill-card:hover { border-color:var(--gold); }
+.skill-ready { border-left:2px solid var(--green); }
+.skill-missing { border-left:2px solid rgba(255,77,109,0.4); }
+.skill-priority { border-left:2px solid var(--gold) !important; }
+.skill-ico { font-size:1.4rem; min-width:28px; margin-top:2px; }
+.skill-name { font-size:0.82rem; font-weight:700; margin-bottom:3px; }
+.skill-desc { font-size:0.68rem; color:var(--muted); line-height:1.4; margin-bottom:6px; }
+
 </style>
 </head>
 <body>
@@ -212,6 +222,7 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
   <div class="sb-section">
     <div class="sb-section-label">Сістэма</div>
     <div class="sb-item" onclick="showPage('office')"><span class="ico">🏢</span> Офіс</div>
+        <div class="sb-item" onclick="showPage('skills')"><span class="ico">🧩</span> Скілы</div>
     <div class="sb-item" onclick="showPage('settings')"><span class="ico">⚙️</span> Налады</div>
     <div class="sb-item" onclick="showPage('deploy')"><span class="ico">🚀</span> Публікацыя</div>
   </div>
@@ -487,6 +498,248 @@ body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; d
         <div class="activity-item"><div class="act-ico">🎨</div><div class="act-content"><div class="act-text"><strong>Геннадый</strong> — i18n 6 моў, lang-switcher дызайн, pixel art офіс</div><div class="act-time">28.02 · 04:35</div></div></div>
         <div class="activity-item"><div class="act-ico">📊</div><div class="act-content"><div class="act-text"><strong>Таццяна</strong> — Supabase leads, RLS, аналітыка</div><div class="act-time">28.02 · 02:00</div></div></div>
         <div class="activity-item"><div class="act-ico">📋</div><div class="act-content"><div class="act-text"><strong>Алексей</strong> — структура концерна, 5 сайтаў, архітэктура</div><div class="act-time">26.02 · старт</div></div></div>
+      </div>
+    </div>
+
+    <!-- SKILLS PAGE -->
+    <div class="page" id="page-skills">
+      <div class="sec-hdr">
+        <div class="sec-hdr-title">Скілы <span class="tag">51 усяго · 15 гатовы</span></div>
+        <div style="display:flex;gap:8px">
+          <button class="tb-btn" onclick="filterSkills('all')">Усе</button>
+          <button class="tb-btn" onclick="filterSkills('ready')">✅ Гатовы</button>
+          <button class="tb-btn" onclick="filterSkills('missing')">⚠️ Не ўстаноўлены</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:4px" id="skills-grid">
+
+        <!-- READY SKILLS -->
+        <div class="skill-card skill-ready" onclick="window.open('https://clawhub.com','_blank')">
+          <div class="skill-ico">🔐</div>
+          <div class="skill-info">
+            <div class="skill-name">1password</div>
+            <div class="skill-desc">1Password CLI — сакрэты, інтэграцыя</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">📰</div>
+          <div class="skill-info">
+            <div class="skill-name">blogwatcher</div>
+            <div class="skill-desc">Маніторынг RSS/Atom стужак</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">♊️</div>
+          <div class="skill-info">
+            <div class="skill-name">gemini</div>
+            <div class="skill-desc">Gemini CLI — Q&A, рэзюмэ, генерацыя</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">📦</div>
+          <div class="skill-info">
+            <div class="skill-name">gh-issues</div>
+            <div class="skill-desc">GitHub Issues → PR аўтаматызацыя</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🐙</div>
+          <div class="skill-info">
+            <div class="skill-name">github</div>
+            <div class="skill-desc">GitHub: PR, CI, code review</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🛡️</div>
+          <div class="skill-info">
+            <div class="skill-name">healthcheck</div>
+            <div class="skill-desc">Аўдыт бяспекі хоста</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">📊</div>
+          <div class="skill-info">
+            <div class="skill-name">model-usage</div>
+            <div class="skill-desc">Статыстыка выкарыстання мадэляў</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🍌</div>
+          <div class="skill-info">
+            <div class="skill-name">nano-banana-pro</div>
+            <div class="skill-desc">Генерацыя выяў праз Gemini</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">📄</div>
+          <div class="skill-info">
+            <div class="skill-name">nano-pdf</div>
+            <div class="skill-desc">Рэдагаванне PDF праз натуральную мову</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🖼️</div>
+          <div class="skill-info">
+            <div class="skill-name">openai-image-gen</div>
+            <div class="skill-desc">Batch-генерацыя выяў праз DALL-E</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🎙️</div>
+          <div class="skill-info">
+            <div class="skill-name">openai-whisper</div>
+            <div class="skill-desc">Лакальны speech-to-text (Whisper)</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">☁️</div>
+          <div class="skill-info">
+            <div class="skill-name">openai-whisper-api</div>
+            <div class="skill-desc">Транскрыпцыя праз OpenAI API</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🧩</div>
+          <div class="skill-info">
+            <div class="skill-name">skill-creator</div>
+            <div class="skill-desc">Стварэнне і абнаўленне скілаў</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🎞️</div>
+          <div class="skill-info">
+            <div class="skill-name">video-frames</div>
+            <div class="skill-desc">Выманне кадраў з відэа (ffmpeg)</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+        <div class="skill-card skill-ready">
+          <div class="skill-ico">🌤️</div>
+          <div class="skill-info">
+            <div class="skill-name">weather</div>
+            <div class="skill-desc">Надвор'е і прагнозы</div>
+            <span class="badge badge-green">✅ Гатовы</span>
+          </div>
+        </div>
+
+        <!-- MISSING SKILLS — useful ones highlighted -->
+        <div class="skill-card skill-missing skill-priority">
+          <div class="skill-ico">🎮</div>
+          <div class="skill-info">
+            <div class="skill-name">gog <span style="font-size:0.6rem;color:var(--gold)">★ ПРЫЯРЫТЭТ</span></div>
+            <div class="skill-desc">Google Workspace: Gmail, Calendar, Drive</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing skill-priority">
+          <div class="skill-ico">📧</div>
+          <div class="skill-info">
+            <div class="skill-name">himalaya <span style="font-size:0.6rem;color:var(--gold)">★ ПРЫЯРЫТЭТ</span></div>
+            <div class="skill-desc">Email праз IMAP/SMTP (Gmail scoring)</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing skill-priority">
+          <div class="skill-ico">🧩</div>
+          <div class="skill-info">
+            <div class="skill-name">coding-agent <span style="font-size:0.6rem;color:var(--gold)">★ ПРЫЯРЫТЭТ</span></div>
+            <div class="skill-desc">Codex/Claude Code для кодынгу</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">💎</div>
+          <div class="skill-info">
+            <div class="skill-name">obsidian</div>
+            <div class="skill-desc">Праца з Obsidian vault</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">𝕏</div>
+          <div class="skill-info">
+            <div class="skill-name">xurl</div>
+            <div class="skill-desc">X (Twitter) API: посты, пошук, DM</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">📝</div>
+          <div class="skill-info">
+            <div class="skill-name">notion</div>
+            <div class="skill-desc">Notion API — старонкі і базы дадзеных</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">📦</div>
+          <div class="skill-info">
+            <div class="skill-name">clawhub</div>
+            <div class="skill-desc">Пошук і ўстаноўка скілаў з clawhub.com</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">📝</div>
+          <div class="skill-info">
+            <div class="skill-name">apple-notes</div>
+            <div class="skill-desc">Apple Notes праз memo CLI</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">⏰</div>
+          <div class="skill-info">
+            <div class="skill-name">apple-reminders</div>
+            <div class="skill-desc">Apple Reminders праз remindctl</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">🧾</div>
+          <div class="skill-info">
+            <div class="skill-name">summarize</div>
+            <div class="skill-desc">Сумарызацыя URL, падкастаў, файлаў</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">📜</div>
+          <div class="skill-info">
+            <div class="skill-name">session-logs</div>
+            <div class="skill-desc">Пошук у логах сесій праз jq</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">🎵</div>
+          <div class="skill-info">
+            <div class="skill-name">spotify-player</div>
+            <div class="skill-desc">Spotify праз тэрмінал</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
+        <div class="skill-card skill-missing">
+          <div class="skill-ico">💬</div>
+          <div class="skill-info">
+            <div class="skill-name">slack</div>
+            <div class="skill-desc">Кіраванне Slack з OpenClaw</div>
+            <span class="badge badge-red">⚠️ Не ўстаноўлены</span>
+          </div>
+        </div>
       </div>
     </div>
     </div>
@@ -1327,6 +1580,16 @@ function startOfficeAnim(ts=0) {
 }
 function stopOfficeAnim() {
   cancelAnimationFrame(officeAnimFrame);
+}
+
+
+function filterSkills(filter) {
+  const cards = document.querySelectorAll('.skill-card');
+  cards.forEach(card => {
+    if (filter === 'all') { card.style.display = ''; return; }
+    if (filter === 'ready') card.style.display = card.classList.contains('skill-ready') ? '' : 'none';
+    if (filter === 'missing') card.style.display = card.classList.contains('skill-missing') ? '' : 'none';
+  });
 }
 
 // ═══ INIT ═══

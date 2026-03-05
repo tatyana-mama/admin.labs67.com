@@ -435,124 +435,196 @@ function drawPlant(x, y) {
 }
 
 // ── DRAW SOUTH PARK CHARACTER ────────────────
+// South Park proportions: BIG round head (≈40% of total height),
+// short wide body, stubby legs, no visible neck.
+// Cartman (Кай) = extra chubby: wider body, bigger head.
 function drawSPChar(agent) {
   const {x, y, ch, state, animT, blink, sitting, name} = agent;
-  const bobY = (state===ST.WORK||state===ST.YOUTUBE||state===ST.PORN) ? Math.sin(animT)*1.2 : 0;
-  const lean = sitting ? 2 : 0; // lean forward when sitting
+  const isCartman = name === 'Кай';
+  const isKenny   = name === 'Геннадий';
 
-  // shadow
-  cx.fillStyle='rgba(0,0,0,0.35)';
-  cx.beginPath(); cx.ellipse(x, y+12, 10, 4, 0, 0, Math.PI*2); cx.fill();
+  const bobY = (state===ST.WORK||state===ST.YOUTUBE||state===ST.PORN)
+    ? Math.sin(animT) * 1.5 : 0;
 
-  // BODY / JACKET
-  // bottom (rounded rectangle body)
-  cx.fillStyle = ch.jacket;
+  // ── sizing ──
+  const headR  = isCartman ? 15 : 12;      // head radius
+  const bodyW  = isCartman ? 28 : 22;      // body width
+  const bodyH  = isCartman ? 22 : 18;      // body height
+  const legW   = isCartman ? 10 : 8;       // leg width
+  const legH   = 10;
+  const shoeR  = isCartman ? 7 : 5;
+
+  // baseline: feet at y+legH, body above, head above body
+  const feetY  = y + legH;
+  const bodyY  = feetY - bodyH;
+  const neckY  = bodyY;                    // SP chars have no visible neck
+  const headY  = neckY - headR - 1;       // center of head
+
+  cx.save();
+  cx.translate(0, bobY);
+
+  // ── shadow ──
+  cx.fillStyle = 'rgba(0,0,0,0.3)';
   cx.beginPath();
-  cx.roundRect(x-9, y-4+bobY+lean, 18, 16, [0,0,5,5]);
+  cx.ellipse(x, feetY + 4, bodyW/2 + 2, 4, 0, 0, Math.PI*2);
   cx.fill();
 
-  // jacket lapels
-  cx.fillStyle = shade(ch.jacket, -30);
-  cx.beginPath(); cx.moveTo(x, y-4+bobY+lean); cx.lineTo(x-4, y+2+bobY+lean); cx.lineTo(x, y+2+bobY+lean); cx.fill();
-  cx.beginPath(); cx.moveTo(x, y-4+bobY+lean); cx.lineTo(x+4, y+2+bobY+lean); cx.lineTo(x, y+2+bobY+lean); cx.fill();
-
-  // PANTS
-  cx.fillStyle = ch.pants;
-  cx.fillRect(x-8, y+9+bobY+lean, 7, 8);
-  cx.fillRect(x+1, y+9+bobY+lean, 7, 8);
-  // shoes
+  // ── SHOES ──
   cx.fillStyle = ch.shoes;
-  cx.beginPath(); cx.ellipse(x-5, y+18+bobY+lean, 5, 3, 0, 0, Math.PI*2); cx.fill();
-  cx.beginPath(); cx.ellipse(x+5, y+18+bobY+lean, 5, 3, 0, 0, Math.PI*2); cx.fill();
+  cx.beginPath(); cx.ellipse(x - legW/2 - 1, feetY + 2, shoeR, 4, 0, 0, Math.PI*2); cx.fill();
+  cx.beginPath(); cx.ellipse(x + legW/2 + 1, feetY + 2, shoeR, 4, 0, 0, Math.PI*2); cx.fill();
 
-  // NECK
+  // ── LEGS / PANTS ──
+  cx.fillStyle = ch.pants;
+  cx.beginPath();
+  cx.roundRect(x - bodyW/2 + 2, bodyY + bodyH - 2, legW, legH + 4, [0,0,3,3]);
+  cx.fill();
+  cx.beginPath();
+  cx.roundRect(x + bodyW/2 - legW - 2, bodyY + bodyH - 2, legW, legH + 4, [0,0,3,3]);
+  cx.fill();
+
+  // ── BODY / JACKET ──
+  cx.fillStyle = ch.jacket;
+  cx.beginPath();
+  cx.roundRect(x - bodyW/2, bodyY, bodyW, bodyH, [4, 4, 2, 2]);
+  cx.fill();
+
+  // jacket shading (left side darker)
+  cx.fillStyle = shade(ch.jacket, -25);
+  cx.beginPath();
+  cx.roundRect(x - bodyW/2, bodyY, bodyW/2, bodyH, [4, 0, 0, 2]);
+  cx.fill();
+
+  // jacket zipper line
+  cx.strokeStyle = shade(ch.jacket, -50);
+  cx.lineWidth = 1.5;
+  cx.beginPath();
+  cx.moveTo(x, bodyY + 3);
+  cx.lineTo(x, bodyY + bodyH - 3);
+  cx.stroke();
+
+  // Kenny parka face cover (scarf/hood strings)
+  if (isKenny) {
+    cx.fillStyle = ch.scarf || ch.jacket;
+    cx.fillRect(x - bodyW/2, bodyY, bodyW, 6);
+  }
+
+  // ── HEAD ──
+  // SP heads are slightly oval — taller than wide
   cx.fillStyle = ch.skin;
-  cx.fillRect(x-3, y-7+bobY, 6, 5);
+  cx.beginPath();
+  cx.ellipse(x, headY, headR, headR + 2, 0, 0, Math.PI*2);
+  cx.fill();
+  cx.strokeStyle = shade(ch.skin, -35);
+  cx.lineWidth = 1;
+  cx.stroke();
 
-  // HEAD (round, chubby for Cartman = agent Кай)
-  const headR = name==='Кай' ? 10 : 8;
-  cx.fillStyle = ch.skin;
-  cx.beginPath(); cx.arc(x, y-16+bobY, headR, 0, Math.PI*2); cx.fill();
+  // Kenny covers most of face with parka
+  if (isKenny) {
+    cx.fillStyle = ch.jacket;
+    // hood covers forehead + chin, only eyes show
+    cx.beginPath();
+    cx.ellipse(x, headY + 3, headR + 2, headR + 4, 0, 0, Math.PI*2);
+    cx.fill();
+    // face hole (oval cutout — skin visible only around eyes)
+    cx.fillStyle = ch.skin;
+    cx.beginPath();
+    cx.ellipse(x, headY + 2, headR - 3, 5, 0, 0, Math.PI*2);
+    cx.fill();
+  }
 
-  // face outline
-  cx.strokeStyle = shade(ch.skin, -40);
-  cx.lineWidth = 0.8; cx.stroke();
-
-  // HAT
-  // brim
+  // ── HAT ──
+  // brim (flat ellipse)
   cx.fillStyle = ch.hatBrim;
-  cx.beginPath(); cx.ellipse(x, y-23+bobY, headR+3, 3, 0, 0, Math.PI*2); cx.fill();
-  // body of hat
-  const hatH = name==='Кай' ? 9 : 8;
+  cx.beginPath();
+  cx.ellipse(x, headY - headR, headR + 4, 4, 0, 0, Math.PI*2);
+  cx.fill();
+
+  // hat body
+  const hatH = isCartman ? 14 : 12;
   cx.fillStyle = ch.hatTop;
-  cx.beginPath(); cx.roundRect(x-headR+1, y-23-hatH+bobY, (headR-1)*2, hatH+2, [4,4,0,0]); cx.fill();
+  cx.beginPath();
+  cx.roundRect(x - headR + 1, headY - headR - hatH, (headR - 1)*2, hatH + 2, [5,5,0,0]);
+  cx.fill();
+  // hat shading
+  cx.fillStyle = shade(ch.hatTop, -20);
+  cx.beginPath();
+  cx.roundRect(x - headR + 1, headY - headR - hatH, headR - 2, hatH + 2, [5,0,0,0]);
+  cx.fill();
+
   // pom-pom
   cx.fillStyle = ch.hatPom;
-  cx.beginPath(); cx.arc(x, y-23-hatH+bobY, 3, 0, Math.PI*2); cx.fill();
+  cx.beginPath();
+  cx.arc(x, headY - headR - hatH, 4, 0, Math.PI*2);
+  cx.fill();
 
   // earflaps
   if (ch.earflap) {
     cx.fillStyle = ch.hatTop;
-    cx.beginPath(); cx.ellipse(x-headR-1, y-19+bobY, 3, 5, -0.3, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.ellipse(x+headR+1, y-19+bobY, 3, 5, 0.3, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(x - headR - 2, headY - headR + 4, 4, 7, -0.2, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(x + headR + 2, headY - headR + 4, 4, 7,  0.2, 0, Math.PI*2); cx.fill();
   }
 
-  // scarf (Kenny)
-  if (ch.scarf) {
-    cx.fillStyle = ch.scarf;
-    cx.fillRect(x-9, y-6+bobY, 18, 4);
-    cx.fillStyle = shade(ch.scarf, -20);
-    cx.fillRect(x-9, y-4+bobY, 18, 2);
-  }
-
-  // bow (Wendy/Татьяна)
+  // bow (Татьяна/Wendy)
   if (ch.bow) {
+    const bx = x, by2 = headY - headR - hatH + 2;
     cx.fillStyle = '#ff69b4';
-    cx.beginPath(); cx.ellipse(x-4, y-25+bobY, 4, 3, -0.5, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.ellipse(x+4, y-25+bobY, 4, 3, 0.5, 0, Math.PI*2); cx.fill();
-    cx.fillStyle='#ff1493';
-    cx.beginPath(); cx.arc(x, y-25+bobY, 2.5, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(bx - 6, by2, 6, 4, -0.4, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(bx + 6, by2, 6, 4,  0.4, 0, Math.PI*2); cx.fill();
+    cx.fillStyle = '#ff1493';
+    cx.beginPath(); cx.arc(bx, by2, 3, 0, Math.PI*2); cx.fill();
   }
 
-  // EYES
-  const ey = y - 17 + bobY;
-  const ex1 = x - 3.5, ex2 = x + 2.5;
+  // ── EYES ──
+  const eyeY = headY + (isKenny ? 1 : 0);
+  const eyeSpread = isCartman ? 5 : 4;
   if (!blink) {
-    cx.fillStyle='#1a1a2e';
-    cx.beginPath(); cx.arc(ex1, ey, 1.5, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.arc(ex2, ey, 1.5, 0, Math.PI*2); cx.fill();
-    // eye shine
-    cx.fillStyle='#fff';
-    cx.beginPath(); cx.arc(ex1+0.5, ey-0.5, 0.6, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.arc(ex2+0.5, ey-0.5, 0.6, 0, Math.PI*2); cx.fill();
+    // whites
+    cx.fillStyle = '#fff';
+    cx.beginPath(); cx.arc(x - eyeSpread, eyeY, 2.8, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(x + eyeSpread, eyeY, 2.8, 0, Math.PI*2); cx.fill();
+    // pupils
+    cx.fillStyle = '#1a1a2e';
+    cx.beginPath(); cx.arc(x - eyeSpread + 0.5, eyeY + 0.5, 1.6, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(x + eyeSpread + 0.5, eyeY + 0.5, 1.6, 0, Math.PI*2); cx.fill();
+    // shine
+    cx.fillStyle = '#fff';
+    cx.beginPath(); cx.arc(x - eyeSpread + 1.2, eyeY - 0.8, 0.7, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(x + eyeSpread + 1.2, eyeY - 0.8, 0.7, 0, Math.PI*2); cx.fill();
   } else {
-    cx.strokeStyle='#1a1a2e'; cx.lineWidth=1.2;
-    cx.beginPath(); cx.moveTo(ex1-1.5, ey); cx.lineTo(ex1+1.5, ey); cx.stroke();
-    cx.beginPath(); cx.moveTo(ex2-1.5, ey); cx.lineTo(ex2+1.5, ey); cx.stroke();
+    cx.strokeStyle = '#1a1a2e'; cx.lineWidth = 1.5;
+    cx.beginPath(); cx.moveTo(x-eyeSpread-2, eyeY); cx.lineTo(x-eyeSpread+2, eyeY); cx.stroke();
+    cx.beginPath(); cx.moveTo(x+eyeSpread-2, eyeY); cx.lineTo(x+eyeSpread+2, eyeY); cx.stroke();
   }
 
-  // MOUTH
-  cx.strokeStyle='#8b4513'; cx.lineWidth=1;
-  if (state===ST.YOUTUBE||state===ST.PORN) {
-    // surprised open mouth
-    cx.fillStyle='#1a0a05';
-    cx.beginPath(); cx.ellipse(x, y-13+bobY, 3, 2.5, 0, 0, Math.PI*2); cx.fill();
-  } else if (state===ST.REST || state===ST.TIRED) {
-    cx.beginPath(); cx.moveTo(x-3, y-13+bobY); cx.lineTo(x+3, y-13+bobY); cx.stroke();
-  } else {
-    cx.beginPath(); cx.arc(x, y-15+bobY, 3, 0.1, Math.PI-0.1); cx.stroke();
+  // ── MOUTH ──
+  const mouthY = headY + 5;
+  if (!isKenny) {
+    cx.lineWidth = 1.2;
+    if (state === ST.YOUTUBE || state === ST.PORN) {
+      // open oval — surprised
+      cx.fillStyle = '#3a1a0a';
+      cx.beginPath(); cx.ellipse(x, mouthY, 4, 3.5, 0, 0, Math.PI*2); cx.fill();
+      cx.strokeStyle = shade(ch.skin, -50); cx.stroke();
+    } else if (state === ST.REST || state === ST.TIRED) {
+      cx.strokeStyle = shade(ch.skin, -60);
+      cx.beginPath(); cx.moveTo(x-4, mouthY+1); cx.lineTo(x+4, mouthY+1); cx.stroke();
+    } else {
+      cx.strokeStyle = shade(ch.skin, -60);
+      cx.beginPath(); cx.arc(x, mouthY - 1, 4, 0.15, Math.PI - 0.15); cx.stroke();
+    }
   }
 
-  // STATE SCREEN ICON (on monitor above desk when sitting)
-  // drawn separately in drawDeskScreen()
+  cx.restore();
 
-  // NAME LABEL
-  cx.fillStyle='rgba(0,0,0,0.75)';
-  cx.font='bold 9px monospace';
+  // ── NAME LABEL ──
+  cx.font = 'bold 10px monospace';
   const tw = cx.measureText(name).width;
-  cx.fillRect(x-tw/2-3, y-32+bobY, tw+6, 11);
+  const labelY = y + legH + 8 + bobY;
+  cx.fillStyle = 'rgba(0,0,0,0.8)';
+  cx.beginPath(); cx.roundRect(x - tw/2 - 4, labelY - 10, tw + 8, 13, 3); cx.fill();
   cx.fillStyle = AGENT_COLOR(name);
-  cx.fillText(name, x-tw/2, y-23+bobY);
+  cx.fillText(name, x - tw/2, labelY);
 }
 
 function AGENT_COLOR(name) {

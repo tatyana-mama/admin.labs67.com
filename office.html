@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>LABS67 — Офис</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; background:#0d1117; overflow:hidden; }
+  canvas { display:block; image-rendering:pixelated; }
+  #log {
+    position:fixed; right:12px; top:12px;
+    width:220px; background:rgba(13,17,23,0.92);
+    border:1px solid #2a3140; border-radius:6px;
+    padding:10px; font-family:monospace; font-size:11px;
+    color:#8b949e; max-height:calc(100vh - 24px); overflow-y:auto;
+  }
+  #log .entry { padding:2px 0; border-bottom:1px solid #1e2530; }
+  #log .entry .ts { color:#3b4a5a; margin-right:4px; }
+  #log .entry .name { font-weight:bold; }
+  #log .name-Кай { color:#58a6ff; }
+  #log .name-Степа { color:#3fb950; }
+  #log .name-Татьяна { color:#ff7b72; }
+  #log .name-Геннадий { color:#f0883e; }
+  #log .name-Алексей { color:#bc8cff; }
+  #log-title { color:#e6edf3; font-size:12px; margin-bottom:6px; font-weight:bold; letter-spacing:1px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="log">
+  <div id="log-title">📋 ACTIVITY LOG</div>
+</div>
+<script>
+// =====================
+// CONFIG
+// =====================
+const C = document.getElementById('c');
+const ctx = C.getContext('2d');
+const LOG = document.getElementById('log');
+
+function resize() {
+  C.width = window.innerWidth - 244;
+  C.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); });
+
+// =====================
+// PALETTE
+// =====================
+const P = {
+  bg:       '#0d1117',
+  floor:    '#161b22',
+  floorAlt: '#1a2030',
+  grid:     '#1e2530',
+  wall:     '#21262d',
+  wallTop:  '#30363d',
+  desk:     '#2d333b',
+  deskTop:  '#373e47',
+  monitor:  '#161b22',
+  screen:   '#0d2137',
+  screenOn: '#0d3a5c',
+  chair:    '#1c2128',
+  chairSeat:'#2d333b',
+  plant:    '#1a3a1a',
+  plantLeaf:'#2d6a2d',
+  coffee:   '#2a1a0a',
+  coffeeM:  '#3a2a1a',
+  carpet:   '#1a1f2e',
+  sofa:     '#252d3b',
+  sofaAcc:  '#2d3850',
+  gold:     '#d4a843',
+  border:   '#30363d',
+  text:     '#e6edf3',
+  textDim:  '#8b949e',
+};
+
+// Agent colors
+const AGENT_COLOR = {
+  'Кай':      '#58a6ff',
+  'Степа':    '#3fb950',
+  'Татьяна':  '#ff7b72',
+  'Геннадий': '#f0883e',
+  'Алексей':  '#bc8cff',
+};
+
+// =====================
+// LAYOUT (isometric top-down 2.5D)
+// W = canvas units
+// Desks: fixed positions
+// =====================
+
+// We use a simple grid: each cell = 48px
+const CELL = 48;
+
+// Desk positions [col, row] — room is 14 wide x 10 tall
+const DESKS = {
+  'Кай':      { col: 2, row: 2, dir: 'right' },
+  'Степа':    { col: 5, row: 2, dir: 'right' },
+  'Татьяна':  { col: 2, row: 5, dir: 'right' },
+  'Геннадий': { col: 5, row: 5, dir: 'right' },
+  'Алексей':  { col: 8, row: 3, dir: 'down'  },
+};
+
+// POI (points of interest)
+const POIS = {
+  coffee: { col: 11, row: 1, label: '☕' },
+  sofa:   { col: 10, row: 6, label: '🛋' },
+  plant1: { col: 0,  row: 0 },
+  plant2: { col: 13, row: 0 },
+  plant3: { col: 0,  row: 9 },
+};
+
+// =====================
+// AGENT STATE MACHINE
+// =====================
+const STATES = {
+  WORKING:   'working',
+  TIRED:     'tired',
+  WALKING:   'walking',
+  COFFEE:    'coffee',
+  SOFA:      'sofa',
+  RETURNING: 'returning',
+};
+
+const PHRASES = {
+  working:  ['Пишу код...', 'Думаю...', 'Анализирую', 'Проверяю...', 'Оптимизирую'],
+  tired:    ['Устал...', 'Перерыв', 'Голова болит'],
+  coffee:   ['☕ Кофе!', 'Ммм...', 'Заряжаюсь'],
+  sofa:     ['Отдыхаю', 'Чилю...', '...'],
+  walking:  ['Иду...', '...'],
+};
+
+function pickPhrase(state) {
+  const arr = PHRASES[state] || PHRASES.working;
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// =====================
+// AGENTS
+// =====================
+let agents = Object.entries(DESKS).map(([name, desk]) => {
+  const px = desk.col * CELL + CELL/2;
+  const py = desk.row * CELL + CELL/2;
+  return {
+    name,
+    color: AGENT_COLOR[name],
+    desk,
+    x: px, y: py,
+    tx: px, ty: py,    // target
+    state: STATES.WORKING,
+    stateTimer: 300 + Math.random() * 400, // frames
+    bubble: null,
+    bubbleTimer: 0,
+    phrase: pickPhrase('working'),
+    blinkTimer: Math.random() * 60,
+    blinkOpen: true,
+    workAnimT: Math.random() * Math.PI * 2,
+  };
+});
+
+// =====================
+// PATHFINDING (simple direct, no obstacles for now)
+// =====================
+function moveTo(agent, col, row) {
+  agent.tx = col * CELL + CELL/2;
+  agent.ty = row * CELL + CELL/2;
+}
+
+function atTarget(agent) {
+  return Math.abs(agent.x - agent.tx) < 2 && Math.abs(agent.y - agent.ty) < 2;
+}
+
+// =====================
+// LOG
+// =====================
+const logEntries = [];
+function addLog(name, text) {
+  logEntries.unshift({ name, text, ts: new Date().toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}) });
+  if (logEntries.length > 30) logEntries.pop();
+  renderLog();
+}
+
+function renderLog() {
+  const frag = logEntries.map(e =>
+    `<div class="entry"><span class="ts">${e.ts}</span><span class="name name-${e.name}">${e.name}</span>: ${e.text}</div>`
+  ).join('');
+  LOG.innerHTML = `<div id="log-title">📋 ACTIVITY LOG</div>` + frag;
+}
+
+// =====================
+// DRAW HELPERS
+// =====================
+function drawRect(x, y, w, h, fill, stroke) {
+  ctx.fillStyle = fill;
+  ctx.fillRect(x, y, w, h);
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x+0.5, y+0.5, w-1, h-1);
+  }
+}
+
+function drawDesk(col, row) {
+  const x = col * CELL;
+  const y = row * CELL;
+  const W = CELL * 2;
+  const H = CELL * 1.5;
+  // desk surface
+  drawRect(x, y, W, H, P.desk, P.border);
+  // desk top edge highlight
+  ctx.fillStyle = P.deskTop;
+  ctx.fillRect(x, y, W, 4);
+  // monitor
+  const mx = x + W/2 - 10;
+  const my = y + 6;
+  drawRect(mx, my, 20, 14, P.monitor, P.border);
+  ctx.fillStyle = P.screenOn;
+  ctx.fillRect(mx+2, my+2, 16, 10);
+  // monitor stand
+  ctx.fillStyle = P.border;
+  ctx.fillRect(mx+8, my+14, 4, 4);
+  ctx.fillRect(mx+4, my+18, 12, 2);
+  // keyboard
+  ctx.fillStyle = P.border;
+  ctx.fillRect(x+W/2-12, y+H-10, 24, 6);
+}
+
+function drawChair(x, y) {
+  ctx.fillStyle = P.chairSeat;
+  ctx.beginPath();
+  ctx.ellipse(x, y, 9, 7, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = P.chair;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+function drawPlant(x, y) {
+  // pot
+  ctx.fillStyle = '#5a3a1a';
+  ctx.fillRect(x-6, y+2, 12, 8);
+  // soil
+  ctx.fillStyle = P.plant;
+  ctx.fillRect(x-5, y, 10, 4);
+  // leaves
+  ctx.fillStyle = P.plantLeaf;
+  ctx.beginPath();
+  ctx.ellipse(x, y-6, 8, 10, -0.3, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(x+5, y-4, 6, 8, 0.4, 0, Math.PI*2);
+  ctx.fill();
+}
+
+function drawCoffeeMachine(col, row) {
+  const x = col * CELL + 4;
+  const y = row * CELL + 4;
+  // body
+  drawRect(x, y, 36, 30, P.coffeeM, P.border);
+  drawRect(x+2, y+2, 32, 12, P.coffee, null);
+  // cup area
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x+12, y+18, 12, 8);
+  ctx.fillStyle = P.gold;
+  ctx.fillRect(x+14, y+20, 8, 4);
+  // label
+  ctx.fillStyle = P.gold;
+  ctx.font = 'bold 8px monospace';
+  ctx.fillText('COFFEE', x+3, y+12);
+}
+
+function drawSofa(col, row) {
+  const x = col * CELL;
+  const y = row * CELL;
+  // back
+  drawRect(x, y, CELL*2, 14, P.sofaAcc, P.border);
+  // seat
+  drawRect(x, y+14, CELL*2, 20, P.sofa, P.border);
+  // armrests
+  drawRect(x, y, 8, 34, P.sofaAcc, P.border);
+  drawRect(x+CELL*2-8, y, 8, 34, P.sofaAcc, P.border);
+  // cushions
+  ctx.fillStyle = P.sofa;
+  ctx.fillRect(x+10, y+16, CELL-12, 16);
+  ctx.fillRect(x+CELL+2, y+16, CELL-12, 16);
+}
+
+function drawCarpet(col, row, w, h) {
+  const x = col * CELL;
+  const y = row * CELL;
+  ctx.fillStyle = P.carpet;
+  ctx.fillRect(x, y, w*CELL, h*CELL);
+  ctx.strokeStyle = '#252d3b';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x+4, y+4, w*CELL-8, h*CELL-8);
+}
+
+function drawGrid() {
+  ctx.strokeStyle = P.grid;
+  ctx.lineWidth = 0.5;
+  for (let c = 0; c <= 14; c++) {
+    ctx.beginPath();
+    ctx.moveTo(c*CELL, 0);
+    ctx.lineTo(c*CELL, 10*CELL);
+    ctx.stroke();
+  }
+  for (let r = 0; r <= 10; r++) {
+    ctx.beginPath();
+    ctx.moveTo(0, r*CELL);
+    ctx.lineTo(14*CELL, r*CELL);
+    ctx.stroke();
+  }
+}
+
+function drawFloor() {
+  // main floor
+  for (let c = 0; c < 14; c++) {
+    for (let r = 0; r < 10; r++) {
+      ctx.fillStyle = (c+r)%2===0 ? P.floor : P.floorAlt;
+      ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
+    }
+  }
+}
+
+function drawWalls() {
+  // top wall
+  ctx.fillStyle = P.wall;
+  ctx.fillRect(0, 0, 14*CELL, 6);
+  ctx.fillStyle = P.wallTop;
+  ctx.fillRect(0, 6, 14*CELL, 3);
+  // left wall
+  ctx.fillStyle = P.wall;
+  ctx.fillRect(0, 0, 6, 10*CELL);
+  ctx.fillStyle = P.wallTop;
+  ctx.fillRect(6, 0, 3, 10*CELL);
+}
+
+function drawAgent(agent) {
+  const { x, y, name, color, state, blinkOpen, workAnimT, phrase, bubbleTimer } = agent;
+
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.ellipse(x, y+10, 9, 4, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // body
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(x, y, 8, 9, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // work animation (bob when working)
+  const bobY = state === STATES.WORKING ? Math.sin(workAnimT) * 1.5 : 0;
+
+  // head
+  ctx.fillStyle = '#e8d5b0';
+  ctx.beginPath();
+  ctx.arc(x, y - 10 + bobY, 6, 0, Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // eyes
+  if (blinkOpen) {
+    ctx.fillStyle = '#1a1a2e';
+    ctx.beginPath();
+    ctx.arc(x-2, y-11+bobY, 1.2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x+2, y-11+bobY, 1.2, 0, Math.PI*2);
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x-3, y-11+bobY);
+    ctx.lineTo(x-1, y-11+bobY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x+1, y-11+bobY);
+    ctx.lineTo(x+3, y-11+bobY);
+    ctx.stroke();
+  }
+
+  // name label
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.font = 'bold 9px monospace';
+  const tw = ctx.measureText(name).width;
+  ctx.fillRect(x - tw/2 - 3, y - 24 + bobY, tw+6, 11);
+  ctx.fillStyle = color;
+  ctx.fillText(name, x - tw/2, y - 15 + bobY);
+
+  // speech bubble
+  if (bubbleTimer > 0 && phrase) {
+    ctx.font = '8px monospace';
+    const bw = ctx.measureText(phrase).width + 8;
+    const bh = 14;
+    const bx = x - bw/2;
+    const by = y - 38 + bobY;
+    ctx.fillStyle = 'rgba(13,17,23,0.95)';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, 3);
+    ctx.fill();
+    ctx.stroke();
+    // tail
+    ctx.fillStyle = 'rgba(13,17,23,0.95)';
+    ctx.beginPath();
+    ctx.moveTo(x-3, by+bh);
+    ctx.lineTo(x+3, by+bh);
+    ctx.lineTo(x, by+bh+5);
+    ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x-3, by+bh);
+    ctx.lineTo(x, by+bh+5);
+    ctx.lineTo(x+3, by+bh);
+    ctx.stroke();
+    ctx.fillStyle = P.text;
+    ctx.fillText(phrase, bx+4, by+10);
+  }
+
+  // state icon
+  const icons = { working:'💻', tired:'😴', walking:'🚶', coffee:'☕', sofa:'🛋', returning:'🚶' };
+  ctx.font = '10px serif';
+  ctx.fillText(icons[state]||'', x+8, y-8+bobY);
+}
+
+// =====================
+// UPDATE
+// =====================
+function updateAgent(agent) {
+  // blink
+  agent.blinkTimer--;
+  if (agent.blinkTimer <= 0) {
+    agent.blinkOpen = !agent.blinkOpen;
+    agent.blinkTimer = agent.blinkOpen ? 120 + Math.random()*180 : 8;
+  }
+
+  // work animation
+  if (agent.state === STATES.WORKING) {
+    agent.workAnimT += 0.05;
+  }
+
+  // bubble timer
+  if (agent.bubbleTimer > 0) agent.bubbleTimer--;
+
+  // movement
+  if (!atTarget(agent)) {
+    const dx = agent.tx - agent.x;
+    const dy = agent.ty - agent.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const speed = 1.2;
+    agent.x += (dx/dist) * speed;
+    agent.y += (dy/dist) * speed;
+    return;
+  }
+
+  // state machine
+  agent.stateTimer--;
+  if (agent.stateTimer > 0) return;
+
+  const prev = agent.state;
+
+  switch (agent.state) {
+    case STATES.WORKING: {
+      // random: go coffee or sofa
+      const r = Math.random();
+      if (r < 0.6) {
+        agent.state = STATES.TIRED;
+        agent.stateTimer = 60 + Math.random() * 80;
+        agent.phrase = pickPhrase('tired');
+        agent.bubbleTimer = 100;
+        addLog(agent.name, agent.phrase);
+      }
+      break;
+    }
+    case STATES.TIRED: {
+      const r = Math.random();
+      if (r < 0.7) {
+        agent.state = STATES.WALKING;
+        agent.stateTimer = 999;
+        moveTo(agent, POIS.coffee.col, POIS.coffee.row);
+        agent.phrase = pickPhrase('walking');
+        agent.bubbleTimer = 60;
+        agent.destination = 'coffee';
+      } else {
+        agent.state = STATES.WALKING;
+        agent.stateTimer = 999;
+        moveTo(agent, POIS.sofa.col, POIS.sofa.row);
+        agent.phrase = pickPhrase('walking');
+        agent.bubbleTimer = 60;
+        agent.destination = 'sofa';
+      }
+      addLog(agent.name, '🚶 идёт к ' + (agent.destination === 'coffee' ? 'кофемашине' : 'дивану'));
+      break;
+    }
+    case STATES.WALKING: {
+      if (atTarget(agent)) {
+        if (agent.destination === 'coffee') {
+          agent.state = STATES.COFFEE;
+          agent.stateTimer = 200 + Math.random() * 200;
+          agent.phrase = pickPhrase('coffee');
+          agent.bubbleTimer = 200;
+          addLog(agent.name, '☕ пьёт кофе');
+        } else {
+          agent.state = STATES.SOFA;
+          agent.stateTimer = 300 + Math.random() * 300;
+          agent.phrase = pickPhrase('sofa');
+          agent.bubbleTimer = 200;
+          addLog(agent.name, '🛋 отдыхает');
+        }
+      }
+      break;
+    }
+    case STATES.COFFEE:
+    case STATES.SOFA: {
+      // return to desk
+      agent.state = STATES.RETURNING;
+      agent.stateTimer = 999;
+      const d = agent.desk;
+      moveTo(agent, d.col + 1, d.row + 1);
+      agent.phrase = '→ Работать';
+      agent.bubbleTimer = 80;
+      addLog(agent.name, '→ возвращается за стол');
+      break;
+    }
+    case STATES.RETURNING: {
+      if (atTarget(agent)) {
+        agent.state = STATES.WORKING;
+        agent.stateTimer = 400 + Math.random() * 600;
+        agent.phrase = pickPhrase('working');
+        agent.bubbleTimer = 100;
+        addLog(agent.name, '💻 ' + agent.phrase);
+      }
+      break;
+    }
+  }
+}
+
+// =====================
+// TITLE / HEADER
+// =====================
+function drawHeader() {
+  ctx.fillStyle = '#161b22';
+  ctx.fillRect(0, 0, C.width, 36);
+  ctx.strokeStyle = P.border;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, 36);
+  ctx.lineTo(C.width, 36);
+  ctx.stroke();
+
+  ctx.font = 'bold 13px monospace';
+  ctx.fillStyle = P.gold;
+  ctx.fillText('LABS67', 14, 23);
+  ctx.font = '11px monospace';
+  ctx.fillStyle = P.textDim;
+  ctx.fillText('// OFFICE', 72, 23);
+
+  // agent status dots
+  let dx = C.width - 20;
+  agents.slice().reverse().forEach(a => {
+    ctx.beginPath();
+    ctx.arc(dx, 18, 5, 0, Math.PI*2);
+    ctx.fillStyle = a.color;
+    ctx.fill();
+    dx -= 16;
+  });
+}
+
+// =====================
+// MAIN RENDER
+// =====================
+function render() {
+  ctx.clearRect(0, 0, C.width, C.height);
+
+  // offset below header
+  ctx.save();
+  ctx.translate(20, 50);
+
+  drawFloor();
+  drawGrid();
+  drawCarpet(9, 5, 3, 3);
+
+  // static objects
+  Object.entries(DESKS).forEach(([name, desk]) => {
+    drawDesk(desk.col, desk.row);
+    drawChair(desk.col * CELL + CELL, desk.row * CELL + CELL * 1.5 - 8);
+  });
+
+  drawCoffeeMachine(POIS.coffee.col, POIS.coffee.row);
+  drawSofa(POIS.sofa.col, POIS.sofa.row);
+  drawPlant(POIS.plant1.col * CELL + 20, POIS.plant1.row * CELL + 20);
+  drawPlant(POIS.plant2.col * CELL + 20, POIS.plant2.row * CELL + 20);
+  drawPlant(POIS.plant3.col * CELL + 20, POIS.plant3.row * CELL + 20);
+
+  // walls on top of floor
+  drawWalls();
+
+  // room label
+  ctx.font = 'bold 10px monospace';
+  ctx.fillStyle = P.textDim;
+  ctx.fillText('LABS67 HQ', 10 * CELL + 4, 9 * CELL - 4);
+
+  // agents sorted by Y (painter's algorithm)
+  const sorted = [...agents].sort((a, b) => a.y - b.y);
+  sorted.forEach(a => {
+    updateAgent(a);
+    drawAgent(a);
+  });
+
+  ctx.restore();
+
+  drawHeader();
+
+  requestAnimationFrame(render);
+}
+
+// Stagger initial state timers so agents don't all move at once
+agents.forEach((a, i) => {
+  a.stateTimer = 200 + i * 120 + Math.random() * 200;
+  addLog(a.name, '💻 ' + pickPhrase('working'));
+});
+
+render();
+</script>
+</body>
+</html>

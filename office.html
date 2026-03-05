@@ -62,42 +62,53 @@ function gx(c) { return c * SZ; }
 function gy(r) { return r * SZ + 44; }  // 44 = header height
 
 // ── SOUTH PARK CHARACTER DEFINITIONS ─────────
-// Each agent: name, colors for jacket/hat/skin
+// Colors matched to pixel-art reference image
 const CHARS = {
   'Кай': {
-    // Cartman: yellow hat, red jacket, round chubby face
-    jacket: '#c0392b', hatBrim: '#e8b84b', hatTop: '#e8b84b',
-    hatPom: '#fff', skin: '#f0d5a0', hair: '#4a3000',
-    pants: '#2980b9', shoes: '#1a1a1a',
-    scarf: null, earflap: true,
+    // Cartman: dome hat blue+yellow stripe, RED jacket with yellow mittens, BLACK pants
+    // Widest/chubbiest body
+    jacket: '#D50000', jacketAcc: '#FFD700',
+    hatBrim: '#3B82F6', hatTop: '#3B82F6', hatStripe: '#FFD700',
+    hatPom: null,   // no pom, dome-shaped
+    skin: '#FFEBCD', hair: '#000',
+    pants: '#111111', shoes: '#111111',
+    scarf: null, earflap: false, bow: false, dome: true,
   },
   'Степа': {
-    // Kyle: green hat, orange jacket
-    jacket: '#e67e22', hatBrim: '#27ae60', hatTop: '#27ae60',
-    hatPom: '#ff6b6b', skin: '#f0d5a0', hair: '#8B4513',
-    pants: '#2c3e50', shoes: '#1a1a1a',
-    scarf: null, earflap: false,
+    // Kyle: green ushanka (earflaps!), orange jacket with green collar
+    jacket: '#FF8C00', jacketAcc: '#2F8F3C',
+    hatBrim: '#2F8F3C', hatTop: '#2F8F3C', hatStripe: null,
+    hatPom: '#2F8F3C',
+    skin: '#FFEBCD', hair: '#8B0000',  // red curls barely visible
+    pants: '#0B6623', shoes: '#111111',
+    scarf: null, earflap: true, bow: false, dome: false,
   },
   'Татьяна': {
-    // Wendy: pink jacket, black hair, bow
-    jacket: '#e91e8c', hatBrim: '#9b59b6', hatTop: '#9b59b6',
-    hatPom: '#ff69b4', skin: '#f5c5a0', hair: '#1a1a1a',
-    pants: '#8e44ad', shoes: '#1a1a1a',
-    scarf: null, earflap: false, bow: true,
+    // Wendy: purple beanie, pink bow, magenta/pink jacket, black hair
+    jacket: '#C2185B', jacketAcc: '#9C27B0',
+    hatBrim: '#7B1FA2', hatTop: '#7B1FA2', hatStripe: null,
+    hatPom: '#fff',
+    skin: '#FFEBCD', hair: '#111111',
+    pants: '#4A148C', shoes: '#111111',
+    scarf: null, earflap: false, bow: true, dome: false,
   },
   'Геннадий': {
-    // Kenny: orange parka, mostly hidden face
-    jacket: '#e67e22', hatBrim: '#e67e22', hatTop: '#e67e22',
-    hatPom: '#fff', skin: '#f0d5a0', hair: '#5d4037',
-    pants: '#795548', shoes: '#1a1a1a',
-    scarf: '#e67e22', earflap: true,
+    // Kenny: full orange parka hood covers everything, only eyes visible
+    jacket: '#FF8C00', jacketAcc: '#E65100',
+    hatBrim: '#FF8C00', hatTop: '#FF8C00', hatStripe: null,
+    hatPom: '#fff',
+    skin: '#FFEBCD', hair: '#111111',
+    pants: '#2B2B2B', shoes: '#111111',
+    scarf: '#FF8C00', earflap: true, bow: false, dome: false, kenny: true,
   },
   'Алексей': {
-    // Stan: red/blue hat, white pom, blue/red jacket
-    jacket: '#2980b9', hatBrim: '#c0392b', hatTop: '#2980b9',
-    hatPom: '#fff', skin: '#f0d5a0', hair: '#1a1a1a',
-    pants: '#1a252f', shoes: '#1a1a1a',
-    scarf: null, earflap: false,
+    // Stan: light blue beanie with red bottom stripe + white pom, dark brown jacket with red collar
+    jacket: '#5D3A1A', jacketAcc: '#D32F2F',
+    hatBrim: '#D32F2F', hatTop: '#4FC3F7', hatStripe: '#D32F2F',
+    hatPom: '#fff',
+    skin: '#FFEBCD', hair: '#111111',
+    pants: '#0D47A1', shoes: '#111111',
+    scarf: null, earflap: false, bow: false, dome: false,
   },
 };
 
@@ -495,17 +506,32 @@ function drawSPChar(agent) {
   cx.roundRect(x - bodyW/2, bodyY, bodyW/2, bodyH, [4, 0, 0, 2]);
   cx.fill();
 
+  // jacket collar / accent color at top
+  if (ch.jacketAcc) {
+    cx.fillStyle = ch.jacketAcc;
+    cx.beginPath();
+    cx.roundRect(x - bodyW/2, bodyY, bodyW, 5, [4,4,0,0]);
+    cx.fill();
+  }
+
+  // Cartman: yellow mitten accents on sleeves
+  if (isCartman) {
+    cx.fillStyle = ch.jacketAcc || '#FFD700';
+    cx.beginPath(); cx.ellipse(x - bodyW/2 - 2, bodyY + bodyH/2, 4, 6, 0, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(x + bodyW/2 + 2, bodyY + bodyH/2, 4, 6, 0, 0, Math.PI*2); cx.fill();
+  }
+
   // jacket zipper line
   cx.strokeStyle = shade(ch.jacket, -50);
   cx.lineWidth = 1.5;
   cx.beginPath();
-  cx.moveTo(x, bodyY + 3);
+  cx.moveTo(x, bodyY + 6);
   cx.lineTo(x, bodyY + bodyH - 3);
   cx.stroke();
 
-  // Kenny parka face cover (scarf/hood strings)
+  // Kenny parka — orange band at neck
   if (isKenny) {
-    cx.fillStyle = ch.scarf || ch.jacket;
+    cx.fillStyle = ch.jacket;
     cx.fillRect(x - bodyW/2, bodyY, bodyW, 6);
   }
 
@@ -534,35 +560,70 @@ function drawSPChar(agent) {
   }
 
   // ── HAT ──
-  // brim (flat ellipse)
-  cx.fillStyle = ch.hatBrim;
-  cx.beginPath();
-  cx.ellipse(x, headY - headR, headR + 4, 4, 0, 0, Math.PI*2);
-  cx.fill();
+  const hatH = isCartman ? 13 : 11;
 
-  // hat body
-  const hatH = isCartman ? 14 : 12;
-  cx.fillStyle = ch.hatTop;
-  cx.beginPath();
-  cx.roundRect(x - headR + 1, headY - headR - hatH, (headR - 1)*2, hatH + 2, [5,5,0,0]);
-  cx.fill();
-  // hat shading
-  cx.fillStyle = shade(ch.hatTop, -20);
-  cx.beginPath();
-  cx.roundRect(x - headR + 1, headY - headR - hatH, headR - 2, hatH + 2, [5,0,0,0]);
-  cx.fill();
+  if (ch.dome) {
+    // Cartman: dome/beanie — semicircle, no flat brim
+    // base ring
+    cx.fillStyle = ch.hatBrim;
+    cx.beginPath();
+    cx.ellipse(x, headY - headR + 2, headR + 3, 4, 0, 0, Math.PI*2);
+    cx.fill();
+    // dome body
+    cx.fillStyle = ch.hatTop;
+    cx.beginPath();
+    cx.arc(x, headY - headR + 1, headR + 2, Math.PI, 0);
+    cx.fill();
+    // yellow stripe on dome
+    if (ch.hatStripe) {
+      cx.fillStyle = ch.hatStripe;
+      cx.beginPath();
+      cx.arc(x, headY - headR + 2, headR + 2, Math.PI + 0.3, -0.3);
+      cx.lineWidth = 3; cx.strokeStyle = ch.hatStripe;
+      cx.stroke();
+    }
+    // shading
+    cx.fillStyle = shade(ch.hatTop, -20);
+    cx.beginPath();
+    cx.arc(x - 4, headY - headR - 2, headR - 2, Math.PI, 0);
+    cx.fill();
+  } else {
+    // regular beanie with brim
+    cx.fillStyle = ch.hatBrim;
+    cx.beginPath();
+    cx.ellipse(x, headY - headR, headR + 4, 4, 0, 0, Math.PI*2);
+    cx.fill();
+    cx.fillStyle = ch.hatTop;
+    cx.beginPath();
+    cx.roundRect(x - headR + 1, headY - headR - hatH, (headR - 1)*2, hatH + 2, [5,5,0,0]);
+    cx.fill();
+    cx.fillStyle = shade(ch.hatTop, -20);
+    cx.beginPath();
+    cx.roundRect(x - headR + 1, headY - headR - hatH, headR - 2, hatH + 2, [5,0,0,0]);
+    cx.fill();
+    // stripe at brim
+    if (ch.hatStripe) {
+      cx.fillStyle = ch.hatStripe;
+      cx.fillRect(x - headR + 1, headY - headR, (headR-1)*2, 4);
+    }
+    // pom-pom
+    if (ch.hatPom) {
+      cx.fillStyle = ch.hatPom;
+      cx.beginPath();
+      cx.arc(x, headY - headR - hatH, 4, 0, Math.PI*2);
+      cx.fill();
+    }
+  }
 
-  // pom-pom
-  cx.fillStyle = ch.hatPom;
-  cx.beginPath();
-  cx.arc(x, headY - headR - hatH, 4, 0, Math.PI*2);
-  cx.fill();
-
-  // earflaps
+  // earflaps (Kyle's ushanka flaps)
   if (ch.earflap) {
     cx.fillStyle = ch.hatTop;
-    cx.beginPath(); cx.ellipse(x - headR - 2, headY - headR + 4, 4, 7, -0.2, 0, Math.PI*2); cx.fill();
-    cx.beginPath(); cx.ellipse(x + headR + 2, headY - headR + 4, 4, 7,  0.2, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.roundRect(x - headR - 5, headY - headR + 2, 7, 12, [2,0,3,3]); cx.fill();
+    cx.beginPath(); cx.roundRect(x + headR - 2, headY - headR + 2, 7, 12, [0,2,3,3]); cx.fill();
+    // inner shadow on flaps
+    cx.fillStyle = shade(ch.hatTop, -20);
+    cx.fillRect(x - headR - 3, headY - headR + 3, 3, 10);
+    cx.fillRect(x + headR, headY - headR + 3, 3, 10);
   }
 
   // bow (Татьяна/Wendy)

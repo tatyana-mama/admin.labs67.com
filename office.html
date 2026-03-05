@@ -4,627 +4,712 @@
 <meta charset="UTF-8">
 <title>LABS67 — Офис</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { width:100%; height:100%; background:#0d1117; overflow:hidden; }
-  canvas { display:block; image-rendering:pixelated; }
-  #log {
-    position:fixed; right:12px; top:12px;
-    width:220px; background:rgba(13,17,23,0.92);
-    border:1px solid #2a3140; border-radius:6px;
-    padding:10px; font-family:monospace; font-size:11px;
-    color:#8b949e; max-height:calc(100vh - 24px); overflow-y:auto;
-  }
-  #log .entry { padding:2px 0; border-bottom:1px solid #1e2530; }
-  #log .entry .ts { color:#3b4a5a; margin-right:4px; }
-  #log .entry .name { font-weight:bold; }
-  #log .name-Кай { color:#58a6ff; }
-  #log .name-Степа { color:#3fb950; }
-  #log .name-Татьяна { color:#ff7b72; }
-  #log .name-Геннадий { color:#f0883e; }
-  #log .name-Алексей { color:#bc8cff; }
-  #log-title { color:#e6edf3; font-size:12px; margin-bottom:6px; font-weight:bold; letter-spacing:1px; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:100%; height:100%; background:#0d1117; overflow:hidden; font-family:monospace; }
+canvas { display:block; image-rendering:pixelated; }
+#log {
+  position:fixed; right:10px; top:10px;
+  width:210px; background:rgba(13,17,23,0.93);
+  border:1px solid #2a3140; border-radius:6px;
+  padding:8px; font-size:11px; color:#8b949e;
+  max-height:calc(100vh - 20px); overflow-y:auto;
+}
+.le { padding:2px 0; border-bottom:1px solid #1e2530; line-height:1.4; }
+.lt { color:#3b4a5a; margin-right:3px; }
+.n-Кай { color:#e8b84b; font-weight:bold; }
+.n-Степа { color:#3fb950; font-weight:bold; }
+.n-Татьяна { color:#ff7b72; font-weight:bold; }
+.n-Геннадий { color:#f0883e; font-weight:bold; }
+.n-Алексей { color:#bc8cff; font-weight:bold; }
+#log-hdr { color:#e6edf3; font-size:11px; margin-bottom:5px; font-weight:bold; letter-spacing:1px; }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-<div id="log">
-  <div id="log-title">📋 ACTIVITY LOG</div>
-</div>
+<div id="log"><div id="log-hdr">📋 ACTIVITY LOG</div></div>
 <script>
-// =====================
-// CONFIG
-// =====================
-const C = document.getElementById('c');
-const ctx = C.getContext('2d');
+const CV = document.getElementById('c');
+const cx = CV.getContext('2d');
 const LOG = document.getElementById('log');
 
 function resize() {
-  C.width = window.innerWidth - 244;
-  C.height = window.innerHeight;
+  CV.width  = window.innerWidth - 232;
+  CV.height = window.innerHeight;
 }
 resize();
-window.addEventListener('resize', () => { resize(); });
+window.addEventListener('resize', resize);
 
-// =====================
-// PALETTE
-// =====================
-const P = {
-  bg:       '#0d1117',
-  floor:    '#161b22',
-  floorAlt: '#1a2030',
-  grid:     '#1e2530',
-  wall:     '#21262d',
-  wallTop:  '#30363d',
-  desk:     '#2d333b',
-  deskTop:  '#373e47',
-  monitor:  '#161b22',
-  screen:   '#0d2137',
-  screenOn: '#0d3a5c',
-  chair:    '#1c2128',
-  chairSeat:'#2d333b',
-  plant:    '#1a3a1a',
-  plantLeaf:'#2d6a2d',
-  coffee:   '#2a1a0a',
-  coffeeM:  '#3a2a1a',
-  carpet:   '#1a1f2e',
-  sofa:     '#252d3b',
-  sofaAcc:  '#2d3850',
-  gold:     '#d4a843',
-  border:   '#30363d',
-  text:     '#e6edf3',
-  textDim:  '#8b949e',
+// ── PALETTE ──────────────────────────────────
+const BG    = '#0d1117';
+const FL1   = '#13181f';
+const FL2   = '#181e27';
+const GRID  = '#1a2030';
+const WALL  = '#1e2530';
+const WALLT = '#252d3b';
+const DESK  = '#252d3b';
+const DESKT = '#2d3748';
+const GOLD  = '#d4a843';
+const BORD  = '#30363d';
+const TXT   = '#e6edf3';
+const TXDM  = '#8b949e';
+
+// ── GRID ─────────────────────────────────────
+const SZ = 52;   // cell size px
+const COLS = 13;
+const ROWS = 10;
+
+function gx(c) { return c * SZ; }
+function gy(r) { return r * SZ + 44; }  // 44 = header height
+
+// ── SOUTH PARK CHARACTER DEFINITIONS ─────────
+// Each agent: name, colors for jacket/hat/skin
+const CHARS = {
+  'Кай': {
+    // Cartman: yellow hat, red jacket, round chubby face
+    jacket: '#c0392b', hatBrim: '#e8b84b', hatTop: '#e8b84b',
+    hatPom: '#fff', skin: '#f0d5a0', hair: '#4a3000',
+    pants: '#2980b9', shoes: '#1a1a1a',
+    scarf: null, earflap: true,
+  },
+  'Степа': {
+    // Kyle: green hat, orange jacket
+    jacket: '#e67e22', hatBrim: '#27ae60', hatTop: '#27ae60',
+    hatPom: '#ff6b6b', skin: '#f0d5a0', hair: '#8B4513',
+    pants: '#2c3e50', shoes: '#1a1a1a',
+    scarf: null, earflap: false,
+  },
+  'Татьяна': {
+    // Wendy: pink jacket, black hair, bow
+    jacket: '#e91e8c', hatBrim: '#9b59b6', hatTop: '#9b59b6',
+    hatPom: '#ff69b4', skin: '#f5c5a0', hair: '#1a1a1a',
+    pants: '#8e44ad', shoes: '#1a1a1a',
+    scarf: null, earflap: false, bow: true,
+  },
+  'Геннадий': {
+    // Kenny: orange parka, mostly hidden face
+    jacket: '#e67e22', hatBrim: '#e67e22', hatTop: '#e67e22',
+    hatPom: '#fff', skin: '#f0d5a0', hair: '#5d4037',
+    pants: '#795548', shoes: '#1a1a1a',
+    scarf: '#e67e22', earflap: true,
+  },
+  'Алексей': {
+    // Stan: red/blue hat, white pom, blue/red jacket
+    jacket: '#2980b9', hatBrim: '#c0392b', hatTop: '#2980b9',
+    hatPom: '#fff', skin: '#f0d5a0', hair: '#1a1a1a',
+    pants: '#1a252f', shoes: '#1a1a1a',
+    scarf: null, earflap: false,
+  },
 };
 
-// Agent colors
-const AGENT_COLOR = {
-  'Кай':      '#58a6ff',
-  'Степа':    '#3fb950',
-  'Татьяна':  '#ff7b72',
-  'Геннадий': '#f0883e',
-  'Алексей':  '#bc8cff',
+// ── FIXED DESK POSITIONS ──────────────────────
+const DESK_POS = {
+  'Кай':      { col: 1, row: 1 },
+  'Степа':    { col: 4, row: 1 },
+  'Татьяна':  { col: 1, row: 4 },
+  'Геннадий': { col: 4, row: 4 },
+  'Алексей':  { col: 7, row: 2 },
 };
 
-// =====================
-// LAYOUT (isometric top-down 2.5D)
-// W = canvas units
-// Desks: fixed positions
-// =====================
-
-// We use a simple grid: each cell = 48px
-const CELL = 48;
-
-// Desk positions [col, row] — room is 14 wide x 10 tall
-const DESKS = {
-  'Кай':      { col: 2, row: 2, dir: 'right' },
-  'Степа':    { col: 5, row: 2, dir: 'right' },
-  'Татьяна':  { col: 2, row: 5, dir: 'right' },
-  'Геннадий': { col: 5, row: 5, dir: 'right' },
-  'Алексей':  { col: 8, row: 3, dir: 'down'  },
+// POI world positions
+const POI = {
+  coffee: { col: 10, row: 1 },
+  sofa:   { col: 9,  row: 6 },
 };
 
-// POI (points of interest)
-const POIS = {
-  coffee: { col: 11, row: 1, label: '☕' },
-  sofa:   { col: 10, row: 6, label: '🛋' },
-  plant1: { col: 0,  row: 0 },
-  plant2: { col: 13, row: 0 },
-  plant3: { col: 0,  row: 9 },
+// ── STATES & LABELS ───────────────────────────
+const ST = {
+  WORK:    'work',
+  REST:    'rest',
+  YOUTUBE: 'youtube',
+  PORN:    'porn',
+  TIRED:   'tired',
+  WALK:    'walk',
+  AT_POI:  'at_poi',
+  RETURN:  'return',
 };
 
-// =====================
-// AGENT STATE MACHINE
-// =====================
-const STATES = {
-  WORKING:   'working',
-  TIRED:     'tired',
-  WALKING:   'walking',
-  COFFEE:    'coffee',
-  SOFA:      'sofa',
-  RETURNING: 'returning',
+const STATE_LABEL = {
+  work:    '💻 Работает',
+  rest:    '😴 Отдыхает',
+  youtube: '▶️ YouTube',
+  porn:    '🔞 Pornhub',
+  tired:   '😓 Устал',
+  walk:    '🚶 Идёт',
+  at_poi:  '☕ Кофе',
+  return:  '🚶 Возвращается',
 };
 
+// ── SPEECH PHRASES ────────────────────────────
 const PHRASES = {
-  working:  ['Пишу код...', 'Думаю...', 'Анализирую', 'Проверяю...', 'Оптимизирую'],
-  tired:    ['Устал...', 'Перерыв', 'Голова болит'],
-  coffee:   ['☕ Кофе!', 'Ммм...', 'Заряжаюсь'],
-  sofa:     ['Отдыхаю', 'Чилю...', '...'],
-  walking:  ['Иду...', '...'],
+  work:    ['Пишу код...', 'Думаю...', 'Оптимизирую', 'Проверяю', 'Коммит!'],
+  rest:    ['Устал...', 'Перерыв', '...zzz...', 'Пять минут'],
+  youtube: ['Хахаха!', 'Интересно...', 'Что за видос', 'Лайк!'],
+  porn:    ['...', '👀', 'Никто не видит?', 'Клёво...'],
+  tired:   ['Всё, хватит', 'Голова болит', 'Пойду кофе'],
+  walk:    ['Иду...', '...'],
+  at_poi:  ['Ммм ☕', 'Заряжаюсь', 'Кофе = жизнь'],
+  return:  ['Вернулся', 'Работаем!'],
 };
 
-function pickPhrase(state) {
-  const arr = PHRASES[state] || PHRASES.working;
+function phrase(state) {
+  const arr = PHRASES[state] || ['...'];
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// =====================
-// AGENTS
-// =====================
-let agents = Object.entries(DESKS).map(([name, desk]) => {
-  const px = desk.col * CELL + CELL/2;
-  const py = desk.row * CELL + CELL/2;
-  return {
-    name,
-    color: AGENT_COLOR[name],
-    desk,
-    x: px, y: py,
-    tx: px, ty: py,    // target
-    state: STATES.WORKING,
-    stateTimer: 300 + Math.random() * 400, // frames
-    bubble: null,
-    bubbleTimer: 0,
-    phrase: pickPhrase('working'),
-    blinkTimer: Math.random() * 60,
-    blinkOpen: true,
-    workAnimT: Math.random() * Math.PI * 2,
-  };
-});
+// ── LOG ───────────────────────────────────────
+const logLines = [];
+function addLog(name, text) {
+  const ts = new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+  logLines.unshift({name, text, ts});
+  if (logLines.length > 40) logLines.pop();
+  LOG.innerHTML = '<div id="log-hdr">📋 ACTIVITY LOG</div>' +
+    logLines.map(l => `<div class="le"><span class="lt">${l.ts}</span><span class="n-${l.name}">${l.name}</span>: ${l.text}</div>`).join('');
+}
 
-// =====================
-// PATHFINDING (simple direct, no obstacles for now)
-// =====================
+// ── AGENT INIT ────────────────────────────────
+const agents = Object.entries(DESK_POS).map(([name, desk], i) => ({
+  name,
+  ch: CHARS[name],
+  desk,
+  x: gx(desk.col) + SZ,
+  y: gy(desk.row) + SZ,
+  tx: gx(desk.col) + SZ,
+  ty: gy(desk.row) + SZ,
+  state: ST.WORK,
+  timer: 300 + i * 80 + Math.random() * 300,
+  dest: null,
+  bubble: '',
+  bubbleTimer: 0,
+  animT: Math.random() * Math.PI * 2,
+  blinkT: 60 + Math.random() * 120,
+  blink: false,
+  sitting: true,
+}));
+
+// ── COLLISION CHECK ───────────────────────────
+function posOccupied(x, y, self) {
+  for (const a of agents) {
+    if (a === self) continue;
+    const dx = a.x - x, dy = a.y - y;
+    if (Math.sqrt(dx*dx+dy*dy) < 28) return true;
+  }
+  return false;
+}
+
+function targetOccupied(col, row, self) {
+  const tx = gx(col) + SZ/2;
+  const ty = gy(row) + SZ/2;
+  for (const a of agents) {
+    if (a === self) continue;
+    if (Math.abs(a.tx - tx) < 30 && Math.abs(a.ty - ty) < 30) return true;
+    if (a.state === ST.AT_POI && a.dest === 'coffee' && col === POI.coffee.col && row === POI.coffee.row) return true;
+  }
+  return false;
+}
+
+// ── MOVEMENT ─────────────────────────────────
 function moveTo(agent, col, row) {
-  agent.tx = col * CELL + CELL/2;
-  agent.ty = row * CELL + CELL/2;
+  agent.tx = gx(col) + SZ/2;
+  agent.ty = gy(row) + SZ/2;
 }
 
 function atTarget(agent) {
-  return Math.abs(agent.x - agent.tx) < 2 && Math.abs(agent.y - agent.ty) < 2;
+  return Math.abs(agent.x - agent.tx) < 2.5 && Math.abs(agent.y - agent.ty) < 2.5;
 }
 
-// =====================
-// LOG
-// =====================
-const logEntries = [];
-function addLog(name, text) {
-  logEntries.unshift({ name, text, ts: new Date().toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}) });
-  if (logEntries.length > 30) logEntries.pop();
-  renderLog();
-}
+// ── STATE MACHINE ─────────────────────────────
+function nextState(agent) {
+  switch (agent.state) {
 
-function renderLog() {
-  const frag = logEntries.map(e =>
-    `<div class="entry"><span class="ts">${e.ts}</span><span class="name name-${e.name}">${e.name}</span>: ${e.text}</div>`
-  ).join('');
-  LOG.innerHTML = `<div id="log-title">📋 ACTIVITY LOG</div>` + frag;
-}
+    case ST.WORK: {
+      agent.timer--;
+      if (agent.timer > 0) return;
+      // choose next desk activity or get tired
+      const r = Math.random();
+      if (r < 0.35) {
+        agent.state = ST.REST;
+        agent.timer = 150 + Math.random()*150;
+      } else if (r < 0.55) {
+        agent.state = ST.YOUTUBE;
+        agent.timer = 200 + Math.random()*200;
+        addLog(agent.name, STATE_LABEL.youtube);
+      } else if (r < 0.65) {
+        agent.state = ST.PORN;
+        agent.timer = 120 + Math.random()*120;
+        addLog(agent.name, '🔞 открыл что-то...');
+      } else {
+        agent.state = ST.TIRED;
+        agent.timer = 60 + Math.random()*60;
+      }
+      agent.bubble = phrase(agent.state);
+      agent.bubbleTimer = 120;
+      agent.sitting = true;
+      break;
+    }
 
-// =====================
-// DRAW HELPERS
-// =====================
-function drawRect(x, y, w, h, fill, stroke) {
-  ctx.fillStyle = fill;
-  ctx.fillRect(x, y, w, h);
-  if (stroke) {
-    ctx.strokeStyle = stroke;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(x+0.5, y+0.5, w-1, h-1);
+    case ST.REST:
+    case ST.YOUTUBE:
+    case ST.PORN: {
+      agent.timer--;
+      if (agent.timer > 0) return;
+      agent.state = ST.TIRED;
+      agent.timer = 60;
+      agent.bubble = phrase('tired');
+      agent.bubbleTimer = 80;
+      break;
+    }
+
+    case ST.TIRED: {
+      agent.timer--;
+      if (agent.timer > 0) return;
+      // go coffee or sofa
+      const wantCoffee = Math.random() < 0.65;
+      const dest = wantCoffee ? 'coffee' : 'sofa';
+      const poi = POI[dest];
+
+      if (targetOccupied(poi.col, poi.row, agent)) {
+        // poi occupied — wait a bit more
+        agent.timer = 80 + Math.random()*80;
+        return;
+      }
+
+      agent.state = ST.WALK;
+      agent.dest = dest;
+      agent.sitting = false;
+      moveTo(agent, poi.col, poi.row);
+      agent.bubble = phrase('walk');
+      agent.bubbleTimer = 60;
+      addLog(agent.name, `🚶 идёт к ${dest === 'coffee' ? 'кофемашине' : 'дивану'}`);
+      break;
+    }
+
+    case ST.WALK: {
+      if (!atTarget(agent)) return;
+      agent.state = ST.AT_POI;
+      agent.timer = (agent.dest === 'coffee' ? 180 : 300) + Math.random()*180;
+      agent.bubble = phrase('at_poi');
+      agent.bubbleTimer = agent.timer;
+      addLog(agent.name, agent.dest === 'coffee' ? '☕ пьёт кофе' : '🛋 отдыхает на диване');
+      break;
+    }
+
+    case ST.AT_POI: {
+      agent.timer--;
+      if (agent.timer > 0) return;
+      // return to desk
+      agent.state = ST.RETURN;
+      const d = agent.desk;
+      agent.sitting = false;
+      moveTo(agent, d.col + 1, d.row + 1);
+      agent.bubble = phrase('return');
+      agent.bubbleTimer = 60;
+      addLog(agent.name, '→ возвращается');
+      break;
+    }
+
+    case ST.RETURN: {
+      if (!atTarget(agent)) return;
+      agent.x = agent.tx;
+      agent.y = agent.ty;
+      agent.state = ST.WORK;
+      agent.timer = 350 + Math.random()*400;
+      agent.sitting = true;
+      agent.bubble = phrase('work');
+      agent.bubbleTimer = 100;
+      addLog(agent.name, '💻 ' + agent.bubble);
+      break;
+    }
   }
 }
 
+// ── DRAW HELPERS ──────────────────────────────
+function rect(x,y,w,h,fill,stroke,lw) {
+  cx.fillStyle = fill; cx.fillRect(x,y,w,h);
+  if (stroke) { cx.strokeStyle=stroke; cx.lineWidth=lw||1; cx.strokeRect(x+.5,y+.5,w-1,h-1); }
+}
+
+function pill(x,y,w,h,r,fill) {
+  cx.fillStyle=fill;
+  cx.beginPath();
+  cx.roundRect(x,y,w,h,r);
+  cx.fill();
+}
+
+// ── DRAW FLOOR ────────────────────────────────
+function drawFloor() {
+  for (let c=0; c<COLS; c++) for (let r=0; r<ROWS; r++) {
+    cx.fillStyle = (c+r)%2===0 ? FL1 : FL2;
+    cx.fillRect(gx(c), gy(r), SZ, SZ);
+  }
+  // grid lines
+  cx.strokeStyle = GRID; cx.lineWidth = 0.4;
+  for (let c=0; c<=COLS; c++) {
+    cx.beginPath(); cx.moveTo(gx(c), gy(0)); cx.lineTo(gx(c), gy(ROWS)); cx.stroke();
+  }
+  for (let r=0; r<=ROWS; r++) {
+    cx.beginPath(); cx.moveTo(gx(0), gy(r)); cx.lineTo(gx(COLS), gy(r)); cx.stroke();
+  }
+}
+
+// ── DRAW DESK ─────────────────────────────────
 function drawDesk(col, row) {
-  const x = col * CELL;
-  const y = row * CELL;
-  const W = CELL * 2;
-  const H = CELL * 1.5;
-  // desk surface
-  drawRect(x, y, W, H, P.desk, P.border);
-  // desk top edge highlight
-  ctx.fillStyle = P.deskTop;
-  ctx.fillRect(x, y, W, 4);
-  // monitor
-  const mx = x + W/2 - 10;
-  const my = y + 6;
-  drawRect(mx, my, 20, 14, P.monitor, P.border);
-  ctx.fillStyle = P.screenOn;
-  ctx.fillRect(mx+2, my+2, 16, 10);
-  // monitor stand
-  ctx.fillStyle = P.border;
-  ctx.fillRect(mx+8, my+14, 4, 4);
-  ctx.fillRect(mx+4, my+18, 12, 2);
+  const x = gx(col), y = gy(row);
+  const W = SZ*2, H = SZ*1.5;
+  // desk body
+  rect(x+2, y+2, W-4, H-4, DESK, BORD);
+  // top highlight
+  cx.fillStyle = DESKT; cx.fillRect(x+2, y+2, W-4, 5);
+  // monitor base
+  const mx = x + W/2 - 14;
+  const my = y + 8;
+  rect(mx, my, 28, 18, '#0d1117', '#3d4a5c');
+  // screen
+  cx.fillStyle = '#0a1929'; cx.fillRect(mx+2, my+2, 24, 14);
+  // screen glow line
+  cx.fillStyle = '#1a4a6a'; cx.fillRect(mx+2, my+2, 24, 2);
+  // stand
+  cx.fillStyle = '#2a3140';
+  cx.fillRect(mx+11, my+18, 6, 5);
+  cx.fillRect(mx+7, my+23, 14, 2);
   // keyboard
-  ctx.fillStyle = P.border;
-  ctx.fillRect(x+W/2-12, y+H-10, 24, 6);
+  rect(x+W/2-14, y+H-12, 28, 7, '#1e2530', '#2a3140');
+  // mouse
+  cx.fillStyle='#2a3140'; cx.beginPath(); cx.ellipse(x+W/2+20, y+H-9, 4, 5, 0, 0, Math.PI*2); cx.fill();
 }
 
+// ── DRAW CHAIR ────────────────────────────────
 function drawChair(x, y) {
-  ctx.fillStyle = P.chairSeat;
-  ctx.beginPath();
-  ctx.ellipse(x, y, 9, 7, 0, 0, Math.PI*2);
-  ctx.fill();
-  ctx.strokeStyle = P.chair;
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
+  cx.fillStyle='#1c2128';
+  cx.beginPath(); cx.ellipse(x, y, 11, 8, 0, 0, Math.PI*2); cx.fill();
+  cx.strokeStyle='#2d3748'; cx.lineWidth=1.5; cx.stroke();
+  // cushion
+  cx.fillStyle='#252d3b';
+  cx.beginPath(); cx.ellipse(x, y, 8, 6, 0, 0, Math.PI*2); cx.fill();
 }
 
+// ── DRAW COFFEE MACHINE ───────────────────────
+function drawCoffeeMachine(col, row) {
+  const x = gx(col)+6, y = gy(row)+4;
+  rect(x, y, 38, 36, '#2a1f14', '#3a2a1a');
+  rect(x+2, y+2, 34, 14, '#1a0f08', null);
+  cx.fillStyle=GOLD; cx.font='bold 7px monospace'; cx.fillText('COFFEE', x+5, y+12);
+  // cup
+  cx.fillStyle='#fff'; cx.fillRect(x+13, y+20, 12, 10);
+  cx.fillStyle='#5c3a00'; cx.fillRect(x+14, y+22, 10, 6);
+  // steam
+  cx.strokeStyle='rgba(255,255,255,0.3)'; cx.lineWidth=1.5;
+  cx.beginPath(); cx.moveTo(x+17, y+19); cx.quadraticCurveTo(x+19, y+14, x+21, y+17); cx.stroke();
+  cx.beginPath(); cx.moveTo(x+21, y+19); cx.quadraticCurveTo(x+23, y+14, x+25, y+17); cx.stroke();
+}
+
+// ── DRAW SOFA ─────────────────────────────────
+function drawSofa(col, row) {
+  const x = gx(col), y = gy(row);
+  const W = SZ*2.5, H = SZ*1.2;
+  // back
+  rect(x, y, W, 16, '#2d3850', BORD);
+  // seat
+  rect(x, y+16, W, H-16, '#252d3b', BORD);
+  // armrests
+  rect(x, y, 10, H, '#353f55', BORD);
+  rect(x+W-10, y, 10, H, '#353f55', BORD);
+  // cushions
+  cx.fillStyle='#2d3748';
+  cx.fillRect(x+12, y+18, W/2-16, H-24);
+  cx.fillRect(x+W/2+4, y+18, W/2-16, H-24);
+}
+
+// ── DRAW PLANTS ───────────────────────────────
 function drawPlant(x, y) {
   // pot
-  ctx.fillStyle = '#5a3a1a';
-  ctx.fillRect(x-6, y+2, 12, 8);
-  // soil
-  ctx.fillStyle = P.plant;
-  ctx.fillRect(x-5, y, 10, 4);
+  cx.fillStyle='#6b3a1f'; cx.fillRect(x-7, y+4, 14, 10);
+  cx.fillStyle='#4a2a10'; cx.fillRect(x-5, y, 10, 5);
   // leaves
-  ctx.fillStyle = P.plantLeaf;
-  ctx.beginPath();
-  ctx.ellipse(x, y-6, 8, 10, -0.3, 0, Math.PI*2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(x+5, y-4, 6, 8, 0.4, 0, Math.PI*2);
-  ctx.fill();
+  cx.fillStyle='#1a4a1a';
+  cx.beginPath(); cx.ellipse(x, y-8, 9, 12, -0.2, 0, Math.PI*2); cx.fill();
+  cx.fillStyle='#2d6a2d';
+  cx.beginPath(); cx.ellipse(x+5, y-5, 7, 9, 0.4, 0, Math.PI*2); cx.fill();
+  cx.beginPath(); cx.ellipse(x-5, y-5, 7, 9, -0.4, 0, Math.PI*2); cx.fill();
+  cx.fillStyle='#3a8a3a';
+  cx.beginPath(); cx.ellipse(x, y-6, 5, 8, 0, 0, Math.PI*2); cx.fill();
 }
 
-function drawCoffeeMachine(col, row) {
-  const x = col * CELL + 4;
-  const y = row * CELL + 4;
-  // body
-  drawRect(x, y, 36, 30, P.coffeeM, P.border);
-  drawRect(x+2, y+2, 32, 12, P.coffee, null);
-  // cup area
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(x+12, y+18, 12, 8);
-  ctx.fillStyle = P.gold;
-  ctx.fillRect(x+14, y+20, 8, 4);
-  // label
-  ctx.fillStyle = P.gold;
-  ctx.font = 'bold 8px monospace';
-  ctx.fillText('COFFEE', x+3, y+12);
-}
-
-function drawSofa(col, row) {
-  const x = col * CELL;
-  const y = row * CELL;
-  // back
-  drawRect(x, y, CELL*2, 14, P.sofaAcc, P.border);
-  // seat
-  drawRect(x, y+14, CELL*2, 20, P.sofa, P.border);
-  // armrests
-  drawRect(x, y, 8, 34, P.sofaAcc, P.border);
-  drawRect(x+CELL*2-8, y, 8, 34, P.sofaAcc, P.border);
-  // cushions
-  ctx.fillStyle = P.sofa;
-  ctx.fillRect(x+10, y+16, CELL-12, 16);
-  ctx.fillRect(x+CELL+2, y+16, CELL-12, 16);
-}
-
-function drawCarpet(col, row, w, h) {
-  const x = col * CELL;
-  const y = row * CELL;
-  ctx.fillStyle = P.carpet;
-  ctx.fillRect(x, y, w*CELL, h*CELL);
-  ctx.strokeStyle = '#252d3b';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(x+4, y+4, w*CELL-8, h*CELL-8);
-}
-
-function drawGrid() {
-  ctx.strokeStyle = P.grid;
-  ctx.lineWidth = 0.5;
-  for (let c = 0; c <= 14; c++) {
-    ctx.beginPath();
-    ctx.moveTo(c*CELL, 0);
-    ctx.lineTo(c*CELL, 10*CELL);
-    ctx.stroke();
-  }
-  for (let r = 0; r <= 10; r++) {
-    ctx.beginPath();
-    ctx.moveTo(0, r*CELL);
-    ctx.lineTo(14*CELL, r*CELL);
-    ctx.stroke();
-  }
-}
-
-function drawFloor() {
-  // main floor
-  for (let c = 0; c < 14; c++) {
-    for (let r = 0; r < 10; r++) {
-      ctx.fillStyle = (c+r)%2===0 ? P.floor : P.floorAlt;
-      ctx.fillRect(c*CELL, r*CELL, CELL, CELL);
-    }
-  }
-}
-
-function drawWalls() {
-  // top wall
-  ctx.fillStyle = P.wall;
-  ctx.fillRect(0, 0, 14*CELL, 6);
-  ctx.fillStyle = P.wallTop;
-  ctx.fillRect(0, 6, 14*CELL, 3);
-  // left wall
-  ctx.fillStyle = P.wall;
-  ctx.fillRect(0, 0, 6, 10*CELL);
-  ctx.fillStyle = P.wallTop;
-  ctx.fillRect(6, 0, 3, 10*CELL);
-}
-
-function drawAgent(agent) {
-  const { x, y, name, color, state, blinkOpen, workAnimT, phrase, bubbleTimer } = agent;
+// ── DRAW SOUTH PARK CHARACTER ────────────────
+function drawSPChar(agent) {
+  const {x, y, ch, state, animT, blink, sitting, name} = agent;
+  const bobY = (state===ST.WORK||state===ST.YOUTUBE||state===ST.PORN) ? Math.sin(animT)*1.2 : 0;
+  const lean = sitting ? 2 : 0; // lean forward when sitting
 
   // shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.beginPath();
-  ctx.ellipse(x, y+10, 9, 4, 0, 0, Math.PI*2);
-  ctx.fill();
+  cx.fillStyle='rgba(0,0,0,0.35)';
+  cx.beginPath(); cx.ellipse(x, y+12, 10, 4, 0, 0, Math.PI*2); cx.fill();
 
-  // body
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.ellipse(x, y, 8, 9, 0, 0, Math.PI*2);
-  ctx.fill();
+  // BODY / JACKET
+  // bottom (rounded rectangle body)
+  cx.fillStyle = ch.jacket;
+  cx.beginPath();
+  cx.roundRect(x-9, y-4+bobY+lean, 18, 16, [0,0,5,5]);
+  cx.fill();
 
-  // work animation (bob when working)
-  const bobY = state === STATES.WORKING ? Math.sin(workAnimT) * 1.5 : 0;
+  // jacket lapels
+  cx.fillStyle = shade(ch.jacket, -30);
+  cx.beginPath(); cx.moveTo(x, y-4+bobY+lean); cx.lineTo(x-4, y+2+bobY+lean); cx.lineTo(x, y+2+bobY+lean); cx.fill();
+  cx.beginPath(); cx.moveTo(x, y-4+bobY+lean); cx.lineTo(x+4, y+2+bobY+lean); cx.lineTo(x, y+2+bobY+lean); cx.fill();
 
-  // head
-  ctx.fillStyle = '#e8d5b0';
-  ctx.beginPath();
-  ctx.arc(x, y - 10 + bobY, 6, 0, Math.PI*2);
-  ctx.fill();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 1;
-  ctx.stroke();
+  // PANTS
+  cx.fillStyle = ch.pants;
+  cx.fillRect(x-8, y+9+bobY+lean, 7, 8);
+  cx.fillRect(x+1, y+9+bobY+lean, 7, 8);
+  // shoes
+  cx.fillStyle = ch.shoes;
+  cx.beginPath(); cx.ellipse(x-5, y+18+bobY+lean, 5, 3, 0, 0, Math.PI*2); cx.fill();
+  cx.beginPath(); cx.ellipse(x+5, y+18+bobY+lean, 5, 3, 0, 0, Math.PI*2); cx.fill();
 
-  // eyes
-  if (blinkOpen) {
-    ctx.fillStyle = '#1a1a2e';
-    ctx.beginPath();
-    ctx.arc(x-2, y-11+bobY, 1.2, 0, Math.PI*2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(x+2, y-11+bobY, 1.2, 0, Math.PI*2);
-    ctx.fill();
+  // NECK
+  cx.fillStyle = ch.skin;
+  cx.fillRect(x-3, y-7+bobY, 6, 5);
+
+  // HEAD (round, chubby for Cartman = agent Кай)
+  const headR = name==='Кай' ? 10 : 8;
+  cx.fillStyle = ch.skin;
+  cx.beginPath(); cx.arc(x, y-16+bobY, headR, 0, Math.PI*2); cx.fill();
+
+  // face outline
+  cx.strokeStyle = shade(ch.skin, -40);
+  cx.lineWidth = 0.8; cx.stroke();
+
+  // HAT
+  // brim
+  cx.fillStyle = ch.hatBrim;
+  cx.beginPath(); cx.ellipse(x, y-23+bobY, headR+3, 3, 0, 0, Math.PI*2); cx.fill();
+  // body of hat
+  const hatH = name==='Кай' ? 9 : 8;
+  cx.fillStyle = ch.hatTop;
+  cx.beginPath(); cx.roundRect(x-headR+1, y-23-hatH+bobY, (headR-1)*2, hatH+2, [4,4,0,0]); cx.fill();
+  // pom-pom
+  cx.fillStyle = ch.hatPom;
+  cx.beginPath(); cx.arc(x, y-23-hatH+bobY, 3, 0, Math.PI*2); cx.fill();
+
+  // earflaps
+  if (ch.earflap) {
+    cx.fillStyle = ch.hatTop;
+    cx.beginPath(); cx.ellipse(x-headR-1, y-19+bobY, 3, 5, -0.3, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(x+headR+1, y-19+bobY, 3, 5, 0.3, 0, Math.PI*2); cx.fill();
+  }
+
+  // scarf (Kenny)
+  if (ch.scarf) {
+    cx.fillStyle = ch.scarf;
+    cx.fillRect(x-9, y-6+bobY, 18, 4);
+    cx.fillStyle = shade(ch.scarf, -20);
+    cx.fillRect(x-9, y-4+bobY, 18, 2);
+  }
+
+  // bow (Wendy/Татьяна)
+  if (ch.bow) {
+    cx.fillStyle = '#ff69b4';
+    cx.beginPath(); cx.ellipse(x-4, y-25+bobY, 4, 3, -0.5, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.ellipse(x+4, y-25+bobY, 4, 3, 0.5, 0, Math.PI*2); cx.fill();
+    cx.fillStyle='#ff1493';
+    cx.beginPath(); cx.arc(x, y-25+bobY, 2.5, 0, Math.PI*2); cx.fill();
+  }
+
+  // EYES
+  const ey = y - 17 + bobY;
+  const ex1 = x - 3.5, ex2 = x + 2.5;
+  if (!blink) {
+    cx.fillStyle='#1a1a2e';
+    cx.beginPath(); cx.arc(ex1, ey, 1.5, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(ex2, ey, 1.5, 0, Math.PI*2); cx.fill();
+    // eye shine
+    cx.fillStyle='#fff';
+    cx.beginPath(); cx.arc(ex1+0.5, ey-0.5, 0.6, 0, Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(ex2+0.5, ey-0.5, 0.6, 0, Math.PI*2); cx.fill();
   } else {
-    ctx.strokeStyle = '#1a1a2e';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(x-3, y-11+bobY);
-    ctx.lineTo(x-1, y-11+bobY);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(x+1, y-11+bobY);
-    ctx.lineTo(x+3, y-11+bobY);
-    ctx.stroke();
+    cx.strokeStyle='#1a1a2e'; cx.lineWidth=1.2;
+    cx.beginPath(); cx.moveTo(ex1-1.5, ey); cx.lineTo(ex1+1.5, ey); cx.stroke();
+    cx.beginPath(); cx.moveTo(ex2-1.5, ey); cx.lineTo(ex2+1.5, ey); cx.stroke();
   }
 
-  // name label
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  ctx.font = 'bold 9px monospace';
-  const tw = ctx.measureText(name).width;
-  ctx.fillRect(x - tw/2 - 3, y - 24 + bobY, tw+6, 11);
-  ctx.fillStyle = color;
-  ctx.fillText(name, x - tw/2, y - 15 + bobY);
-
-  // speech bubble
-  if (bubbleTimer > 0 && phrase) {
-    ctx.font = '8px monospace';
-    const bw = ctx.measureText(phrase).width + 8;
-    const bh = 14;
-    const bx = x - bw/2;
-    const by = y - 38 + bobY;
-    ctx.fillStyle = 'rgba(13,17,23,0.95)';
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(bx, by, bw, bh, 3);
-    ctx.fill();
-    ctx.stroke();
-    // tail
-    ctx.fillStyle = 'rgba(13,17,23,0.95)';
-    ctx.beginPath();
-    ctx.moveTo(x-3, by+bh);
-    ctx.lineTo(x+3, by+bh);
-    ctx.lineTo(x, by+bh+5);
-    ctx.fill();
-    ctx.strokeStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(x-3, by+bh);
-    ctx.lineTo(x, by+bh+5);
-    ctx.lineTo(x+3, by+bh);
-    ctx.stroke();
-    ctx.fillStyle = P.text;
-    ctx.fillText(phrase, bx+4, by+10);
+  // MOUTH
+  cx.strokeStyle='#8b4513'; cx.lineWidth=1;
+  if (state===ST.YOUTUBE||state===ST.PORN) {
+    // surprised open mouth
+    cx.fillStyle='#1a0a05';
+    cx.beginPath(); cx.ellipse(x, y-13+bobY, 3, 2.5, 0, 0, Math.PI*2); cx.fill();
+  } else if (state===ST.REST || state===ST.TIRED) {
+    cx.beginPath(); cx.moveTo(x-3, y-13+bobY); cx.lineTo(x+3, y-13+bobY); cx.stroke();
+  } else {
+    cx.beginPath(); cx.arc(x, y-15+bobY, 3, 0.1, Math.PI-0.1); cx.stroke();
   }
 
-  // state icon
-  const icons = { working:'💻', tired:'😴', walking:'🚶', coffee:'☕', sofa:'🛋', returning:'🚶' };
-  ctx.font = '10px serif';
-  ctx.fillText(icons[state]||'', x+8, y-8+bobY);
+  // STATE SCREEN ICON (on monitor above desk when sitting)
+  // drawn separately in drawDeskScreen()
+
+  // NAME LABEL
+  cx.fillStyle='rgba(0,0,0,0.75)';
+  cx.font='bold 9px monospace';
+  const tw = cx.measureText(name).width;
+  cx.fillRect(x-tw/2-3, y-32+bobY, tw+6, 11);
+  cx.fillStyle = AGENT_COLOR(name);
+  cx.fillText(name, x-tw/2, y-23+bobY);
 }
 
-// =====================
-// UPDATE
-// =====================
-function updateAgent(agent) {
-  // blink
-  agent.blinkTimer--;
-  if (agent.blinkTimer <= 0) {
-    agent.blinkOpen = !agent.blinkOpen;
-    agent.blinkTimer = agent.blinkOpen ? 120 + Math.random()*180 : 8;
-  }
+function AGENT_COLOR(name) {
+  const m = {'Кай':'#e8b84b','Степа':'#3fb950','Татьяна':'#ff7b72','Геннадий':'#f0883e','Алексей':'#bc8cff'};
+  return m[name]||'#fff';
+}
 
-  // work animation
-  if (agent.state === STATES.WORKING) {
-    agent.workAnimT += 0.05;
-  }
+// darken hex color by amt (0-255)
+function shade(hex, amt) {
+  let n = parseInt(hex.slice(1),16);
+  let r = Math.min(255,Math.max(0,((n>>16)&0xff)+amt));
+  let g = Math.min(255,Math.max(0,((n>>8)&0xff)+amt));
+  let b = Math.min(255,Math.max(0,(n&0xff)+amt));
+  return '#'+(r<<16|g<<8|b).toString(16).padStart(6,'0');
+}
 
-  // bubble timer
-  if (agent.bubbleTimer > 0) agent.bubbleTimer--;
+// ── DRAW SCREEN CONTENT (on desk monitor) ────
+function drawScreenContent(desk, state, animT) {
+  const x = gx(desk.col)+2 + SZ - 14 + 2;
+  const y = gy(desk.row) + 8 + 2;
+  const W = 24, H = 14;
 
-  // movement
-  if (!atTarget(agent)) {
-    const dx = agent.tx - agent.x;
-    const dy = agent.ty - agent.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    const speed = 1.2;
-    agent.x += (dx/dist) * speed;
-    agent.y += (dy/dist) * speed;
-    return;
-  }
-
-  // state machine
-  agent.stateTimer--;
-  if (agent.stateTimer > 0) return;
-
-  const prev = agent.state;
-
-  switch (agent.state) {
-    case STATES.WORKING: {
-      // random: go coffee or sofa
-      const r = Math.random();
-      if (r < 0.6) {
-        agent.state = STATES.TIRED;
-        agent.stateTimer = 60 + Math.random() * 80;
-        agent.phrase = pickPhrase('tired');
-        agent.bubbleTimer = 100;
-        addLog(agent.name, agent.phrase);
-      }
-      break;
-    }
-    case STATES.TIRED: {
-      const r = Math.random();
-      if (r < 0.7) {
-        agent.state = STATES.WALKING;
-        agent.stateTimer = 999;
-        moveTo(agent, POIS.coffee.col, POIS.coffee.row);
-        agent.phrase = pickPhrase('walking');
-        agent.bubbleTimer = 60;
-        agent.destination = 'coffee';
-      } else {
-        agent.state = STATES.WALKING;
-        agent.stateTimer = 999;
-        moveTo(agent, POIS.sofa.col, POIS.sofa.row);
-        agent.phrase = pickPhrase('walking');
-        agent.bubbleTimer = 60;
-        agent.destination = 'sofa';
-      }
-      addLog(agent.name, '🚶 идёт к ' + (agent.destination === 'coffee' ? 'кофемашине' : 'дивану'));
-      break;
-    }
-    case STATES.WALKING: {
-      if (atTarget(agent)) {
-        if (agent.destination === 'coffee') {
-          agent.state = STATES.COFFEE;
-          agent.stateTimer = 200 + Math.random() * 200;
-          agent.phrase = pickPhrase('coffee');
-          agent.bubbleTimer = 200;
-          addLog(agent.name, '☕ пьёт кофе');
-        } else {
-          agent.state = STATES.SOFA;
-          agent.stateTimer = 300 + Math.random() * 300;
-          agent.phrase = pickPhrase('sofa');
-          agent.bubbleTimer = 200;
-          addLog(agent.name, '🛋 отдыхает');
-        }
-      }
-      break;
-    }
-    case STATES.COFFEE:
-    case STATES.SOFA: {
-      // return to desk
-      agent.state = STATES.RETURNING;
-      agent.stateTimer = 999;
-      const d = agent.desk;
-      moveTo(agent, d.col + 1, d.row + 1);
-      agent.phrase = '→ Работать';
-      agent.bubbleTimer = 80;
-      addLog(agent.name, '→ возвращается за стол');
-      break;
-    }
-    case STATES.RETURNING: {
-      if (atTarget(agent)) {
-        agent.state = STATES.WORKING;
-        agent.stateTimer = 400 + Math.random() * 600;
-        agent.phrase = pickPhrase('working');
-        agent.bubbleTimer = 100;
-        addLog(agent.name, '💻 ' + agent.phrase);
-      }
-      break;
-    }
+  if (state === ST.WORK) {
+    // code lines
+    cx.fillStyle='#3fb950'; cx.font='5px monospace';
+    cx.fillText('> git commit', x, y+5);
+    cx.fillStyle='#58a6ff';
+    cx.fillText('const ai=', x, y+10);
+  } else if (state === ST.YOUTUBE) {
+    // red youtube-ish rect
+    cx.fillStyle='#ff0000';
+    cx.fillRect(x+W/2-7, y+H/2-5, 14, 10);
+    cx.fillStyle='#fff';
+    cx.beginPath(); cx.moveTo(x+W/2-1, y+H/2-3); cx.lineTo(x+W/2+5, y+H/2); cx.lineTo(x+W/2-1, y+H/2+3); cx.fill();
+  } else if (state === ST.PORN) {
+    // PornHub colors: black + orange
+    cx.fillStyle='#000'; cx.fillRect(x, y, W, H);
+    cx.fillStyle='#f90';
+    cx.font='bold 5px monospace'; cx.fillText('PH', x+3, y+9);
+    cx.fillStyle='#fff'; cx.fillText('orn', x+9, y+9);
+    // pulse glow
+    cx.fillStyle=`rgba(255,153,0,${0.1+Math.abs(Math.sin(animT))*0.15})`;
+    cx.fillRect(x, y, W, H);
+  } else if (state === ST.REST) {
+    // Zzz
+    cx.fillStyle='#8b949e'; cx.font='bold 9px monospace'; cx.fillText('zzz', x+5, y+9);
   }
 }
 
-// =====================
-// TITLE / HEADER
-// =====================
+// ── DRAW SPEECH BUBBLE ────────────────────────
+function drawBubble(agent) {
+  if (agent.bubbleTimer <= 0 || !agent.bubble) return;
+  const {x, y, bubble, animT} = agent;
+  const bobY = Math.sin(animT)*1.2;
+  cx.font='8px monospace';
+  const tw = cx.measureText(bubble).width;
+  const bw = tw + 10, bh = 15;
+  const bx = x - bw/2, by = y - 52 + bobY;
+  // box
+  cx.fillStyle='rgba(13,17,23,0.93)';
+  cx.strokeStyle = AGENT_COLOR(agent.name);
+  cx.lineWidth=1;
+  cx.beginPath(); cx.roundRect(bx, by, bw, bh, 3); cx.fill(); cx.stroke();
+  // tail
+  cx.fillStyle='rgba(13,17,23,0.93)';
+  cx.beginPath();
+  cx.moveTo(x-4, by+bh); cx.lineTo(x+4, by+bh); cx.lineTo(x, by+bh+5);
+  cx.fill();
+  cx.strokeStyle=AGENT_COLOR(agent.name); cx.lineWidth=1;
+  cx.beginPath(); cx.moveTo(x-4, by+bh); cx.lineTo(x, by+bh+5); cx.lineTo(x+4, by+bh); cx.stroke();
+  // text
+  cx.fillStyle=TXT; cx.fillText(bubble, bx+5, by+10);
+}
+
+// ── HEADER ────────────────────────────────────
 function drawHeader() {
-  ctx.fillStyle = '#161b22';
-  ctx.fillRect(0, 0, C.width, 36);
-  ctx.strokeStyle = P.border;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, 36);
-  ctx.lineTo(C.width, 36);
-  ctx.stroke();
-
-  ctx.font = 'bold 13px monospace';
-  ctx.fillStyle = P.gold;
-  ctx.fillText('LABS67', 14, 23);
-  ctx.font = '11px monospace';
-  ctx.fillStyle = P.textDim;
-  ctx.fillText('// OFFICE', 72, 23);
-
-  // agent status dots
-  let dx = C.width - 20;
+  rect(0, 0, CV.width, 44, '#161b22', BORD);
+  cx.strokeStyle=BORD; cx.lineWidth=1;
+  cx.beginPath(); cx.moveTo(0,44); cx.lineTo(CV.width,44); cx.stroke();
+  cx.font='bold 13px monospace'; cx.fillStyle=GOLD; cx.fillText('LABS67', 14, 26);
+  cx.font='11px monospace'; cx.fillStyle=TXDM; cx.fillText('// OFFICE', 74, 26);
+  // agent dots
+  let dx = CV.width - 18;
   agents.slice().reverse().forEach(a => {
-    ctx.beginPath();
-    ctx.arc(dx, 18, 5, 0, Math.PI*2);
-    ctx.fillStyle = a.color;
-    ctx.fill();
-    dx -= 16;
+    cx.beginPath(); cx.arc(dx, 22, 5, 0, Math.PI*2);
+    cx.fillStyle=AGENT_COLOR(a.name); cx.fill();
+    dx -= 15;
   });
 }
 
-// =====================
-// MAIN RENDER
-// =====================
-function render() {
-  ctx.clearRect(0, 0, C.width, C.height);
+// ── MAIN LOOP ─────────────────────────────────
+function update() {
+  agents.forEach(a => {
+    // animation
+    a.animT += 0.04;
+    // blink
+    a.blinkT--;
+    if (a.blinkT <= 0) { a.blink = !a.blink; a.blinkT = a.blink ? 8 : 100+Math.random()*140; }
+    // bubble
+    if (a.bubbleTimer > 0) a.bubbleTimer--;
+    // movement
+    if (!atTarget(a)) {
+      const dx = a.tx - a.x, dy = a.ty - a.y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+      const spd = 1.4;
+      a.x += dx/d*spd; a.y += dy/d*spd;
+    }
+    // state machine
+    nextState(a);
+  });
+}
 
-  // offset below header
-  ctx.save();
-  ctx.translate(20, 50);
+function render() {
+  cx.clearRect(0, 0, CV.width, CV.height);
 
   drawFloor();
-  drawGrid();
-  drawCarpet(9, 5, 3, 3);
 
-  // static objects
-  Object.entries(DESKS).forEach(([name, desk]) => {
-    drawDesk(desk.col, desk.row);
-    drawChair(desk.col * CELL + CELL, desk.row * CELL + CELL * 1.5 - 8);
+  // static furniture
+  drawSofa(POI.sofa.col, POI.sofa.row);
+  drawCoffeeMachine(POI.coffee.col, POI.coffee.row);
+  drawPlant(gx(0)+22,  gy(0)+22);
+  drawPlant(gx(12)+22, gy(0)+22);
+  drawPlant(gx(0)+22,  gy(9)+22);
+  drawPlant(gx(12)+22, gy(9)+22);
+
+  // desks + chairs
+  Object.entries(DESK_POS).forEach(([name, d]) => {
+    drawDesk(d.col, d.row);
+    drawChair(gx(d.col)+SZ, gy(d.row)+SZ*1.5-6);
   });
 
-  drawCoffeeMachine(POIS.coffee.col, POIS.coffee.row);
-  drawSofa(POIS.sofa.col, POIS.sofa.row);
-  drawPlant(POIS.plant1.col * CELL + 20, POIS.plant1.row * CELL + 20);
-  drawPlant(POIS.plant2.col * CELL + 20, POIS.plant2.row * CELL + 20);
-  drawPlant(POIS.plant3.col * CELL + 20, POIS.plant3.row * CELL + 20);
+  // screen content for sitting agents
+  agents.forEach(a => {
+    if (a.sitting && (a.state===ST.WORK||a.state===ST.REST||a.state===ST.YOUTUBE||a.state===ST.PORN)) {
+      drawScreenContent(a.desk, a.state, a.animT);
+    }
+  });
 
-  // walls on top of floor
-  drawWalls();
+  // agents sorted by y (painter's algo)
+  [...agents].sort((a,b)=>a.y-b.y).forEach(a => {
+    drawSPChar(a);
+    drawBubble(a);
+  });
 
   // room label
-  ctx.font = 'bold 10px monospace';
-  ctx.fillStyle = P.textDim;
-  ctx.fillText('LABS67 HQ', 10 * CELL + 4, 9 * CELL - 4);
-
-  // agents sorted by Y (painter's algorithm)
-  const sorted = [...agents].sort((a, b) => a.y - b.y);
-  sorted.forEach(a => {
-    updateAgent(a);
-    drawAgent(a);
-  });
-
-  ctx.restore();
+  cx.font='10px monospace'; cx.fillStyle=TXDM;
+  cx.fillText('LABS67 HQ', gx(9)+4, gy(9)+32);
 
   drawHeader();
-
+  update();
   requestAnimationFrame(render);
 }
 
-// Stagger initial state timers so agents don't all move at once
-agents.forEach((a, i) => {
-  a.stateTimer = 200 + i * 120 + Math.random() * 200;
-  addLog(a.name, '💻 ' + pickPhrase('working'));
+// stagger timers
+agents.forEach((a,i) => {
+  a.timer = 200 + i*90 + Math.random()*200;
+  addLog(a.name, '💻 '+phrase('work'));
 });
 
 render();
